@@ -1,5 +1,9 @@
 # TRAE CLI — Advanced Rust development toolkit
 
+[![CI](https://github.com/Rigohl/trae-cli/workflows/CI/badge.svg)](https://github.com/Rigohl/trae-cli/actions)
+[![Version](https://img.shields.io/badge/version-0.2.0-blue.svg)](https://github.com/Rigohl/trae-cli/releases)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/Rigohl/trae-cli/blob/master/LICENSE)
+
 TRAE CLI (Total Rust Analysis Engine) is a command-line tool for analyzing, repairing and optimizing Rust projects.
 
 Highlights
