@@ -1,2 +1,0 @@
-cargo:rustc-link-arg=/STACK:8388608
-cargo:rerun-if-changed=src/main.rs
