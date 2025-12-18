@@ -183,3 +183,9 @@ impl CargoExecutor {
         }
     }
 }
+
+impl Default for CargoExecutor {
+    fn default() -> Self {
+        Self::new()
+    }
+}

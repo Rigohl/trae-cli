@@ -19,12 +19,13 @@ path = "src/bin/server_http.rs"
 
 [dependencies]
 reqwest = { version = "0.11", features = ["json"] }
-tokio = { version = "1", features = ["full"] }
+tokio = { version = "1.28", features = ["full"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 clap = { version = "4", features = ["derive", "env"] }
 colored = "2"
 chrono = { version = "0.4", features = ["serde"] }
+sysinfo = "0.29"
 indicatif = "0.17"
 console = "0.15"
 dialoguer = "0.11"

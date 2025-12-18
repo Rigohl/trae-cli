@@ -401,21 +401,21 @@ impl TraeCli {
         crate::api::analyze(true, true, true, no_jarvix, None, false, None).await?;
         // Repair (auto)
         // default repair: level balanced, rollback disabled, no updates, no git operations
-        crate::api::repair(
-            true,
-            true,
-            true,
-            true,
-            false,
+        let repair_opts = crate::commands::repair::RepairOptions {
+            auto: true,
+            clippy: true,
+            fmt: true,
+            deps: true,
+            dry_run: false,
             no_jarvix,
-            Some("balanced".to_string()),
-            false,
-            false,
-            false,
-            None,
-            None,
-        )
-        .await?;
+            level: Some("balanced".to_string()),
+            rollback: false,
+            update: false,
+            upgrade: false,
+            git_branch: None,
+            git_commit: None,
+        };
+        crate::api::repair(repair_opts).await?;
         // Test (basic)
         crate::api::test_cmd(false, false, false, None, None, false, no_jarvix).await?;
         println!("{}", "✅ TRAE AUTO completado".green());

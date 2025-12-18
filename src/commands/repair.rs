@@ -277,18 +277,18 @@ impl RepairCommand {
             // Git operations: create branch and commit
             if let Some(branch) = &self.git_branch {
                 let git_start = Instant::now();
-                match std::process::Command::new("git").args(&["checkout", "-b", branch]).output() {
-                    Ok(o) if o.status.success() => steps.push(StepSummary::success(&format!("Crear branch git: {}", branch), git_start.elapsed())),
-                    Ok(o) => steps.push(StepSummary::failed(&format!("Crear branch git: {}", branch), git_start.elapsed(), String::from_utf8_lossy(&o.stderr).to_string())),
-                    Err(e) => steps.push(StepSummary::failed(&format!("Crear branch git: {}", branch), git_start.elapsed(), e.to_string())),
+                match std::process::Command::new("git").args(["checkout", "-b", branch]).output() {
+                    Ok(o) if o.status.success() => steps.push(StepSummary::success(format!("Crear branch git: {}", branch), git_start.elapsed())),
+                    Ok(o) => steps.push(StepSummary::failed(format!("Crear branch git: {}", branch), git_start.elapsed(), String::from_utf8_lossy(&o.stderr).to_string())),
+                    Err(e) => steps.push(StepSummary::failed(format!("Crear branch git: {}", branch), git_start.elapsed(), e.to_string())),
                 }
             }
             if let Some(msg) = &self.git_commit {
                 let git_start = Instant::now();
-                let add = std::process::Command::new("git").args(&["add", "-A"]).output();
+                let add = std::process::Command::new("git").args(["add", "-A"]).output();
                 if let Ok(a) = add {
                     if a.status.success() {
-                        match std::process::Command::new("git").args(&["commit", "-m", msg]).output() {
+                        match std::process::Command::new("git").args(["commit", "-m", msg]).output() {
                             Ok(c) if c.status.success() => steps.push(StepSummary::success("Git commit", git_start.elapsed())),
                             Ok(c) => steps.push(StepSummary::failed("Git commit", git_start.elapsed(), String::from_utf8_lossy(&c.stderr).to_string())),
                             Err(e) => steps.push(StepSummary::failed("Git commit", git_start.elapsed(), e.to_string())),
@@ -881,31 +881,38 @@ impl RepairCommand {
         Ok(())
     }
 
+}
+
+/// Options for programmatic repair API.
+#[derive(Debug, Clone, Default)]
+pub struct RepairOptions {
+    pub auto: bool,
+    pub clippy: bool,
+    pub fmt: bool,
+    pub deps: bool,
+    pub dry_run: bool,
+    pub no_jarvix: bool,
+    pub level: Option<String>,
+    pub rollback: bool,
+    pub update: bool,
+    pub upgrade: bool,
+    pub git_branch: Option<String>,
+    pub git_commit: Option<String>,
+}
+
+impl RepairCommand {
     /// API-friendly wrapper to run repair flow programmatically.
-    pub async fn run_simple(
-        auto: bool,
-        clippy: bool,
-        fmt: bool,
-        deps: bool,
-        dry_run: bool,
-        no_jarvix: bool,
-        level: Option<String>,
-        rollback: bool,
-        update: bool,
-        upgrade: bool,
-        git_branch: Option<String>,
-        git_commit: Option<String>,
-    ) -> Result<()> {
+    pub async fn run_simple(opts: RepairOptions) -> Result<()> {
         // Map level to flags if provided
-        let (auto, clippy, fmt, deps) = if let Some(l) = level.as_deref() {
+        let (auto, clippy, fmt, deps) = if let Some(l) = opts.level.as_deref() {
             match l {
                 "safe" => (false, true, true, false),
                 "balanced" => (false, true, true, true),
                 "aggressive" => (true, true, true, true),
-                _ => (auto, clippy, fmt, deps),
+                _ => (opts.auto, opts.clippy, opts.fmt, opts.deps),
             }
         } else {
-            (auto, clippy, fmt, deps)
+            (opts.auto, opts.clippy, opts.fmt, opts.deps)
         };
 
         let cmd = RepairCommand {
@@ -920,18 +927,18 @@ impl RepairCommand {
             export: None,
             check: true,
             outdated: false,
-            dry_run,
+            dry_run: opts.dry_run,
             force: true,
-            level: level.clone(),
-            rollback,
-            update,
-            upgrade,
-            git_branch: git_branch.clone(),
-            git_commit: git_commit.clone(),
+            level: opts.level.clone(),
+            rollback: opts.rollback,
+            update: opts.update,
+            upgrade: opts.upgrade,
+            git_branch: opts.git_branch.clone(),
+            git_commit: opts.git_commit.clone(),
         };
 
         // If rollback requested, create a simple backup copy of the workspace
-        let backup_dir = if rollback {
+        let backup_dir = if opts.rollback {
             let ts = chrono::Utc::now().format("%Y%m%dT%H%M%SZ").to_string();
             let backup = std::path::Path::new(".trae").join("backups").join(format!("repair_{}", ts));
             if let Err(e) = std::fs::create_dir_all(&backup) {
@@ -971,7 +978,7 @@ impl RepairCommand {
         let cli = crate::cli::TraeCli {
             verbose: false,
             config: None,
-            no_jarvix,
+            no_jarvix: opts.no_jarvix,
             command: crate::cli::Commands::Repair(cmd),
         };
         // Execute the full flow by calling the command's execute directly to avoid recursion

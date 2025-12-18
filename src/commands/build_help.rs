@@ -38,7 +38,7 @@ impl BuildHelpCommand {
                 cmd.arg("--release");
             }
             if let Some(t) = &self.target {
-                cmd.args(&["--target", t]);
+                cmd.args(["--target", t]);
             }
             if self.optimize_size {
                 // set env RUSTFLAGS for size optimizations

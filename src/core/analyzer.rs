@@ -170,6 +170,11 @@ impl ProjectAnalyzer {
         Ok(analysis)
     }
 }
+impl Default for ProjectAnalyzer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 #[doc = " Análisis de un archivo individual (función auxiliar para paralelización)"]
 fn analyze_single_file(path: &Path) -> FileAnalysisResult {
     let mut result = FileAnalysisResult {
@@ -179,60 +184,132 @@ fn analyze_single_file(path: &Path) -> FileAnalysisResult {
     };
     if let Ok(content) = std::fs::read_to_string(path) {
         result.lines = content.lines().count();
-        if content.contains("TODO:") {
-            result.issues.push(AnalysisIssue {
-                category: "Code Quality".to_string(),
-                description: format!("TODO encontrado en {:?}", path.file_name()),
-                severity: IssueSeverity::Info,
+        
+        // Enhanced security and quality analysis
+        let lines: Vec<&str> = content.lines().collect();
+        for (i, line) in lines.iter().enumerate() {
+            let line_num = i + 1;
+            
+            // Security issues
+            if line.contains("unsafe") && !line.trim().starts_with("//") {
+                result.issues.push(AnalysisIssue {
+                    category: "Security".to_string(),
+                    description: "Uso de código unsafe detectado".to_string(),
+                    severity: IssueSeverity::Critical,
+                    file: Some(path.to_string_lossy().to_string()),
+                    line: Some(line_num),
+                });
+            }
+            
+            if line.contains(".unwrap()") {
+                result.issues.push(AnalysisIssue {
+                    category: "Reliability".to_string(),
+                    description: "Uso de unwrap() - puede causar pánico".to_string(),
+                    severity: IssueSeverity::Warning,
+                    file: Some(path.to_string_lossy().to_string()),
+                    line: Some(line_num),
+                });
+            }
+            
+            if line.contains(".expect(") {
+                result.issues.push(AnalysisIssue {
+                    category: "Reliability".to_string(),
+                    description: "Uso de expect() - puede causar pánico".to_string(),
+                    severity: IssueSeverity::Warning,
+                    file: Some(path.to_string_lossy().to_string()),
+                    line: Some(line_num),
+                });
+            }
+            
+            if line.contains("panic!") {
+                result.issues.push(AnalysisIssue {
+                    category: "Reliability".to_string(),
+                    description: "Uso de panic! macro".to_string(),
+                    severity: IssueSeverity::Info,
+                    file: Some(path.to_string_lossy().to_string()),
+                    line: Some(line_num),
+                });
+            }
+            
+            // Performance issues
+            if line.contains(".clone()") && (line.contains("String") || line.contains("Vec")) {
+                result.issues.push(AnalysisIssue {
+                    category: "Performance".to_string(),
+                    description: "Clone potencialmente innecesario de colección".to_string(),
+                    severity: IssueSeverity::Info,
+                    file: Some(path.to_string_lossy().to_string()),
+                    line: Some(line_num),
+                });
+            }
+            
+            // Code quality
+            if line.contains("TODO:") {
+                result.issues.push(AnalysisIssue {
+                    category: "Code Quality".to_string(),
+                    description: format!("TODO encontrado en {:?}", path.file_name()),
+                    severity: IssueSeverity::Info,
+                    file: Some(path.to_string_lossy().to_string()),
+                    line: Some(line_num),
+                });
+            }
+            
+            if line.contains("FIXME:") {
+                result.issues.push(AnalysisIssue {
+                    category: "Code Quality".to_string(),
+                    description: format!("FIXME encontrado en {:?}", path.file_name()),
+                    severity: IssueSeverity::Info,
+                    file: Some(path.to_string_lossy().to_string()),
+                    line: Some(line_num),
+                });
+            }
+            
+            // Deprecated APIs
+            if line.contains("#[deprecated") {
+                result.suggestions.push(OptimizationSuggestion {
+                    description: "API deprecated encontrada - considerar actualización".to_string(),
+                    impact: OptimizationImpact::Medium,
+                    effort: OptimizationEffort::Medium,
+                    file: Some(path.to_string_lossy().to_string()),
+                    line: Some(line_num),
+                });
+            }
+        }
+        
+        // File-level analysis
+        if content.contains("#[allow(") {
+            result.suggestions.push(OptimizationSuggestion {
+                description: "Uso de #[allow] - revisar si es necesario".to_string(),
+                impact: OptimizationImpact::Low,
+                effort: OptimizationEffort::Low,
                 file: Some(path.to_string_lossy().to_string()),
-                line: Some(
-                    content
-                        .lines()
-                        .position(|l| l.contains("TODO:"))
-                        .unwrap_or(0)
-                        + 1,
-                ),
+                line: None,
             });
         }
-        if content.contains("unwrap()") {
-            let severity = if content.matches("unwrap()").count() > 5 {
-                IssueSeverity::Critical
-            } else {
-                IssueSeverity::Warning
-            };
+        
+        // Complexity analysis
+        let function_count = content.matches("fn ").count();
+        let unsafe_count = content.matches("unsafe").count();
+        if function_count > 20 {
             result.issues.push(AnalysisIssue {
-                category: "Safety".to_string(),
-                description: format!(
-                    "uso de unwrap() ({} veces) en {:?}",
-                    content.matches("unwrap()").count(),
-                    path.file_name()
-                ),
-                severity,
+                category: "Complexity".to_string(),
+                description: format!("Archivo con {} funciones - considerar dividir", function_count),
+                severity: IssueSeverity::Warning,
                 file: Some(path.to_string_lossy().to_string()),
-                line: Some(
-                    content
-                        .lines()
-                        .position(|l| l.contains("unwrap()"))
-                        .unwrap_or(0)
-                        + 1,
-                ),
+                line: None,
             });
         }
-        if content.contains("panic!") {
+        
+        if unsafe_count > 5 {
             result.issues.push(AnalysisIssue {
-                category: "Safety".to_string(),
-                description: format!("panic! macro encontrado en {:?}", path.file_name()),
+                category: "Security".to_string(),
+                description: format!("Archivo con {} bloques unsafe - alto riesgo", unsafe_count),
                 severity: IssueSeverity::Critical,
                 file: Some(path.to_string_lossy().to_string()),
-                line: Some(
-                    content
-                        .lines()
-                        .position(|l| l.contains("panic!"))
-                        .unwrap_or(0)
-                        + 1,
-                ),
+                line: None,
             });
         }
+        
+        // File size analysis
         if result.lines > 1000 {
             result.suggestions.push(OptimizationSuggestion {
                 description: format!(
@@ -261,6 +338,7 @@ fn analyze_single_file(path: &Path) -> FileAnalysisResult {
                 line: None,
             });
         }
+        
         if content.contains("#[allow(dead_code)]") {
             result.suggestions.push(OptimizationSuggestion {
                 description: "Revisar código marcado como dead_code".to_string(),

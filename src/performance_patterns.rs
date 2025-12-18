@@ -292,6 +292,11 @@ impl MetricsCollector {
         )
     }
 }
+impl Default for MetricsCollector {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 #[doc = " Paralelización selectiva basada en threshold dinámico"]
 pub fn parallel_process<T, F, R>(items: Vec<T>, func: F, config: &PerformanceConfig) -> Vec<R>
 where

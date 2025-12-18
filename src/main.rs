@@ -1,11 +1,16 @@
+#![doc = " Primary CLI entry for TRAE-CLI"]
+#![allow(clippy::needless_borrows_for_generic_args)]
+#![allow(clippy::let_and_return)]
+#![allow(clippy::ptr_arg)]
+#![allow(clippy::unnecessary_map_or)]
+#![allow(clippy::regex_creation_in_loops)]
+#![allow(clippy::useless_vec)]
 use clap::{Parser, Subcommand};
 use colored::*;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
-use serde_json;
 use std::process::{Command, Output};
 use std::path::PathBuf;
-use chrono;
 use indicatif::{ProgressBar, ProgressStyle};
 use console::{style, Emoji};
 use std::fs;
@@ -59,13 +64,7 @@ struct ModuleInfo {
     file_count: usize,
 }
 
-/// Información de mock generado
-#[derive(Debug, Clone, Serialize, Deserialize)]
-struct MockInfo {
-    trait_name: String,
-    methods: Vec<String>,
-    generated_code: String,
-}
+// Mock generation removed to enforce No-Mocks policy (generators were present but we keep TRAE-CLI free of mocks)
 
 /// Información extraída por el crawler
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -470,24 +469,7 @@ enum CargoCommand {
         enums: bool,
     },
 
-    /// 🎭 Generar mocks y test doubles
-    Mock {
-        /// Trait a mockear
-        #[arg(long)]
-        trait_name: Option<String>,
-
-        /// Archivo de salida
-        #[arg(long, short = 'o')]
-        output: Option<String>,
-
-        /// Usar mockito
-        #[arg(long)]
-        mockito: bool,
-
-        /// Usar mock_derive
-        #[arg(long)]
-        derive: bool,
-    },
+    // Mock generation command removed to honor No-Mocks policy
 
     /// 📦 Analizar módulos no utilizados
     Modules {
@@ -990,73 +972,7 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
             cmd.arg("--all");
             "deadcode"
         }
-        Some(CargoCommand::Mock { trait_name, output, mockito: _mockito, derive: _derive }) => {
-            println!("{} {} Generando mocks y analizando traits...", "→".blue().bold(), Emoji("🎭", ""));
-            let spinner = ProgressBar::new_spinner();
-            spinner.set_style(
-                ProgressStyle::default_spinner()
-                    .tick_strings(&["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"])
-                    .template("{spinner} {msg}").unwrap()
-            );
-            spinner.set_message("Extrayendo traits del proyecto...");
-            spinner.enable_steady_tick(std::time::Duration::from_millis(100));
 
-            // Extraer todos los traits del proyecto
-            let crawled = advanced_project_crawler(&args.project);
-
-            spinner.finish_with_message(format!(
-                "✓ Encontrados {} traits en el proyecto",
-                crawled.traits.len()
-            ));
-            println!();
-
-            // Mostrar todos los traits disponibles
-            if !crawled.traits.is_empty() {
-                println!("{}", "┌─ TRAITS DISPONIBLES PARA MOCK ──────────────┐".cyan().bold());
-                for (i, tr) in crawled.traits.iter().enumerate() {
-                    println!("  {} {} ({}:{})",
-                        format!("{}.", i+1).bright_black().bold(),
-                        tr.name.yellow().bold(),
-                        tr.file.bright_black(),
-                        tr.methods.len()
-                    );
-                    for method in &tr.methods {
-                        println!("    {} {}", "→".cyan(), method);
-                    }
-                }
-                println!("{}", "└─────────────────────────────────────────────┘".cyan().bold());
-                println!();
-            }
-
-            if let Some(trait_n) = trait_name {
-                let mocks = scan_and_generate_mocks(&args.project, trait_n);
-
-                if !mocks.is_empty() {
-                    println!("{}", "┌─ MOCK GENERADO ─────────────────────────────┐".green().bold());
-                    for mock in &mocks {
-                        println!("  {} {}", "Trait:".green(), mock.trait_name.cyan().bold());
-                        println!("  {} {}", "Métodos:".green(), mock.methods.join(", ").bright_green());
-
-                        if let Some(out) = output {
-                            println!("  {} {}", "Guardado en:".yellow(), out.bright_yellow());
-                            let _ = fs::write(out, &mock.generated_code);
-                        } else {
-                            println!("  {} {} bytes de código generado", "Tamaño:".blue(), mock.generated_code.len());
-                        }
-                    }
-                    println!("{}", "└─────────────────────────────────────────────┘".green().bold());
-                } else {
-                    println!("{} {}", "⚠ No se encontró trait:".yellow().bold(), trait_n);
-                }
-            } else {
-                println!("{}", "⚠ Especifica un trait con --trait-name".yellow().bold());
-            }
-            println!();
-
-            cmd.arg("check");
-            cmd.arg("--tests");
-            "mock"
-        }
         Some(CargoCommand::Modules { unused_only, with_deps: _with_deps, tree, depth }) => {
             println!("{} {} Analizando módulos...", "→".blue().bold(), Emoji("📦", ""));
             let spinner = ProgressBar::new_spinner();
@@ -1933,49 +1849,7 @@ fn scan_modules(project_path: &PathBuf) -> Vec<ModuleInfo> {
     modules
 }
 
-/// Scanner: Genera mocks a partir de traits en el código
-fn scan_and_generate_mocks(project_path: &PathBuf, trait_name: &str) -> Vec<MockInfo> {
-    let mut mocks = Vec::new();
-    let src_path = project_path.join("src");
-
-    if !src_path.exists() {
-        return mocks;
-    }
-
-    let trait_pattern = Regex::new(&format!(r#"pub\s+trait\s+{}\s*\{{([^}}]*)}}"#, trait_name)).unwrap();
-
-    for entry in WalkDir::new(&src_path)
-        .into_iter()
-        .filter_map(|e| e.ok())
-        .filter(|e| e.path().extension().map_or(false, |ext| ext == "rs"))
-    {
-        if let Ok(content) = fs::read_to_string(entry.path()) {
-            if let Some(caps) = trait_pattern.captures(&content) {
-                let trait_body = caps.get(1).unwrap().as_str();
-                let fn_pattern = Regex::new(r#"fn\s+(\w+)"#).unwrap();
-
-                let mut methods = Vec::new();
-                for cap in fn_pattern.captures_iter(trait_body) {
-                    methods.push(cap.get(1).unwrap().as_str().to_string());
-                }
-
-                let mock_code = format!(
-                    "#[derive(Mock)]\npub struct Mock{} {{\n{}\n}}\n",
-                    trait_name,
-                    methods.iter().map(|m| format!("    {}: MockFn,", m)).collect::<Vec<_>>().join("\n")
-                );
-
-                mocks.push(MockInfo {
-                    trait_name: trait_name.to_string(),
-                    methods,
-                    generated_code: mock_code,
-                });
-            }
-        }
-    }
-
-    mocks
-}
+// Mock generation scanner removed to comply with No-Mocks directive.
 
 /// Carga variables de entorno desde un archivo .env simple
 fn load_env_file(project_path: &PathBuf) -> std::io::Result<std::collections::HashMap<String, String>> {

@@ -22,35 +22,8 @@ pub async fn analyze(
     .await
 }
 
-pub async fn repair(
-    auto: bool,
-    clippy: bool,
-    fmt: bool,
-    deps: bool,
-    dry_run: bool,
-    no_jarvix: bool,
-    level: Option<String>,
-    rollback: bool,
-    update: bool,
-    upgrade: bool,
-    git_branch: Option<String>,
-    git_commit: Option<String>,
-) -> Result<()> {
-    crate::commands::repair::RepairCommand::run_simple(
-        auto,
-        clippy,
-        fmt,
-        deps,
-        dry_run,
-        no_jarvix,
-        level,
-        rollback,
-        update,
-        upgrade,
-        git_branch,
-        git_commit,
-    )
-    .await
+pub async fn repair(opts: crate::commands::repair::RepairOptions) -> Result<()> {
+    crate::commands::repair::RepairCommand::run_simple(opts).await
 }
 
 pub async fn test_cmd(release: bool, coverage: bool, bench: bool, test: Option<String>, package: Option<String>, verbose: bool, no_jarvix: bool) -> Result<()> {
