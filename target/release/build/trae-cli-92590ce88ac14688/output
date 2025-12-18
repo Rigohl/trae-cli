@@ -1,0 +1,3 @@
+cargo:rustc-link-arg=/STACK:8388608
+cargo:warning=✅ trae.exe copiado a bin/
+cargo:rerun-if-changed=src/main.rs

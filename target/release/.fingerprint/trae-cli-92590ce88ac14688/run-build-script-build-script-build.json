@@ -1,0 +1,1 @@
+{"rustc":2490638836439573635,"features":"","declared_features":"","target":0,"profile":0,"path":0,"deps":[[14250782864374049604,"build_script_build",false,12859639128163515940]],"local":[{"RerunIfChanged":{"output":"release\\build\\trae-cli-92590ce88ac14688\\output","paths":["src/main.rs"]}}],"rustflags":[],"config":0,"compile_kind":0}

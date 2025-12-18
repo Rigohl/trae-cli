@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Pre-commit hook: run clippy and fail commit if there are warnings/errors
+# Supports Windows PowerShell (pwsh/powershell) or falls back to cargo clippy
+
+set -e
+
+if command -v pwsh >/dev/null 2>&1; then
+  pwsh -NoProfile -NoLogo -ExecutionPolicy Bypass -File "./verify-clippy.ps1"
+elif command -v powershell >/dev/null 2>&1; then
+  powershell -NoProfile -ExecutionPolicy Bypass -File "./verify-clippy.ps1"
+else
+  echo "pwsh/powershell not found, running cargo clippy directly"
+  cargo clippy --all-targets -- -D warnings
+fi

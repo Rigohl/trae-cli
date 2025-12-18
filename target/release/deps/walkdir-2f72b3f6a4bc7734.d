@@ -1,0 +1,10 @@
+C:\Users\DELL\Desktop\CLI\trae-cli\target\release\deps\walkdir-2f72b3f6a4bc7734.d: C:\Users\DELL\scoop\persist\rustup\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\lib.rs C:\Users\DELL\scoop\persist\rustup\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\dent.rs C:\Users\DELL\scoop\persist\rustup\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\error.rs C:\Users\DELL\scoop\persist\rustup\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\util.rs
+
+C:\Users\DELL\Desktop\CLI\trae-cli\target\release\deps\libwalkdir-2f72b3f6a4bc7734.rlib: C:\Users\DELL\scoop\persist\rustup\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\lib.rs C:\Users\DELL\scoop\persist\rustup\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\dent.rs C:\Users\DELL\scoop\persist\rustup\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\error.rs C:\Users\DELL\scoop\persist\rustup\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\util.rs
+
+C:\Users\DELL\Desktop\CLI\trae-cli\target\release\deps\libwalkdir-2f72b3f6a4bc7734.rmeta: C:\Users\DELL\scoop\persist\rustup\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\lib.rs C:\Users\DELL\scoop\persist\rustup\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\dent.rs C:\Users\DELL\scoop\persist\rustup\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\error.rs C:\Users\DELL\scoop\persist\rustup\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\util.rs
+
+C:\Users\DELL\scoop\persist\rustup\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\lib.rs:
+C:\Users\DELL\scoop\persist\rustup\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\dent.rs:
+C:\Users\DELL\scoop\persist\rustup\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\error.rs:
+C:\Users\DELL\scoop\persist\rustup\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\walkdir-2.5.0\src\util.rs:

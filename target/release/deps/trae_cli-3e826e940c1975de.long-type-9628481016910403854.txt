@@ -1,0 +1,62 @@
+&'a Utf8Path
+&'a serde_json::value::RawValue
+&'a std::path::Path
+(T0, T1, T2)
+(T0, T1, T2, T3)
+(T0, T1, T2, T3, T4)
+(T0, T1, T2, T3, T4, T5)
+(T0, T1, T2, T3, T4, T5, T6)
+(T0, T1, T2, T3, T4, T5, T6, T7)
+(T0, T1, T2, T3, T4, T5, T6, T7, T8)
+(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9)
+(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)
+(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11)
+(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12)
+(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13)
+(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14)
+(T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15)
+BTreeMap<K, V>
+BinaryHeap<T>
+DateTime<FixedOffset>
+DateTime<Utc>
+DateTime<chrono::Local>
+HashMap<K, V, S>
+HashSet<T, S>
+LinkedList<T>
+PhantomData<T>
+RangeTo<Idx>
+Result<T, E>
+cargo_metadata::BuildFinished
+cargo_metadata::CompilerMessage
+cargo_metadata::Message
+cargo_metadata::Metadata
+cargo_metadata::Resolve
+cargo_metadata::semver::Version
+cargo_platform::Platform
+chrono::Month
+collector::MetricsCollector
+collector::_::<impl Deserialize<'de> for collector::MetricsCollector>::deserialize::__Field
+reqwest::Url
+serde_json::Map<std::string::String, serde_json::Value>
+serde_json::Number
+serde_json::Value
+std::boxed::Box<T>
+std::boxed::Box<Utf8Path>
+std::boxed::Box<[T]>
+std::boxed::Box<serde_json::value::RawValue>
+std::boxed::Box<std::ffi::CStr>
+std::boxed::Box<std::ffi::OsStr>
+std::boxed::Box<std::path::Path>
+std::boxed::Box<str>
+std::ops::Range<Idx>
+std::ops::RangeFrom<Idx>
+std::ops::RangeInclusive<Idx>
+std::option::Option<T>
+std::string::String
+std::sync::Mutex<T>
+std::sync::RwLock<T>
+toml::Spanned<T>
+toml::datetime::DatetimeFromString
+toml::map::Map<std::string::String, toml::Value>
+toml::value::Datetime
+url::host::Host<S>

@@ -1,0 +1,2 @@
+[alias]
+clippy-clean = "clippy --all-targets -- -D warnings"

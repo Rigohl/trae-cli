@@ -1,0 +1,1 @@
+&mut cargo_metadata::MetadataCommand

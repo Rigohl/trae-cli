@@ -1,0 +1,17 @@
+{
+  "analysis_metrics": {
+    "avg_lines_per_file": 652.3333333333334,
+    "cache_efficiency": 0.0,
+    "fourier_complexity": 4.476437833689171,
+    "parallel_processed_units": 4800.0,
+    "rust_files": 48.0,
+    "structural_curvature": 1.0
+  },
+  "summary": {
+    "files_count": 48,
+    "issues_count": 17,
+    "lines": 31312,
+    "profile": "default",
+    "summary": "issues:17 suggestions:21 lines:31312 files:48"
+  }
+}
