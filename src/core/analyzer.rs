@@ -184,12 +184,12 @@ fn analyze_single_file(path: &Path) -> FileAnalysisResult {
     };
     if let Ok(content) = std::fs::read_to_string(path) {
         result.lines = content.lines().count();
-        
+
         // Enhanced security and quality analysis
         let lines: Vec<&str> = content.lines().collect();
         for (i, line) in lines.iter().enumerate() {
             let line_num = i + 1;
-            
+
             // Security issues
             if line.contains("unsafe") && !line.trim().starts_with("//") {
                 result.issues.push(AnalysisIssue {
@@ -200,7 +200,7 @@ fn analyze_single_file(path: &Path) -> FileAnalysisResult {
                     line: Some(line_num),
                 });
             }
-            
+
             if line.contains(".unwrap()") {
                 result.issues.push(AnalysisIssue {
                     category: "Reliability".to_string(),
@@ -210,7 +210,7 @@ fn analyze_single_file(path: &Path) -> FileAnalysisResult {
                     line: Some(line_num),
                 });
             }
-            
+
             if line.contains(".expect(") {
                 result.issues.push(AnalysisIssue {
                     category: "Reliability".to_string(),
@@ -220,7 +220,7 @@ fn analyze_single_file(path: &Path) -> FileAnalysisResult {
                     line: Some(line_num),
                 });
             }
-            
+
             if line.contains("panic!") {
                 result.issues.push(AnalysisIssue {
                     category: "Reliability".to_string(),
@@ -230,7 +230,7 @@ fn analyze_single_file(path: &Path) -> FileAnalysisResult {
                     line: Some(line_num),
                 });
             }
-            
+
             // Performance issues
             if line.contains(".clone()") && (line.contains("String") || line.contains("Vec")) {
                 result.issues.push(AnalysisIssue {
@@ -241,7 +241,7 @@ fn analyze_single_file(path: &Path) -> FileAnalysisResult {
                     line: Some(line_num),
                 });
             }
-            
+
             // Code quality
             if line.contains("TODO:") {
                 result.issues.push(AnalysisIssue {
@@ -252,7 +252,7 @@ fn analyze_single_file(path: &Path) -> FileAnalysisResult {
                     line: Some(line_num),
                 });
             }
-            
+
             if line.contains("FIXME:") {
                 result.issues.push(AnalysisIssue {
                     category: "Code Quality".to_string(),
@@ -262,7 +262,7 @@ fn analyze_single_file(path: &Path) -> FileAnalysisResult {
                     line: Some(line_num),
                 });
             }
-            
+
             // Deprecated APIs
             if line.contains("#[deprecated") {
                 result.suggestions.push(OptimizationSuggestion {
@@ -274,7 +274,7 @@ fn analyze_single_file(path: &Path) -> FileAnalysisResult {
                 });
             }
         }
-        
+
         // File-level analysis
         if content.contains("#[allow(") {
             result.suggestions.push(OptimizationSuggestion {
@@ -285,7 +285,7 @@ fn analyze_single_file(path: &Path) -> FileAnalysisResult {
                 line: None,
             });
         }
-        
+
         // Complexity analysis
         let function_count = content.matches("fn ").count();
         let unsafe_count = content.matches("unsafe").count();
@@ -298,7 +298,7 @@ fn analyze_single_file(path: &Path) -> FileAnalysisResult {
                 line: None,
             });
         }
-        
+
         if unsafe_count > 5 {
             result.issues.push(AnalysisIssue {
                 category: "Security".to_string(),
@@ -308,7 +308,7 @@ fn analyze_single_file(path: &Path) -> FileAnalysisResult {
                 line: None,
             });
         }
-        
+
         // File size analysis
         if result.lines > 1000 {
             result.suggestions.push(OptimizationSuggestion {
@@ -338,7 +338,7 @@ fn analyze_single_file(path: &Path) -> FileAnalysisResult {
                 line: None,
             });
         }
-        
+
         if content.contains("#[allow(dead_code)]") {
             result.suggestions.push(OptimizationSuggestion {
                 description: "Revisar código marcado como dead_code".to_string(),
