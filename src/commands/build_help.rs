@@ -10,7 +10,11 @@ pub struct BuildHelpCommand {
     pub run: bool,
     #[arg(long, help = "Build --release")]
     pub release: bool,
-    #[arg(long, value_name = "TARGET", help = "Optional target triple to build for")]
+    #[arg(
+        long,
+        value_name = "TARGET",
+        help = "Optional target triple to build for"
+    )]
     pub target: Option<String>,
     #[arg(long, help = "Verbose output")]
     pub verbose: bool,
@@ -21,7 +25,9 @@ impl BuildHelpCommand {
         // Minimal, sober suggestions
         println!("TRAE Build Helper - recomendaciones sobrias para compilar");
         if self.optimize_size {
-            println!(" • Recomendación: optimizar tamaño: opt-level = 's', lto = true, strip símbolos");
+            println!(
+                " • Recomendación: optimizar tamaño: opt-level = 's', lto = true, strip símbolos"
+            );
         } else {
             println!(" • Recomendación: para rendimiento, usar --release con opt-level=3 y LTO si aplica");
         }
@@ -52,7 +58,10 @@ impl BuildHelpCommand {
                 println!("Build completado ✓");
                 Ok(())
             } else {
-                Err(anyhow::anyhow!("cargo build falló con estado {:?}", status.code()))
+                Err(anyhow::anyhow!(
+                    "cargo build falló con estado {:?}",
+                    status.code()
+                ))
             }
         } else {
             println!("Para ejecutar la recomendación añade --run");
