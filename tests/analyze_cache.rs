@@ -3,7 +3,7 @@ use std::path::PathBuf;
 
 use uuid::Uuid;
 
-use trae_cli::commands::analyze::AnalyzeCommand;
+use jarvix_cli::commands::analyze::AnalyzeCommand;
 
 #[tokio::test]
 async fn analyze_cache_and_force_refresh_and_profile() {
