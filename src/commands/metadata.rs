@@ -4,7 +4,7 @@ use cargo_metadata::MetadataCommand as CargoMetadataCommand;
 use std::fs;
 
 #[derive(Args, Debug)]
-pub struct TraeMetadataCommand {
+pub struct JarvixMetadataCommand {
     #[arg(long, value_name = "PATH", help = "Write metadata JSON to file")]
     pub output: Option<String>,
     #[arg(long, help = "Include lines-of-code counts (may be slow)")]
@@ -15,7 +15,7 @@ pub struct TraeMetadataCommand {
     pub verbose: bool,
 }
 
-impl TraeMetadataCommand {
+impl JarvixMetadataCommand {
     pub async fn execute(&self, _cli: &crate::cli::JarvixCli) -> Result<()> {
         // Fetch cargo metadata
         let meta = CargoMetadataCommand::new().exec().map_err(|e| anyhow::anyhow!(e))?;

@@ -1,4 +1,4 @@
-//! Biblioteca pública mínima de TRAE-CLI para reutilización por otros binarios/crates.
+//! Biblioteca pública mínima de Jarvix-CLI para reutilización por otros binarios/crates.
 //! Reexporta módulos clave (jarvix client, metrics, core) con API estable mínima.
 
 pub mod cli;

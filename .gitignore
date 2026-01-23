@@ -21,6 +21,8 @@ Thumbs.db
 *.tmp
 *.swp
 
-# TRAE specific
+# Jarvix specific
+.jarvix/
 .trae/
+*.jarvix
 *.trae

@@ -1,6 +1,6 @@
 #![doc = " # CLI Module - Command Line Interface"]
 #![doc = ""]
-#![doc = " Define la estructura principal de comandos y subcomandos de TRAE CLI"]
+#![doc = " Define la estructura principal de comandos y subcomandos de Jarvix CLI"]
 use crate::commands::{
     analyze::AnalyzeCommand, build::BuildCommand, cargo::CargoCommand, clippy::ClippyCommand,
     build_help::BuildHelpCommand,
@@ -8,7 +8,7 @@ use crate::commands::{
     metrics::MetricsCommand, paths::PathsCommand, release::ReleaseCommand, repair::RepairCommand,
     rustup::RustupCommand, security::SecurityCommand, simulate::SimulateCommand, test::TestCommand,
     watch::WatchCommand,
-    metadata::TraeMetadataCommand,
+    metadata::JarvixMetadataCommand,
 };
 use crate::core::cargo::CargoExecutor;
 use anyhow::Result;
@@ -72,13 +72,13 @@ pub enum Commands {
     #[doc = " Show all available cargo commands (from `CARGO_COMMANDS.md`)"]
     #[command(name = "help-cargo")]
     HelpCargo,
-    #[doc = " Initialize TRAE configuration"]
+    #[doc = " Initialize Jarvix configuration"]
     Init {
         #[doc = " Force overwrite existing configuration"]
         #[arg(long)]
         force: bool,
     },
-    #[doc = " Check TRAE and system dependencies"]
+    #[doc = " Check Jarvix and system dependencies"]
     Doctor,
     #[doc = " 🔍 SUPER SCAN - Análisis completo multilenguaje del proyecto desde raíz"]
     #[command(name = "scan")]
@@ -102,13 +102,13 @@ pub enum Commands {
     #[doc = " 🧪 Enhanced testing with coverage and analysis"]
     Test(TestCommand),
     #[doc = "Generate project metadata JSON"]
-    Metadata(TraeMetadataCommand),
+    Metadata(JarvixMetadataCommand),
     #[doc = " Quick pipeline: analyze -> repair -> test (compact powerful command)"]
     Auto {
         #[arg(long)]
         no_jarvix: bool,
     },
-    #[doc = " Lista detallada de los comandos TRAE y sus highlights recientes"]
+    #[doc = " Lista detallada de los comandos Jarvix y sus highlights recientes"]
     #[command(name = "commands")]
     CommandsGuide,
     #[doc = " 📚 Documentation generation and validation"]
@@ -228,7 +228,7 @@ impl JarvixCli {
     ) -> Result<()> {
         println!(
             "{}",
-            "🔍 TRAE SUPER SCAN - Análisis Nuclear Completo con JARVIX Paralelización"
+            "🔍 Jarvix SUPER SCAN - Análisis Nuclear Completo con JARVIX Paralelización"
                 .cyan()
                 .bold()
         );
@@ -395,7 +395,7 @@ impl JarvixCli {
 
     /// Run a compact pipeline: analyze -> repair -> test
     async fn run_auto(&self, no_jarvix: bool) -> Result<()> {
-        println!("{}", "⚡ TRAE AUTO - pipeline compacto: analyze -> repair -> test".cyan().bold());
+        println!("{}", "⚡ Jarvix AUTO - pipeline compacto: analyze -> repair -> test".cyan().bold());
         // Analyze
         // default: full profile = None, don't force refresh, no output file
         crate::api::analyze(true, true, true, no_jarvix, None, false, None).await?;
@@ -418,7 +418,7 @@ impl JarvixCli {
         crate::api::repair(repair_opts).await?;
         // Test (basic)
         crate::api::test_cmd(false, false, false, None, None, false, no_jarvix).await?;
-        println!("{}", "✅ TRAE AUTO completado".green());
+        println!("{}", "✅ Jarvix AUTO completado".green());
         Ok(())
     }
     #[doc = "Method documentation added by AI refactor"]
