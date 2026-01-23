@@ -8,13 +8,14 @@ TRAE CLI (Total Rust Analysis Engine) is a command-line tool for analyzing, repa
 
 ## ✨ Features
 
-- 🚀 **Fast Analysis**: File-system aware analysis with intelligent caching (.trae/cache)
-- 🔒 **Security First**: Detects unsafe blocks, unwrap calls, and panic macros
-- 📊 **Quality Metrics**: Six Sigma analysis with DPMO calculations
+- 🚀 **Fast Analysis**: File-system aware analysis with intelligent caching
+- 🔒 **Security First**: Detects unsafe blocks, unwrap calls, and security issues
+- 📊 **Quality Metrics**: Comprehensive code quality analysis
 - 🔧 **Auto Repair**: Automatic code improvements and optimizations
 - 🌐 **JARVIXSERVER Integration**: Seamless integration with MCP tools
-- ⚡ **Zero Warnings**: Strict CI policy with clippy -D warnings
+- ⚡ **Zero Warnings**: Strict CI policy with clippy checks
 - 📈 **Performance Optimized**: Parallel processing with rayon
+- 🛠️ **Rich Command Set**: Full cargo wrapper with enhanced functionality
 
 ## 🚀 Quick Start
 
@@ -22,24 +23,30 @@ TRAE CLI (Total Rust Analysis Engine) is a command-line tool for analyzing, repa
 # Install globally
 cargo install --path .
 
-# Run analysis (programmatic API)
+# Run analysis and repair
 cargo run --bin trae -- repair
 
 # Check code quality
-cargo run --bin trae -- clippy --strict
+cargo run --bin trae -- clippy
+
+# Run preflight check (fmt + clippy + test + build)
+cargo run --bin trae -- preflight
 
 # View available commands
 cargo run --bin trae -- --help
+
+# Start HTTP server for JARVIXSERVER integration
+cargo run --bin server_http
 ```
 
 ## 📊 Current Analysis Results
 
-Latest project analysis shows:
-- **49 total files analyzed**
-- **31,267 lines of code**
-- **92 issues detected** (security, performance, quality)
-- **30 optimization suggestions**
-- **Parallel processing**: 4,900 units in optimized chunks
+TRAE CLI provides comprehensive analysis capabilities:
+- **Multi-file analysis**: Analyzes all Rust files in your project
+- **Security detection**: Identifies unsafe blocks and potential vulnerabilities
+- **Code quality metrics**: Provides detailed quality assessments
+- **Performance insights**: Suggests optimization opportunities
+- **Parallel processing**: Utilizes rayon for fast analysis
 
 ## 🛠️ Development
 
@@ -64,19 +71,33 @@ cargo fmt
 trae-cli/
 ├── src/
 │   ├── main.rs              # CLI entry point
+│   ├── lib.rs               # Library exports
+│   ├── cli.rs               # CLI structure and commands
+│   ├── config.rs            # Configuration management
+│   ├── api.rs               # API definitions
 │   ├── core/
-│   │   └── analyzer.rs      # Six Sigma analysis engine
+│   │   └── analyzer.rs      # Code analysis engine
 │   ├── commands/
-│   │   ├── analyze.rs       # Analysis command (API)
-│   │   └── repair.rs        # Auto repair functionality
-│   └── bin/
-│       └── server_http.rs   # HTTP server for JARVIXSERVER
+│   │   ├── analyze.rs       # Analysis command
+│   │   ├── repair.rs        # Auto repair functionality
+│   │   ├── build.rs         # Build command
+│   │   ├── clippy.rs        # Clippy integration
+│   │   ├── test.rs          # Testing command
+│   │   ├── security.rs      # Security analysis
+│   │   ├── metrics.rs       # Metrics collection
+│   │   └── ...              # Other commands
+│   ├── bin/
+│   │   └── server_http.rs   # HTTP server for JARVIXSERVER
+│   ├── jarvix/              # JARVIXSERVER integration
+│   ├── metrics/             # Metrics collection system
+│   └── utils/               # Utility functions
 ├── tests/
-│   ├── analyze_cache.rs     # Analysis testing
-│   └── integration_jarvix.rs # JARVIXSERVER integration
+│   ├── analyze_cache.rs     # Analysis caching tests
+│   └── integration_jarvix.rs # JARVIXSERVER integration tests
 ├── Cargo.toml               # Dependencies (pinned versions)
-├── CHANGELOG.md            # Version history
-└── README.md              # This file
+├── CHANGELOG.md             # Version history
+├── COMMANDS.md              # Available commands reference
+└── README.md                # This file
 ```
 
 ## 🔧 Configuration
@@ -135,11 +156,24 @@ TRAE CLI integrates seamlessly with JARVIXSERVER for enhanced capabilities:
 └─────────────────┘    └─────────────────┘
 ```
 
-### Proxy Endpoints
-- `GET /trae/health` - Health check
-- `POST /trae/api/analyze` - Code analysis
-- `POST /trae/api/repair` - Auto repair
-- `GET /trae/api/metrics` - System metrics
+### HTTP Server API
+
+TRAE CLI includes an HTTP server for JARVIXSERVER integration. The server provides these endpoints:
+
+```
+GET  /health         - Health check
+POST /api/analyze    - Code analysis
+POST /api/repair     - Auto repair
+GET  /api/metrics    - System metrics
+```
+
+When integrated with JARVIXSERVER, these endpoints are proxied under `/trae/*`:
+```
+GET  /trae/health         → http://localhost:3001/health
+POST /trae/api/analyze    → http://localhost:3001/api/analyze
+POST /trae/api/repair     → http://localhost:3001/api/repair
+GET  /trae/api/metrics    → http://localhost:3001/api/metrics
+```
 
 ### MCP Tools Integration
 - **Nuclear Crawler**: Advanced code analysis
@@ -178,7 +212,10 @@ cargo --version
 # Check JARVIXSERVER status
 curl http://localhost:8080/health
 
-# Test TRAE CLI integration
+# Test TRAE CLI server
+curl http://localhost:3001/health
+
+# Test via JARVIXSERVER proxy
 curl http://localhost:8080/trae/health
 ```
 

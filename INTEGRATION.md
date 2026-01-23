@@ -57,11 +57,11 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Build TRAE CLI
-        run: cargo build --release --bin trae-server
+        run: cargo build --release --bin server_http
 
       - name: Start TRAE Server
         run: |
-          ./target/release/trae-server &
+          ./target/release/server_http &
           sleep 3
 
       - name: Run Code Analysis
@@ -97,10 +97,10 @@ pipeline {
             steps {
                 sh '''
                     # Build TRAE CLI
-                    cargo build --release --bin trae-server
+                    cargo build --release --bin server_http
 
                     # Start server in background
-                    ./target/release/trae-server &
+                    ./target/release/server_http &
                     sleep 3
 
                     # Run analysis
@@ -132,7 +132,7 @@ pipeline {
 FROM rust:1.70-slim as builder
 WORKDIR /app
 COPY . .
-RUN cargo build --release --bin trae-server
+RUN cargo build --release --bin server_http
 
 FROM debian:bookworm-slim
 # Install dependencies for Chapel
@@ -161,11 +161,11 @@ RUN wget -O chapel.tar.gz https://github.com/chapel-lang/chapel/releases/downloa
 ENV CHPL_HOME=/usr/local/chapel
 ENV PATH=$PATH:$CHPL_HOME/bin
 
-COPY --from=builder /app/target/release/trae-server /usr/local/bin/
+COPY --from=builder /app/target/release/server_http /usr/local/bin/
 EXPOSE 3001
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:3001/health || exit 1
-CMD ["trae-server"]
+CMD ["server_http"]
 ```
 
 ```yaml
