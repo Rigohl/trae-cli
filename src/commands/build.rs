@@ -2,7 +2,7 @@
 #![doc = ""]
 #![doc = " Comando de build mejorado con anÃ¡lisis automÃ¡tico y reporte de mÃ©tricas"]
 use crate::{
-    cli::TraeCli,
+    cli::JarvixCli,
     commands::repair::RepairCommand,
     core::{analyzer::ProjectAnalyzer, cargo::CargoExecutor},
     jarvix::client::JarvixClient,
@@ -48,7 +48,7 @@ pub struct BuildCommand {
 }
 impl BuildCommand {
     #[doc = "Method documentation added by AI refactor"]
-    pub async fn execute(&self, cli: &TraeCli) -> Result<()> {
+    pub async fn execute(&self, cli: &JarvixCli) -> Result<()> {
         info!("??? Iniciando build mejorado con TRAE CLI");
         let total_start = Instant::now();
         let mut metrics = MetricsCollector::new("build".to_string());
@@ -210,7 +210,7 @@ impl BuildCommand {
         }
     }
     #[doc = "Method documentation added by AI refactor"]
-    fn show_build_config(&self, _cli: &TraeCli) {
+    fn show_build_config(&self, _cli: &JarvixCli) {
         println!("{}", "ðŸ“‹ ConfiguraciÃ³n del Build:".cyan().bold());
         println!(
             "  â€¢ Modo: {}",
@@ -272,7 +272,7 @@ impl BuildCommand {
         Ok(())
     }
     #[doc = "Method documentation added by AI refactor"]
-    async fn execute_build(&self, _cli: &TraeCli) -> Result<Vec<String>> {
+    async fn execute_build(&self, _cli: &JarvixCli) -> Result<Vec<String>> {
         let build_msg = if self.docker {
             "ðŸš€ Ejecutando cargo build con Docker y Chapel..."
         } else {
@@ -325,7 +325,7 @@ impl BuildCommand {
             format!("{}:/app", std::env::current_dir()?.display()),
             "-w".to_string(),
             "/app".to_string(),
-            "trae-cli:latest".to_string(),
+            "jarvix-cli:latest".to_string(),
             "cargo".to_string(),
             "build".to_string(),
         ];
@@ -370,7 +370,7 @@ impl BuildCommand {
         Ok(())
     }
     #[doc = "Method documentation added by AI refactor"]
-    async fn run_auto_repair(&self, cli: &TraeCli) -> Result<()> {
+    async fn run_auto_repair(&self, cli: &JarvixCli) -> Result<()> {
         println!("{}", "ðŸ”§ Ejecutando auto-repair...".cyan());
         let repair = RepairCommand {
             auto: true,
@@ -402,24 +402,24 @@ impl BuildCommand {
         if error_str.contains("could not compile") {
             println!(
                 "  â€¢ Ejecuta: {} para anÃ¡lisis detallado",
-                "trae analyze".green()
+                "jar analyze".green()
             );
         }
         if error_str.contains("dependency") {
             println!(
                 "  â€¢ Ejecuta: {} para reparar dependencias",
-                "trae repair --deps".green()
+                "jar repair --deps".green()
             );
         }
         if error_str.contains("format") || error_str.contains("clippy") {
             println!(
                 "  â€¢ Ejecuta: {} para formato automÃ¡tico",
-                "trae repair --fmt".green()
+                "jar repair --fmt".green()
             );
         }
         println!(
             "  â€¢ Ejecuta: {} para reparaciÃ³n automÃ¡tica completa",
-            "trae repair --auto".green()
+            "jar repair --auto".green()
         );
         Ok(())
     }

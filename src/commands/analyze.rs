@@ -1,7 +1,7 @@
 #![doc = " # Analyze Command - Deep code analysis and optimization"]
 #![doc = ""]
 #![doc = " Comando para análisis profundo del código y sugerencias de optimización"]
-use crate::cli::TraeCli;
+use crate::cli::JarvixCli;
 use anyhow::Result;
 use clap::Args;
 use colored::Colorize;
@@ -61,7 +61,7 @@ impl AnalyzeCommand {
     #[doc = " - Multi-threaded analysis"]
     #[doc = " - Progress indicators"]
     #[doc = " - Memory-efficient processing"]
-    pub async fn execute(&self, cli: &TraeCli) -> Result<()> {
+    pub async fn execute(&self, cli: &JarvixCli) -> Result<()> {
         // Delegate to the API-friendly run_simple to keep behavior consistent
         crate::commands::analyze::AnalyzeCommand::run_simple(
             self.performance,
@@ -75,7 +75,7 @@ impl AnalyzeCommand {
         .await
     }
 
-    /// API-friendly wrapper to run analyze without a full `TraeCli` instance.
+    /// API-friendly wrapper to run analyze without a full `JarvixCli` instance.
     pub async fn run_simple(
         _performance: bool,
         _security: bool,

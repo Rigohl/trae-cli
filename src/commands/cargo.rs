@@ -2,7 +2,7 @@
 #![doc = ""]
 #![doc = " Wrapper inteligente de `cargo` con métricas, progreso y passthrough."]
 use crate::{
-    cli::TraeCli,
+    cli::JarvixCli,
     core::cargo::{CargoExecutor, CargoStream},
     utils::progress,
 };
@@ -58,7 +58,7 @@ fn resolve_executable(name: &str) -> Option<String> {
 }
 impl CargoCommand {
     #[doc = "Method documentation added by AI refactor"]
-    pub async fn execute(&self, cli: &TraeCli) -> Result<()> {
+    pub async fn execute(&self, cli: &JarvixCli) -> Result<()> {
         println!(
             "{}",
             format!("🚀 Ejecutando cargo {} mejorado...", self.command)
@@ -94,7 +94,7 @@ impl CargoCommand {
     #[doc = "Method documentation added by AI refactor"]
     async fn run_interactive(
         &self,
-        cli: &TraeCli,
+        cli: &JarvixCli,
         executor: &CargoExecutor,
         metrics: &mut crate::metrics::collector::MetricsCollector,
         args: &[&str],
@@ -138,7 +138,7 @@ impl CargoCommand {
     #[doc = "Method documentation added by AI refactor"]
     async fn run_streaming(
         &self,
-        cli: &TraeCli,
+        cli: &JarvixCli,
         executor: &CargoExecutor,
         metrics: &mut crate::metrics::collector::MetricsCollector,
         args: &[&str],
@@ -217,7 +217,7 @@ impl CargoCommand {
     #[doc = "Method documentation added by AI refactor"]
     async fn report_metrics(
         &self,
-        cli: &TraeCli,
+        cli: &JarvixCli,
         metrics: &crate::metrics::collector::MetricsCollector,
     ) {
         if cli.no_jarvix {
@@ -230,7 +230,7 @@ impl CargoCommand {
         }
     }
 
-    /// API-friendly wrapper to run cargo subcommands programmatically without TraeCli.
+    /// API-friendly wrapper to run cargo subcommands programmatically without JarvixCli.
     pub async fn run_simple(
         command: &str,
         args: &[String],

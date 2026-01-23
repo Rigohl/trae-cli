@@ -1,7 +1,7 @@
 #![doc = " # Doc Command - Documentation generation and validation"]
 #![doc = ""]
 #![doc = " Comando de documentación con generación automática, validación y publicación"]
-use crate::{cli::TraeCli, jarvix::client::JarvixClient, metrics::collector::MetricsCollector};
+use crate::{cli::JarvixCli, jarvix::client::JarvixClient, metrics::collector::MetricsCollector};
 use anyhow::Result;
 use clap::Args;
 use colored::Colorize;
@@ -49,7 +49,7 @@ pub struct DocCommand {
 }
 impl DocCommand {
     #[doc = "Method documentation added by AI refactor"]
-    pub async fn execute(&self, cli: &TraeCli) -> Result<()> {
+    pub async fn execute(&self, cli: &JarvixCli) -> Result<()> {
         let start_time = Instant::now();
         let metrics = MetricsCollector::new("doc".to_string());
         println!("{}", "📚 TRAE DOC - Documentation Suite".cyan().bold());
@@ -106,7 +106,7 @@ impl DocCommand {
         Ok(())
     }
     #[doc = "Method documentation added by AI refactor"]
-    fn generate_docs(&self, _cli: &TraeCli) -> Result<()> {
+    fn generate_docs(&self, _cli: &JarvixCli) -> Result<()> {
         let mut cmd = Command::new("cargo");
         cmd.arg("doc");
         if self.private {
@@ -141,7 +141,7 @@ impl DocCommand {
         Ok(())
     }
     #[doc = "Method documentation added by AI refactor"]
-    fn validate_docs(&self, _cli: &TraeCli) -> Result<()> {
+    fn validate_docs(&self, _cli: &JarvixCli) -> Result<()> {
         println!("🔍 Validando documentación...");
         if !Path::new("target/doc").exists() {
             println!("⚠️ Documentación no generada");
@@ -154,7 +154,7 @@ impl DocCommand {
         Ok(())
     }
     #[doc = "Method documentation added by AI refactor"]
-    fn check_doc_coverage(&self, _cli: &TraeCli) -> Result<()> {
+    fn check_doc_coverage(&self, _cli: &JarvixCli) -> Result<()> {
         println!("📈 Analizando cobertura de documentación...");
         let mut total_items = 0;
         let mut documented_items = 0;
@@ -176,7 +176,7 @@ impl DocCommand {
         Ok(())
     }
     #[doc = "Method documentation added by AI refactor"]
-    fn generate_readme(&self, _cli: &TraeCli) -> Result<()> {
+    fn generate_readme(&self, _cli: &JarvixCli) -> Result<()> {
         let project_name = env!("CARGO_PKG_NAME");
         let version = env!("CARGO_PKG_VERSION");
         let description = env!("CARGO_PKG_DESCRIPTION");
@@ -200,7 +200,7 @@ impl DocCommand {
         Ok(())
     }
     #[doc = "Method documentation added by AI refactor"]
-    fn publish_docs(&self, _cli: &TraeCli) -> Result<()> {
+    fn publish_docs(&self, _cli: &JarvixCli) -> Result<()> {
         let has_gh_pages = Path::new(".github/workflows").exists()
             && walkdir::WalkDir::new(".github/workflows")
                 .into_iter()

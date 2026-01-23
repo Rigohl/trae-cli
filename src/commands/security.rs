@@ -1,7 +1,7 @@
 #![doc = " # Security Command - Security audit and vulnerability scanning"]
 #![doc = ""]
 #![doc = " Comando de seguridad con auditoría completa, escaneo de vulnerabilidades y hardening"]
-use crate::{cli::TraeCli, jarvix::client::JarvixClient, metrics::collector::MetricsCollector};
+use crate::{cli::JarvixCli, jarvix::client::JarvixClient, metrics::collector::MetricsCollector};
 use anyhow::Result;
 use clap::Args;
 use colored::Colorize;
@@ -46,7 +46,7 @@ pub struct SecurityCommand {
 }
 impl SecurityCommand {
     #[doc = "Method documentation added by AI refactor"]
-    pub async fn execute(&self, cli: &TraeCli) -> Result<()> {
+    pub async fn execute(&self, cli: &JarvixCli) -> Result<()> {
         let start_time = Instant::now();
         let mut metrics = MetricsCollector::new("security".to_string());
         println!("{}", "🔒 TRAE SECURITY - Security Audit Suite".red().bold());
@@ -124,7 +124,7 @@ impl SecurityCommand {
     #[doc = "Method documentation added by AI refactor"]
     fn run_full_audit(
         &self,
-        cli: &TraeCli,
+        cli: &JarvixCli,
         min_severity: SecuritySeverity,
     ) -> Result<SecurityAuditResult> {
         let mut findings = Vec::new();
@@ -164,7 +164,7 @@ impl SecurityCommand {
         })
     }
     #[doc = "Method documentation added by AI refactor"]
-    fn check_vulnerable_deps(&self, _cli: &TraeCli) -> Result<DependencySecurityResult> {
+    fn check_vulnerable_deps(&self, _cli: &JarvixCli) -> Result<DependencySecurityResult> {
         let mut vulnerabilities = Vec::new();
         if let Ok(content) = fs::read_to_string("Cargo.lock") {
             let outdated_patterns = vec![
@@ -204,7 +204,7 @@ impl SecurityCommand {
     #[doc = "Method documentation added by AI refactor"]
     fn scan_code_security(
         &self,
-        _cli: &TraeCli,
+        _cli: &JarvixCli,
         min_severity: SecuritySeverity,
     ) -> Result<CodeSecurityResult> {
         let mut vulnerabilities = Vec::new();
@@ -287,7 +287,7 @@ impl SecurityCommand {
         })
     }
     #[doc = "Method documentation added by AI refactor"]
-    fn check_security_config(&self, _cli: &TraeCli) -> Result<ConfigSecurityResult> {
+    fn check_security_config(&self, _cli: &JarvixCli) -> Result<ConfigSecurityResult> {
         let mut issues = Vec::new();
         if let Ok(content) = fs::read_to_string("Cargo.toml") {
             if !content.contains("[profile.release]") {
@@ -324,7 +324,7 @@ impl SecurityCommand {
         })
     }
     #[doc = "Method documentation added by AI refactor"]
-    fn scan_hardcoded_secrets(&self, _cli: &TraeCli) -> Result<SecretsScanResult> {
+    fn scan_hardcoded_secrets(&self, _cli: &JarvixCli) -> Result<SecretsScanResult> {
         let mut findings = Vec::new();
         let secret_patterns = vec![
             (
@@ -399,7 +399,7 @@ impl SecurityCommand {
         })
     }
     #[doc = "Method documentation added by AI refactor"]
-    fn run_cargo_audit(&self, _cli: &TraeCli) -> Result<CargoAuditResult> {
+    fn run_cargo_audit(&self, _cli: &JarvixCli) -> Result<CargoAuditResult> {
         let audit_check = Command::new("cargo").arg("audit").arg("--version").output();
         if audit_check.is_err() {
             return Ok(CargoAuditResult {
@@ -428,7 +428,7 @@ impl SecurityCommand {
     #[doc = "Method documentation added by AI refactor"]
     fn apply_auto_fixes(
         &self,
-        _cli: &TraeCli,
+        _cli: &JarvixCli,
         results: &SecurityResults,
     ) -> Result<SecurityFixesResult> {
         let mut fixes_applied = Vec::new();

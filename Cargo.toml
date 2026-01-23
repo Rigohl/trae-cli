@@ -1,16 +1,16 @@
 [package]
-name = "trae-cli"
+name = "jarvix-cli"
 version = "0.2.0"
 edition = "2021"
-authors = ["TRAE Team"]
+authors = ["Jarvix Team"]
 description = "CLI de Rust que ejecuta comandos cargo y reporta resultados a JARVIXSERVER"
-repository = "https://github.com/tu-usuario/trae-cli"
+repository = "https://github.com/Rigohl/jarvix-cli"
 license = "MIT"
 keywords = ["cli", "cargo", "automation", "rust"]
 categories = ["command-line-utilities", "development-tools"]
 
 [[bin]]
-name = "trae"
+name = "jar"
 path = "src/main.rs"
 
 [[bin]]

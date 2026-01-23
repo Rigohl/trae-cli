@@ -2,7 +2,7 @@
 #![doc = ""]
 #![doc = " Inicia el binario `trae-server` en segundo plano, con opción de silenciar"]
 #![doc = " stdout/stderr o redirigir a un archivo de log."]
-use crate::cli::TraeCli;
+use crate::cli::JarvixCli;
 use anyhow::{Context, Result};
 use clap::Args;
 use colored::Colorize;
@@ -12,8 +12,8 @@ use tokio::process::Command;
 #[derive(Args, Debug)]
 #[doc = "Struct documentation added by AI refactor"]
 pub struct DaemonCommand {
-    #[doc = " Ruta del binario a ejecutar (por defecto usa trae-server en PATH)"]
-    #[arg(long, default_value = "trae-server")]
+    #[doc = " Ruta del binario a ejecutar (por defecto usa jar-server en PATH)"]
+    #[arg(long, default_value = "jar-server")]
     pub binary: String,
     #[doc = " Puerto para el server (exportado como PORT)"]
     #[arg(long, default_value_t = 3001)]
@@ -27,7 +27,7 @@ pub struct DaemonCommand {
 }
 impl DaemonCommand {
     #[doc = "Method documentation added by AI refactor"]
-    pub async fn execute(&self, _cli: &TraeCli) -> Result<()> {
+    pub async fn execute(&self, _cli: &JarvixCli) -> Result<()> {
         println!(
             "{}",
             format!(

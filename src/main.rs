@@ -1,4 +1,4 @@
-#![doc = " Primary CLI entry for TRAE-CLI"]
+#![doc = " Primary CLI entry for Jarvix-CLI"]
 #![allow(clippy::needless_borrows_for_generic_args)]
 #![allow(clippy::let_and_return)]
 #![allow(clippy::ptr_arg)]
@@ -17,12 +17,12 @@ use std::fs;
 use walkdir::WalkDir;
 use regex::Regex;
 
-/// TRAE-CLI: Ejecutor de comandos Rust que reporta a JARVIXSERVER
+/// Jarvix-CLI: Ejecutor de comandos Rust que reporta a JARVIXSERVER
 #[derive(Parser)]
-#[command(name = "trae")]
+#[command(name = "jar")]
 #[command(about = "Ejecuta comandos Rust (cargo) y reporta resultados a JARVIXSERVER")]
 #[command(version = "0.2.0")]
-#[command(author = "TRAE Team")]
+#[command(author = "Jarvix Team")]
 struct Args {
     #[command(subcommand)]
     command: Option<CargoCommand>,
@@ -64,7 +64,7 @@ struct ModuleInfo {
     file_count: usize,
 }
 
-// Mock generation removed to enforce No-Mocks policy (generators were present but we keep TRAE-CLI free of mocks)
+// Mock generation removed to enforce No-Mocks policy (generators were present but we keep Jarvix-CLI free of mocks)
 
 /// Información extraída por el crawler
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -601,7 +601,7 @@ async fn main() {
 /// Imprime el encabezado de la aplicación
 fn print_header(args: &Args) {
     println!("{}", "╔════════════════════════════════════════════════════════╗".cyan());
-    println!("{}", "║        ▶ TRAE-CLI v0.2.0 - Ejecutor de Rust            ║".cyan().bold());
+    println!("{}", "║        ▶ Jarvix-CLI v0.2.0 - Ejecutor de Rust           ║".cyan().bold());
     println!("{}", "║     Compilación, Testing & Reporting Integrado         ║".bright_cyan());
     println!("{}", "╚════════════════════════════════════════════════════════╝".cyan());
     println!("  {} {}", style("JARVIXSERVER:").cyan().bold(), args.jarvix.green());
@@ -653,7 +653,7 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
 
             if let Ok(output) = fmt_status {
                 if !output.status.success() {
-                    spinner.finish_with_message("❌ Formato incorrecto (ejecuta 'trae fmt')");
+                    spinner.finish_with_message("❌ Formato incorrecto (ejecuta 'jar fmt')");
                 } else {
                     spinner.finish_with_message("✓ Formato verificado");
                 }
@@ -1048,7 +1048,7 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
             match Command::new("cargo").args(&["fmt", "--check"]).current_dir(&args.project).status() {
                 Ok(status) if !status.success() => {
                     pb.finish_with_message("❌ Formato incorrecto");
-                    eprintln!("{} Ejecuta 'trae fmt' para corregir", "!".red());
+                    eprintln!("{} Ejecuta 'jar fmt' para corregir", "!".red());
                     let output = Output {
                         status: std::process::ExitStatus::default(),
                         stdout: b"Formato incorrecto".to_vec(),
@@ -1216,7 +1216,7 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
                 .post(&endpoint)
                 .json(&search_request)
                 .header("Content-Type", "application/json")
-                .header("X-TRAE-Version", "0.2.0")
+                .header("X-Jarvix-Version", "0.2.0")
                 .timeout(std::time::Duration::from_secs(30))
                 .send()
                 .await
@@ -1348,7 +1348,7 @@ async fn report_to_jarvix(args: &Args, result: &CommandResult) {
             .post(&endpoint)
             .json(result)
             .header("Content-Type", "application/json")
-            .header("X-TRAE-Version", "0.2.0")
+            .header("X-Jarvix-Version", "0.2.0")
             .timeout(std::time::Duration::from_secs(5))
             .send()
             .await

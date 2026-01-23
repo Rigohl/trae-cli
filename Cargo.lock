@@ -1064,6 +1064,46 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4a5f13b858c8d314ee3e8f639011f7ccefe71f97f96e50151fb991f267928e2c"
 
 [[package]]
+name = "jarvix-cli"
+version = "0.2.0"
+dependencies = [
+ "anyhow",
+ "axum",
+ "cargo_metadata",
+ "chrono",
+ "clap",
+ "clap_complete",
+ "colored",
+ "console",
+ "dialoguer",
+ "dirs",
+ "env_logger",
+ "hex",
+ "indicatif",
+ "log",
+ "notify",
+ "num_cpus",
+ "proc-macro2",
+ "quote",
+ "rayon",
+ "regex",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "sha2",
+ "syn 2.0.111",
+ "sysinfo",
+ "tabled",
+ "tiny_http",
+ "tokio",
+ "toml",
+ "tower-http",
+ "uuid",
+ "walkdir",
+ "which",
+]
+
+[[package]]
 name = "js-sys"
 version = "0.3.83"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2099,46 +2139,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a04e24fab5c89c6a36eb8558c9656f30d81de51dfa4d3b45f26b21d61fa0a6c"
 dependencies = [
  "once_cell",
-]
-
-[[package]]
-name = "trae-cli"
-version = "0.2.0"
-dependencies = [
- "anyhow",
- "axum",
- "cargo_metadata",
- "chrono",
- "clap",
- "clap_complete",
- "colored",
- "console",
- "dialoguer",
- "dirs",
- "env_logger",
- "hex",
- "indicatif",
- "log",
- "notify",
- "num_cpus",
- "proc-macro2",
- "quote",
- "rayon",
- "regex",
- "reqwest",
- "serde",
- "serde_json",
- "sha2",
- "syn 2.0.111",
- "sysinfo",
- "tabled",
- "tiny_http",
- "tokio",
- "toml",
- "tower-http",
- "uuid",
- "walkdir",
- "which",
 ]
 
 [[package]]

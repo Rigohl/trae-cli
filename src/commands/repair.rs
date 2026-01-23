@@ -2,7 +2,7 @@
 #![doc = ""]
 #![doc = " Comando para reparar automáticamente issues comunes en proyectos Rust"]
 use crate::{
-    cli::TraeCli,
+    cli::JarvixCli,
     core::{analyzer::ProjectAnalyzer, cargo::CargoExecutor},
     jarvix::client::JarvixClient,
     metrics::collector::MetricsCollector,
@@ -97,7 +97,7 @@ pub struct RepairCommand {
 }
 impl RepairCommand {
     #[doc = "Method documentation added by AI refactor"]
-    pub async fn execute(&self, cli: &TraeCli) -> Result<()> {
+    pub async fn execute(&self, cli: &JarvixCli) -> Result<()> {
         info!("?? Iniciando proceso de reparaci¢n autom tica");
         let total_start = Instant::now();
         let mut metrics = MetricsCollector::new("repair".to_string());
@@ -974,8 +974,8 @@ impl RepairCommand {
             None
         };
 
-        // Build a minimal TraeCli to reuse the full execute flow
-        let cli = crate::cli::TraeCli {
+        // Build a minimal JarvixCli to reuse the full execute flow
+        let cli = crate::cli::JarvixCli {
             verbose: false,
             config: None,
             no_jarvix: opts.no_jarvix,

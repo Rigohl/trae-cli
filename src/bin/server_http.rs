@@ -229,7 +229,7 @@ async fn metrics_handler() -> impl IntoResponse {
 /// Function documentation added by AI refactor
 async fn status_handler() -> impl IntoResponse {
     Json(serde_json::json!({
-        "service": "trae-cli",
+        "service": "jarvix-cli",
         "version": env!("CARGO_PKG_VERSION"),
         "status": "operational",
         "endpoints": ["/health", "/api/build", "/api/analyze", "/api/repair", "/api/metrics"]

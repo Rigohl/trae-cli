@@ -61,7 +61,7 @@ pub async fn init_trae_config(force: bool) -> Result<()> {
     let quantum_init_start = std::time::Instant::now();
     let config_dir = dirs::config_dir()
         .ok_or_else(|| anyhow::anyhow!("No se pudo encontrar el directorio de configuración"))?
-        .join("trae");
+        .join("jarvix");
     std::fs::create_dir_all(&config_dir)?;
     let config_file = config_dir.join("config.toml");
     let init_duration = quantum_init_start.elapsed();

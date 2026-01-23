@@ -1,7 +1,7 @@
 #![doc = " # Metrics Command - Manage metrics and reporting"]
 #![doc = ""]
 #![doc = " Comando para gestionar métricas y reportes"]
-use crate::cli::TraeCli;
+use crate::cli::JarvixCli;
 use anyhow::Result;
 use clap::Args;
 use colored::Colorize;
@@ -20,7 +20,7 @@ pub struct MetricsCommand {
 }
 impl MetricsCommand {
     #[doc = "Method documentation added by AI refactor"]
-    pub async fn execute(&self, cli: &TraeCli) -> Result<()> {
+    pub async fn execute(&self, cli: &JarvixCli) -> Result<()> {
         println!("{}", "📊 Gestión de métricas TRAE".cyan().bold());
         if self.show {
             self.show_metrics()?;

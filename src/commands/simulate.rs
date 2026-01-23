@@ -1,7 +1,7 @@
 #![doc = " # Simulate Command - Performance simulation and optimization"]
 #![doc = ""]
 #![doc = " Comando para ejecutar simulaciones de rendimiento y optimización automática"]
-use crate::cli::TraeCli;
+use crate::cli::JarvixCli;
 use anyhow::Result;
 use clap::Args;
 use colored::Colorize;
@@ -36,7 +36,7 @@ pub struct SimulateCommand {
 }
 impl SimulateCommand {
     #[doc = "Method documentation added by AI refactor"]
-    pub async fn execute(&self, _cli: &TraeCli) -> Result<()> {
+    pub async fn execute(&self, _cli: &JarvixCli) -> Result<()> {
         println!(
             "{}",
             "🧪 TRAE SIMULATION ENGINE - Performance Analysis & Optimization"

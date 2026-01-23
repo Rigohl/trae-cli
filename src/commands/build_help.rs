@@ -17,9 +17,9 @@ pub struct BuildHelpCommand {
 }
 
 impl BuildHelpCommand {
-    pub async fn execute(&self, _cli: &crate::cli::TraeCli) -> Result<()> {
+    pub async fn execute(&self, _cli: &crate::cli::JarvixCli) -> Result<()> {
         // Minimal, sober suggestions
-        println!("TRAE Build Helper - recomendaciones sobrias para compilar");
+        println!("Jarvix Build Helper - recomendaciones sobrias para compilar");
         if self.optimize_size {
             println!(" • Recomendación: optimizar tamaño: opt-level = 's', lto = true, strip símbolos");
         } else {

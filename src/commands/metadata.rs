@@ -16,7 +16,7 @@ pub struct TraeMetadataCommand {
 }
 
 impl TraeMetadataCommand {
-    pub async fn execute(&self, _cli: &crate::cli::TraeCli) -> Result<()> {
+    pub async fn execute(&self, _cli: &crate::cli::JarvixCli) -> Result<()> {
         // Fetch cargo metadata
         let meta = CargoMetadataCommand::new().exec().map_err(|e| anyhow::anyhow!(e))?;
         let mut out = serde_json::json!({

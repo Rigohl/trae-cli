@@ -20,7 +20,7 @@ pub struct MathCommand {
 }
 impl MathCommand {
     #[doc = "Method documentation added by AI refactor"]
-    pub async fn execute(&self, trae_cli: &crate::cli::TraeCli) -> Result<()> {
+    pub async fn execute(&self, jarvix_cli: &crate::cli::JarvixCli) -> Result<()> {
         println!(
             "{}",
             "🔬 TRAE MATH ANALYSIS - Análisis Matemático con Julia"
@@ -31,7 +31,7 @@ impl MathCommand {
             "{}",
             "==============================================\n".cyan()
         );
-        let jarvix_client = if trae_cli.no_jarvix {
+        let jarvix_client = if jarvix_cli.no_jarvix {
             println!("❌ JARVIXSERVER requerido para análisis matemático");
             return Ok(());
         } else {

@@ -1,7 +1,7 @@
 #![doc = " # Test Command - Enhanced testing with coverage and analysis"]
 #![doc = ""]
 #![doc = " Comando de testing mejorado con análisis de cobertura, benchmarking y reportes avanzados"]
-use crate::{cli::TraeCli, jarvix::client::JarvixClient, metrics::collector::MetricsCollector};
+use crate::{cli::JarvixCli, jarvix::client::JarvixClient, metrics::collector::MetricsCollector};
 use anyhow::Result;
 use clap::Args;
 use colored::Colorize;
@@ -50,7 +50,7 @@ pub struct TestCommand {
 }
 impl TestCommand {
     #[doc = "Method documentation added by AI refactor"]
-    pub async fn execute(&self, cli: &TraeCli) -> Result<()> {
+    pub async fn execute(&self, cli: &JarvixCli) -> Result<()> {
         let start_time = Instant::now();
         let mut metrics = MetricsCollector::new("test".to_string());
         println!("{}", "🧪 TRAE TEST - Testing Suite Avanzada".cyan().bold());
@@ -105,7 +105,7 @@ impl TestCommand {
         Ok(())
     }
     #[doc = "Method documentation added by AI refactor"]
-    fn run_basic_tests(&self, _cli: &TraeCli) -> Result<TestResults> {
+    fn run_basic_tests(&self, _cli: &JarvixCli) -> Result<TestResults> {
         let mut cmd = Command::new("cargo");
         cmd.arg("test");
         if self.release {
@@ -141,7 +141,7 @@ impl TestCommand {
         })
     }
     #[doc = "Method documentation added by AI refactor"]
-    fn run_coverage_analysis(&self, _cli: &TraeCli) -> Result<CoverageData> {
+    fn run_coverage_analysis(&self, _cli: &JarvixCli) -> Result<CoverageData> {
         let tarpaulin_check = Command::new("cargo")
             .arg("tarpaulin")
             .arg("--version")
@@ -178,7 +178,7 @@ impl TestCommand {
         })
     }
     #[doc = "Method documentation added by AI refactor"]
-    fn run_benchmarks(&self, _cli: &TraeCli) -> Result<BenchmarkResults> {
+    fn run_benchmarks(&self, _cli: &JarvixCli) -> Result<BenchmarkResults> {
         let mut cmd = Command::new("cargo");
         cmd.args(["bench"]);
         if self.release {
@@ -201,7 +201,7 @@ impl TestCommand {
         })
     }
     #[doc = "Method documentation added by AI refactor"]
-    fn analyze_test_performance(&self, _cli: &TraeCli) -> Result<PerformanceAnalysis> {
+    fn analyze_test_performance(&self, _cli: &JarvixCli) -> Result<PerformanceAnalysis> {
         Ok(PerformanceAnalysis {
             slowest_tests: vec![TestPerformance {
                 name: "test_slow_example".to_string(),
@@ -361,13 +361,13 @@ impl TestCommand {
             unit: false,
             cargo_args: vec![],
         };
-        let cli = crate::cli::TraeCli {
+        let cli = crate::cli::JarvixCli {
             verbose,
             config: None,
             no_jarvix,
             command: crate::cli::Commands::Test(cmd),
         };
-        // Call the command directly to avoid recursion through TraeCli::execute
+        // Call the command directly to avoid recursion through JarvixCli::execute
         if let crate::cli::Commands::Test(cmd_inner) = &cli.command {
             cmd_inner.execute(&cli).await
         } else {

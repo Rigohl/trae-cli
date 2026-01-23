@@ -16,13 +16,13 @@ use clap::{Parser, Subcommand};
 use colored::Colorize;
 use serde_json::json;
 use std::time::{Duration, Instant};
-#[doc = " TRAE CLI - Enhanced Rust Development Tools"]
+#[doc = " Jarvix CLI - Enhanced Rust Development Tools"]
 #[derive(Parser, Debug)]
-#[command(name = "trae")]
-#[command(version = "0.1.0")]
-#[command(about = "Total Rust Analysis Engine - Enhanced cargo with advanced tooling")]
+#[command(name = "jar")]
+#[command(version = "0.2.0")]
+#[command(about = "Jarvix Analysis Runtime - Enhanced cargo with advanced tooling")]
 # [command (long_about = None)]
-pub struct TraeCli {
+pub struct JarvixCli {
     #[doc = " Enable verbose output"]
     #[arg(short, long, global = true)]
     pub verbose: bool,
@@ -119,7 +119,7 @@ pub enum Commands {
     #[doc = " � Security audit and vulnerability scanning"]
     Security(SecurityCommand),
 }
-impl TraeCli {
+impl JarvixCli {
     #[doc = "Method documentation added by AI refactor"]
     pub async fn execute(&self) -> Result<()> {
         let start_time = Instant::now();
@@ -180,8 +180,8 @@ impl TraeCli {
             usage: &'a str,
             highlights: &'a [&'a str],
         }
-        let catalog = vec ! [CommandInfo { name : "build" , usage : "trae build [--release] [--auto-repair] [--analyze]" , highlights : & ["Pipeline con tabla de pasos, métricas FFT y auto-repair opcional." , "Compatibilidad total con argumentos clásicos de cargo; no usa Docker por defecto." ,] , } , CommandInfo { name : "repair" , usage : "trae repair [--auto|--fmt|--clippy|--deps] [--dry-run]" , highlights : & ["Flujo DMAIC con confirmación inteligente y exportación JSON." , "Resumen por fase (clippy, fmt, deps, etc.) reutilizando StepSummary moderno." ,] , } , CommandInfo { name : "simulate" , usage : "trae simulate --scenarios 100000 --stream" , highlights : & ["Motor de simulaciones estilo Ben Bend con streaming de métricas." , "Permite validar patrones de rendimiento antes del build o tests." ,] , } , CommandInfo { name : "mcp" , usage : "trae mcp <tool> [args]" , highlights : & ["Levanta MCPs (MEMORY_P, JarvixServer, etc.) en silencio y segundo plano." , "Ideal para dejar servicios auxiliares activos sin escribir scripts extra." ,] , } , CommandInfo { name : "cargo" , usage : "trae cargo <subcomando> [...args]" , highlights : & ["Proxy neutro a cargo con streaming coloreado y métricas homogéneas." , "Sirve para cualquier proyecto Rust ajeno a Jarvix; cero vendor lock-in." ,] , } , CommandInfo { name : "help-cargo" , usage : "trae help-cargo" , highlights : & ["Muestra el catálogo extendido documentado en CARGO_COMMANDS.md." ,] , } ,] ;
-        println!("\n{}", "TRAE Command Catalog".cyan().bold());
+        let catalog = vec ! [CommandInfo { name : "build" , usage : "jar build [--release] [--auto-repair] [--analyze]" , highlights : & ["Pipeline con tabla de pasos, métricas FFT y auto-repair opcional." , "Compatibilidad total con argumentos clásicos de cargo; no usa Docker por defecto." ,] , } , CommandInfo { name : "repair" , usage : "jar repair [--auto|--fmt|--clippy|--deps] [--dry-run]" , highlights : & ["Flujo DMAIC con confirmación inteligente y exportación JSON." , "Resumen por fase (clippy, fmt, deps, etc.) reutilizando StepSummary moderno." ,] , } , CommandInfo { name : "simulate" , usage : "jar simulate --scenarios 100000 --stream" , highlights : & ["Motor de simulaciones estilo Ben Bend con streaming de métricas." , "Permite validar patrones de rendimiento antes del build o tests." ,] , } , CommandInfo { name : "mcp" , usage : "jar mcp <tool> [args]" , highlights : & ["Levanta MCPs (MEMORY_P, JarvixServer, etc.) en silencio y segundo plano." , "Ideal para dejar servicios auxiliares activos sin escribir scripts extra." ,] , } , CommandInfo { name : "cargo" , usage : "jar cargo <subcomando> [...args]" , highlights : & ["Proxy neutro a cargo con streaming coloreado y métricas homogéneas." , "Sirve para cualquier proyecto Rust ajeno a Jarvix; cero vendor lock-in." ,] , } , CommandInfo { name : "help-cargo" , usage : "jar help-cargo" , highlights : & ["Muestra el catálogo extendido documentado en CARGO_COMMANDS.md." ,] , } ,] ;
+        println!("\n{}", "Jarvix Command Catalog".cyan().bold());
         println!(
             "{}",
             "Resumen rápido de los comandos mejorados y cómo aprovecharlos.".dimmed()
@@ -197,7 +197,7 @@ impl TraeCli {
         }
         println!(
             "{}",
-            "Tip: combina `trae commands` + `trae help-cargo` para guías rápidas por etapa."
+            "Tip: combina `jar commands` + `jar help-cargo` para guías rápidas por etapa."
                 .green()
         );
         Ok(())

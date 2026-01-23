@@ -170,7 +170,7 @@ fn main() {
         let response = match (request.method(), request.url()) {
             (&Method::Get, "/health") => Response::from_string("OK"),
             (&Method::Get, "/status") => make_json_response(ApiResponse::success(
-                serde_json :: json ! ({ "service" : "trae-cli" , "version" : "0.1.0" , "status" : "operational" , "endpoints" : ["/health" , "/status" , "/api/analyze" , "/api/repair" , "/api/metrics"] }),
+                serde_json :: json ! ({ "service" : "jarvix-cli" , "version" : "0.2.0" , "status" : "operational" , "endpoints" : ["/health" , "/status" , "/api/analyze" , "/api/repair" , "/api/metrics"] }),
             )),
             (&Method::Post, "/api/analyze") => match analyze_project() {
                 Ok(result) => make_json_response(ApiResponse::success(result)),
