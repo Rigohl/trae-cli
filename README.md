@@ -41,12 +41,12 @@ cargo run --bin server_http
 
 ## 📊 Current Analysis Results
 
-Latest project analysis shows:
-- **Multiple Rust files analyzed**
-- **Comprehensive code quality metrics**
-- **Security vulnerability detection**
-- **Performance optimization suggestions**
-- **Parallel processing with rayon**
+TRAE CLI provides comprehensive analysis capabilities:
+- **Multi-file analysis**: Analyzes all Rust files in your project
+- **Security detection**: Identifies unsafe blocks and potential vulnerabilities
+- **Code quality metrics**: Provides detailed quality assessments
+- **Performance insights**: Suggests optimization opportunities
+- **Parallel processing**: Utilizes rayon for fast analysis
 
 ## 🛠️ Development
 
@@ -156,13 +156,24 @@ TRAE CLI integrates seamlessly with JARVIXSERVER for enhanced capabilities:
 └─────────────────┘    └─────────────────┘
 ```
 
-### Proxy Endpoints
-- `GET /health` - Health check
-- `POST /api/analyze` - Code analysis
-- `POST /api/repair` - Auto repair
-- `GET /api/metrics` - System metrics
+### HTTP Server API
 
-(Accessed via JARVIXSERVER proxy at `/trae/*`)
+TRAE CLI includes an HTTP server for JARVIXSERVER integration. The server provides these endpoints:
+
+```
+GET  /health         - Health check
+POST /api/analyze    - Code analysis
+POST /api/repair     - Auto repair
+GET  /api/metrics    - System metrics
+```
+
+When integrated with JARVIXSERVER, these endpoints are proxied under `/trae/*`:
+```
+GET  /trae/health         → http://localhost:3001/health
+POST /trae/api/analyze    → http://localhost:3001/api/analyze
+POST /trae/api/repair     → http://localhost:3001/api/repair
+GET  /trae/api/metrics    → http://localhost:3001/api/metrics
+```
 
 ### MCP Tools Integration
 - **Nuclear Crawler**: Advanced code analysis
