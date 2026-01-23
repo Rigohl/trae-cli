@@ -1,6 +1,6 @@
 use anyhow::Result;
-use clap::Args;
 use cargo_metadata::MetadataCommand as CargoMetadataCommand;
+use clap::Args;
 use std::fs;
 
 #[derive(Args, Debug)]
@@ -18,7 +18,9 @@ pub struct JarvixMetadataCommand {
 impl JarvixMetadataCommand {
     pub async fn execute(&self, _cli: &crate::cli::JarvixCli) -> Result<()> {
         // Fetch cargo metadata
-        let meta = CargoMetadataCommand::new().exec().map_err(|e| anyhow::anyhow!(e))?;
+        let meta = CargoMetadataCommand::new()
+            .exec()
+            .map_err(|e| anyhow::anyhow!(e))?;
         let mut out = serde_json::json!({
             "workspace_root": meta.workspace_root,
             "packages": [],
@@ -28,19 +30,26 @@ impl JarvixMetadataCommand {
         let pkgs: Vec<_> = meta
             .packages
             .iter()
-            .map(|p| serde_json::json!({
-                "name": p.name,
-                "version": p.version.to_string(),
-                "id": p.id.to_string(),
-                "manifest_path": p.manifest_path.to_string()
-            }))
+            .map(|p| {
+                serde_json::json!({
+                    "name": p.name,
+                    "version": p.version.to_string(),
+                    "id": p.id.to_string(),
+                    "manifest_path": p.manifest_path.to_string()
+                })
+            })
             .collect();
         out["packages"] = serde_json::Value::Array(pkgs);
 
         // Try to get rustc version
-        if let Ok(r) = std::process::Command::new("rustc").arg("--version").output() {
+        if let Ok(r) = std::process::Command::new("rustc")
+            .arg("--version")
+            .output()
+        {
             if r.status.success() {
-                out["rustc_version"] = serde_json::Value::String(String::from_utf8_lossy(&r.stdout).trim().to_string());
+                out["rustc_version"] = serde_json::Value::String(
+                    String::from_utf8_lossy(&r.stdout).trim().to_string(),
+                );
             }
         }
 
@@ -56,7 +65,13 @@ impl JarvixMetadataCommand {
         if self.include_loc {
             // Count lines in src/**/*.rs
             let mut total = 0usize;
-            for entry in walkdir::WalkDir::new(".").into_iter().filter_map(|e| e.ok()).filter(|e| e.path().is_file() && e.path().extension().map(|s| s == "rs").unwrap_or(false)) {
+            for entry in walkdir::WalkDir::new(".")
+                .into_iter()
+                .filter_map(|e| e.ok())
+                .filter(|e| {
+                    e.path().is_file() && e.path().extension().map(|s| s == "rs").unwrap_or(false)
+                })
+            {
                 if let Ok(s) = fs::read_to_string(entry.path()) {
                     total += s.lines().count();
                 }

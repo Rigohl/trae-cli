@@ -1,11 +1,11 @@
 use std::sync::{Arc, Mutex};
 
+use jarvix_cli::commands::analyze::AnalyzeCommand;
+use jarvix_cli::jarvix::client::JarvixClient;
+use jarvix_cli::metrics::collector::MetricsCollector;
 use serde_json::Value;
 use std::thread;
 use tiny_http::{Response, Server};
-use trae_cli::jarvix::client::JarvixClient;
-use trae_cli::metrics::collector::MetricsCollector;
-use trae_cli::commands::analyze::AnalyzeCommand;
 
 #[tokio::test]
 async fn jarvix_client_reports_scan_metrics_to_local_server() {
@@ -44,7 +44,9 @@ async fn jarvix_client_reports_scan_metrics_to_local_server() {
     metrics.add_custom_metric("foo".to_string(), 42);
 
     // Create client and report
-    let client = JarvixClient::new().expect("client new").expect("client present");
+    let client = JarvixClient::new()
+        .expect("client new")
+        .expect("client present");
     let res = client.report_scan_metrics(metrics).await;
     assert!(res.is_ok(), "report_scan_metrics failed: {:?}", res.err());
 

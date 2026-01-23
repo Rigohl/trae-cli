@@ -2,13 +2,11 @@
 #![doc = ""]
 #![doc = " Define la estructura principal de comandos y subcomandos de Jarvix CLI"]
 use crate::commands::{
-    analyze::AnalyzeCommand, build::BuildCommand, cargo::CargoCommand, clippy::ClippyCommand,
-    build_help::BuildHelpCommand,
-    daemon::DaemonCommand, doc::DocCommand, math::MathCommand, mcp::McpCommand,
-    metrics::MetricsCommand, paths::PathsCommand, release::ReleaseCommand, repair::RepairCommand,
-    rustup::RustupCommand, security::SecurityCommand, simulate::SimulateCommand, test::TestCommand,
-    watch::WatchCommand,
-    metadata::JarvixMetadataCommand,
+    analyze::AnalyzeCommand, build::BuildCommand, build_help::BuildHelpCommand,
+    cargo::CargoCommand, clippy::ClippyCommand, daemon::DaemonCommand, doc::DocCommand,
+    math::MathCommand, mcp::McpCommand, metadata::JarvixMetadataCommand, metrics::MetricsCommand,
+    paths::PathsCommand, release::ReleaseCommand, repair::RepairCommand, rustup::RustupCommand,
+    security::SecurityCommand, simulate::SimulateCommand, test::TestCommand, watch::WatchCommand,
 };
 use crate::core::cargo::CargoExecutor;
 use anyhow::Result;
@@ -197,8 +195,7 @@ impl JarvixCli {
         }
         println!(
             "{}",
-            "Tip: combina `jar commands` + `jar help-cargo` para guías rápidas por etapa."
-                .green()
+            "Tip: combina `jar commands` + `jar help-cargo` para guías rápidas por etapa.".green()
         );
         Ok(())
     }
@@ -395,7 +392,12 @@ impl JarvixCli {
 
     /// Run a compact pipeline: analyze -> repair -> test
     async fn run_auto(&self, no_jarvix: bool) -> Result<()> {
-        println!("{}", "⚡ Jarvix AUTO - pipeline compacto: analyze -> repair -> test".cyan().bold());
+        println!(
+            "{}",
+            "⚡ Jarvix AUTO - pipeline compacto: analyze -> repair -> test"
+                .cyan()
+                .bold()
+        );
         // Analyze
         // default: full profile = None, don't force refresh, no output file
         crate::api::analyze(true, true, true, no_jarvix, None, false, None).await?;

@@ -263,41 +263,92 @@ impl RepairCommand {
             if self.update {
                 let upd_start = Instant::now();
                 match executor.execute_streaming(&["update"]).await {
-                    Ok(_) => steps.push(StepSummary::success("Actualizar dependencias (cargo update)", upd_start.elapsed())),
-                    Err(e) => steps.push(StepSummary::failed("Actualizar dependencias (cargo update)", upd_start.elapsed(), e.to_string())),
+                    Ok(_) => steps.push(StepSummary::success(
+                        "Actualizar dependencias (cargo update)",
+                        upd_start.elapsed(),
+                    )),
+                    Err(e) => steps.push(StepSummary::failed(
+                        "Actualizar dependencias (cargo update)",
+                        upd_start.elapsed(),
+                        e.to_string(),
+                    )),
                 }
             }
             if self.upgrade {
                 let upg_start = Instant::now();
                 match executor.execute_streaming(&["upgrade"]).await {
-                    Ok(_) => steps.push(StepSummary::success("Upgrade deps (cargo upgrade)", upg_start.elapsed())),
-                    Err(e) => steps.push(StepSummary::failed("Upgrade deps (cargo upgrade)", upg_start.elapsed(), e.to_string())),
+                    Ok(_) => steps.push(StepSummary::success(
+                        "Upgrade deps (cargo upgrade)",
+                        upg_start.elapsed(),
+                    )),
+                    Err(e) => steps.push(StepSummary::failed(
+                        "Upgrade deps (cargo upgrade)",
+                        upg_start.elapsed(),
+                        e.to_string(),
+                    )),
                 }
             }
             // Git operations: create branch and commit
             if let Some(branch) = &self.git_branch {
                 let git_start = Instant::now();
-                match std::process::Command::new("git").args(["checkout", "-b", branch]).output() {
-                    Ok(o) if o.status.success() => steps.push(StepSummary::success(format!("Crear branch git: {}", branch), git_start.elapsed())),
-                    Ok(o) => steps.push(StepSummary::failed(format!("Crear branch git: {}", branch), git_start.elapsed(), String::from_utf8_lossy(&o.stderr).to_string())),
-                    Err(e) => steps.push(StepSummary::failed(format!("Crear branch git: {}", branch), git_start.elapsed(), e.to_string())),
+                match std::process::Command::new("git")
+                    .args(["checkout", "-b", branch])
+                    .output()
+                {
+                    Ok(o) if o.status.success() => steps.push(StepSummary::success(
+                        format!("Crear branch git: {}", branch),
+                        git_start.elapsed(),
+                    )),
+                    Ok(o) => steps.push(StepSummary::failed(
+                        format!("Crear branch git: {}", branch),
+                        git_start.elapsed(),
+                        String::from_utf8_lossy(&o.stderr).to_string(),
+                    )),
+                    Err(e) => steps.push(StepSummary::failed(
+                        format!("Crear branch git: {}", branch),
+                        git_start.elapsed(),
+                        e.to_string(),
+                    )),
                 }
             }
             if let Some(msg) = &self.git_commit {
                 let git_start = Instant::now();
-                let add = std::process::Command::new("git").args(["add", "-A"]).output();
+                let add = std::process::Command::new("git")
+                    .args(["add", "-A"])
+                    .output();
                 if let Ok(a) = add {
                     if a.status.success() {
-                        match std::process::Command::new("git").args(["commit", "-m", msg]).output() {
-                            Ok(c) if c.status.success() => steps.push(StepSummary::success("Git commit", git_start.elapsed())),
-                            Ok(c) => steps.push(StepSummary::failed("Git commit", git_start.elapsed(), String::from_utf8_lossy(&c.stderr).to_string())),
-                            Err(e) => steps.push(StepSummary::failed("Git commit", git_start.elapsed(), e.to_string())),
+                        match std::process::Command::new("git")
+                            .args(["commit", "-m", msg])
+                            .output()
+                        {
+                            Ok(c) if c.status.success() => {
+                                steps.push(StepSummary::success("Git commit", git_start.elapsed()))
+                            }
+                            Ok(c) => steps.push(StepSummary::failed(
+                                "Git commit",
+                                git_start.elapsed(),
+                                String::from_utf8_lossy(&c.stderr).to_string(),
+                            )),
+                            Err(e) => steps.push(StepSummary::failed(
+                                "Git commit",
+                                git_start.elapsed(),
+                                e.to_string(),
+                            )),
                         }
                     } else {
-                        steps.push(StepSummary::failed("Git add", git_start.elapsed(), String::from_utf8_lossy(&a.stderr).to_string()));
+                        steps.push(StepSummary::failed(
+                            "Git add",
+                            git_start.elapsed(),
+                            String::from_utf8_lossy(&a.stderr).to_string(),
+                        ));
                     }
                 } else if let Err(e) = add {
-                    steps.push(StepSummary::failed("Git add", git_start.elapsed(), e.to_string()));
+                    steps.push(StepSummary::failed(
+                        "Git add",
+                        git_start.elapsed(),
+                        e.to_string(),
+                    ));
                 }
             }
         }
@@ -880,7 +931,6 @@ impl RepairCommand {
         }
         Ok(())
     }
-
 }
 
 /// Options for programmatic repair API.
@@ -940,13 +990,18 @@ impl RepairCommand {
         // If rollback requested, create a simple backup copy of the workspace
         let backup_dir = if opts.rollback {
             let ts = chrono::Utc::now().format("%Y%m%dT%H%M%SZ").to_string();
-            let backup = std::path::Path::new(".trae").join("backups").join(format!("repair_{}", ts));
+            let backup = std::path::Path::new(".trae")
+                .join("backups")
+                .join(format!("repair_{}", ts));
             if let Err(e) = std::fs::create_dir_all(&backup) {
                 eprintln!("⚠️ No se pudo crear backup dir: {e}");
                 None
             } else {
                 // copy files recursively (skip .trae and target)
-                fn copy_recursively(src: &std::path::Path, dst: &std::path::Path) -> std::io::Result<()> {
+                fn copy_recursively(
+                    src: &std::path::Path,
+                    dst: &std::path::Path,
+                ) -> std::io::Result<()> {
                     for entry in std::fs::read_dir(src)? {
                         let entry = entry?;
                         let path = entry.path();
@@ -988,7 +1043,10 @@ impl RepairCommand {
                 if let Some(backup) = backup_dir {
                     eprintln!("⚠️ Error en reparacion, intentando rollback desde backup...");
                     // restore files (copy from backup over current)
-                    fn restore_recursively(src: &std::path::Path, dst: &std::path::Path) -> std::io::Result<()> {
+                    fn restore_recursively(
+                        src: &std::path::Path,
+                        dst: &std::path::Path,
+                    ) -> std::io::Result<()> {
                         for entry in std::fs::read_dir(src)? {
                             let entry = entry?;
                             let path = entry.path();
@@ -1009,7 +1067,10 @@ impl RepairCommand {
                     if let Err(e) = restore_recursively(&backup, std::path::Path::new(".")) {
                         eprintln!("⚠️ Rollback failed: {e}");
                     } else {
-                        eprintln!("✅ Rollback completed from backup: {}", backup.to_string_lossy());
+                        eprintln!(
+                            "✅ Rollback completed from backup: {}",
+                            backup.to_string_lossy()
+                        );
                     }
                 }
             }

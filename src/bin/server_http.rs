@@ -1,7 +1,13 @@
 //! HTTP Server for TRAE CLI
 //! Expone comandos de trae-cli como REST API integrado con JARVIXSERVER
 
-use axum::{extract::{Json, State}, http::StatusCode, response::IntoResponse, routing::{get, post}, Router};
+use axum::{
+    extract::{Json, State},
+    http::StatusCode,
+    response::IntoResponse,
+    routing::{get, post},
+    Router,
+};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, sync::Arc};
 use tower_http::cors::CorsLayer;
@@ -141,7 +147,10 @@ async fn health_handler(State(state): State<Arc<AppState>>) -> impl IntoResponse
 
 /// Function documentation added by AI refactor
 async fn build_handler(Json(req): Json<BuildRequest>) -> impl IntoResponse {
-    println!("🔨 Build request: release={}, features={:?}", req.release, req.features);
+    println!(
+        "🔨 Build request: release={}, features={:?}",
+        req.release, req.features
+    );
     let start = std::time::Instant::now();
     let mut cmd = std::process::Command::new("cargo");
     cmd.arg("build");
@@ -181,7 +190,10 @@ async fn build_handler(Json(req): Json<BuildRequest>) -> impl IntoResponse {
 
 /// Function documentation added by AI refactor
 async fn analyze_handler(Json(req): Json<AnalyzeRequest>) -> impl IntoResponse {
-    println!("🔍 Analyze request: path={:?}, depth={}", req.path, req.depth);
+    println!(
+        "🔍 Analyze request: path={:?}, depth={}",
+        req.path, req.depth
+    );
     let path = req.path.unwrap_or_else(|| ".".to_string());
     match analyze_project_advanced(&path) {
         Ok(analysis) => Json(ApiResponse::success(analysis)).into_response(),
@@ -195,7 +207,10 @@ async fn analyze_handler(Json(req): Json<AnalyzeRequest>) -> impl IntoResponse {
 
 /// Function documentation added by AI refactor
 async fn repair_handler(Json(req): Json<RepairRequest>) -> impl IntoResponse {
-    println!("🔧 Repair request: auto_fix={}, target={:?}", req.auto_fix, req.target);
+    println!(
+        "🔧 Repair request: auto_fix={}, target={:?}",
+        req.auto_fix, req.target
+    );
     if req.auto_fix {
         match run_advanced_repair() {
             Ok(result) => Json(ApiResponse::success(result)).into_response(),
@@ -285,10 +300,8 @@ fn analyze_project_advanced(path: &str) -> Result<AnalyzeResponse, String> {
                         let lines = content.lines().count();
                         total_lines += lines;
                         let cyclomatic_complexity = calculate_cyclomatic_complexity(&content);
-                        complexity_metrics.insert(
-                            entry.path().display().to_string(),
-                            cyclomatic_complexity,
-                        );
+                        complexity_metrics
+                            .insert(entry.path().display().to_string(), cyclomatic_complexity);
                         for (idx, line) in content.lines().enumerate() {
                             if line.contains("unsafe") && !line.trim_start().starts_with("//") {
                                 issues.push(Issue {
@@ -304,8 +317,9 @@ fn analyze_project_advanced(path: &str) -> Result<AnalyzeResponse, String> {
                                     file: entry.path().display().to_string(),
                                     line: idx + 1,
                                     severity: "warning".to_string(),
-                                    message: "Consider using proper error handling instead of unwrap()"
-                                        .to_string(),
+                                    message:
+                                        "Consider using proper error handling instead of unwrap()"
+                                            .to_string(),
                                 });
                             }
                             if line.contains("panic!") && !line.trim_start().starts_with("//") {
@@ -313,8 +327,9 @@ fn analyze_project_advanced(path: &str) -> Result<AnalyzeResponse, String> {
                                     file: entry.path().display().to_string(),
                                     line: idx + 1,
                                     severity: "error".to_string(),
-                                    message: "Panic detected - use Result/Option for error handling"
-                                        .to_string(),
+                                    message:
+                                        "Panic detected - use Result/Option for error handling"
+                                            .to_string(),
                                 });
                             }
                             if line.contains("todo!") || line.contains("unimplemented!") {
@@ -345,8 +360,9 @@ fn analyze_project_advanced(path: &str) -> Result<AnalyzeResponse, String> {
                                 file: entry.path().display().to_string(),
                                 line: 0,
                                 severity: "info".to_string(),
-                                message: "Random dependency detected - ensure secure random generation"
-                                    .to_string(),
+                                message:
+                                    "Random dependency detected - ensure secure random generation"
+                                        .to_string(),
                             });
                         }
                     }
@@ -431,11 +447,7 @@ fn analyze_fourier_complexity(metrics: &HashMap<String, f64>) -> f64 {
     }
     let values: Vec<f64> = metrics.values().copied().collect();
     let mean = values.iter().sum::<f64>() / values.len() as f64;
-    let variance = values
-        .iter()
-        .map(|v| (v - mean).powi(2))
-        .sum::<f64>()
-        / values.len() as f64;
+    let variance = values.iter().map(|v| (v - mean).powi(2)).sum::<f64>() / values.len() as f64;
     variance.sqrt()
 }
 
@@ -549,8 +561,8 @@ async fn main() {
         .init();
 
     println!("🚀 Starting TRAE CLI HTTP Server...");
-    let jarvix_url = std::env::var("JARVIX_URL")
-        .unwrap_or_else(|_| "http://localhost:5051".to_string());
+    let jarvix_url =
+        std::env::var("JARVIX_URL").unwrap_or_else(|_| "http://localhost:5051".to_string());
     println!("📡 JARVIX URL: {}", jarvix_url);
 
     let state = Arc::new(AppState {
@@ -592,8 +604,6 @@ async fn main() {
     println!();
     println!("🚀 Starting server...");
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3001")
-        .await
-        .unwrap();
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3001").await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }
