@@ -36,7 +36,7 @@ cargo clippy --all-targets --all-features -- -D warnings
 ```bash
 cargo test --all --release
 ```
-- Primera ejecución puede tardar ~2–3 min por descargas/compilación.
+- Primera ejecución puede tardar ~2-3 min por descargas/compilación.
 
 ### Build (CI)
 ```bash
@@ -51,7 +51,7 @@ cargo run --bin trae -- --help
 # Servidor HTTP (puerto 3001)
 JARVIX_URL=http://localhost:5051 cargo run --bin server_http
 
-# Binario adicional
+# Binario adicional (servidor HTTP "full" basado en tiny_http en puerto 3001)
 cargo run --bin trae_server_final
 ```
 
@@ -71,7 +71,7 @@ cargo run --bin trae_server_final
 
 ## Validaciones adicionales y notas
 - **CI real**: solo existe `.github/workflows/ci.yml` (fmt → clippy → tests → build).
-- Si necesitas JARVIXSERVER, los docs muestran 8080, pero el servidor HTTP usa `JARVIX_URL` con **default `http://localhost:5051`** (ver `src/bin/server_http.rs`).
+- Si necesitas JARVIXSERVER, el README/INTEGRATION.md mencionan proxy en **8080** vía JARVIXSERVER, mientras que el servidor HTTP local escucha en **3001** y `JARVIX_URL` default es **http://localhost:5051** (ver `src/bin/server_http.rs`).
 - La carpeta `.trae/` contiene caches/metrics y se puede limpiar si necesitas regenerar estado.
 
 ## Recomendación final
