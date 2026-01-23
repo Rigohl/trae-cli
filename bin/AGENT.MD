@@ -16,7 +16,7 @@ Esta carpeta contiene los binarios compilados de Jarvix-CLI, incluyendo ejecutab
 
 #### Binarios de Release
 - **jar**: Ejecutable principal de Jarvix-CLI
-- **jar.exe**: Versión Windows
+- **jarcli.exe**: Versión Windows
 - **jar-macos**: Versión macOS
 - **jar-linux**: Versión Linux
 
@@ -48,11 +48,11 @@ bin/
 │       └── jar.sha256
 ├── windows/
 │   ├── x86_64/
-│   │   ├── jar.exe
-│   │   └── jar.exe.sha256
+│   │   ├── jarcli.exe
+│   │   └── jarcli.exe.sha256
 │   └── aarch64/
-│       ├── jar.exe
-│       └── jar.exe.sha256
+│       ├── jarcli.exe
+│       └── jarcli.exe.sha256
 └── checksums.txt
 ```
 
@@ -111,7 +111,7 @@ for target in "${TARGETS[@]}"; do
             platform="macos"
             ;;
         *-windows-*)
-            bin_name="jar.exe"
+            bin_name="jarcli.exe"
             platform="windows"
             ;;
     esac
@@ -200,7 +200,7 @@ create_package "linux" "x86_64" "jarcli"
 create_package "linux" "aarch64" "jarcli"
 create_package "macos" "x86_64" "jarcli"
 create_package "macos" "aarch64" "jarcli"
-create_package "windows" "x86_64" "jar.exe"
+create_package "windows" "x86_64" "jarcli.exe"
 ```
 
 ### Checksums Globales
