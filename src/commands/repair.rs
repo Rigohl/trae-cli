@@ -990,14 +990,14 @@ impl RepairCommand {
         // If rollback requested, create a simple backup copy of the workspace
         let backup_dir = if opts.rollback {
             let ts = chrono::Utc::now().format("%Y%m%dT%H%M%SZ").to_string();
-            let backup = std::path::Path::new(".trae")
+            let backup = std::path::Path::new(".jarcli")
                 .join("backups")
                 .join(format!("repair_{}", ts));
             if let Err(e) = std::fs::create_dir_all(&backup) {
                 eprintln!("⚠️ No se pudo crear backup dir: {e}");
                 None
             } else {
-                // copy files recursively (skip .trae and target)
+                // copy files recursively (skip .jarcli and target)
                 fn copy_recursively(
                     src: &std::path::Path,
                     dst: &std::path::Path,
@@ -1006,7 +1006,7 @@ impl RepairCommand {
                         let entry = entry?;
                         let path = entry.path();
                         let rel = path.strip_prefix(src).unwrap_or(&path);
-                        if rel.starts_with(".trae") || rel.starts_with("target") {
+                        if rel.starts_with(".jarcli") || rel.starts_with("target") {
                             continue;
                         }
                         let dest_path = dst.join(rel);

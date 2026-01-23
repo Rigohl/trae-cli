@@ -16,7 +16,7 @@ Esta carpeta contiene los binarios compilados de Jarvix-CLI, incluyendo ejecutab
 
 #### Binarios de Release
 - **jar**: Ejecutable principal de Jarvix-CLI
-- **jar.exe**: Versión Windows
+- **jarcli.exe**: Versión Windows
 - **jar-macos**: Versión macOS
 - **jar-linux**: Versión Linux
 
@@ -48,11 +48,11 @@ bin/
 │       └── jar.sha256
 ├── windows/
 │   ├── x86_64/
-│   │   ├── jar.exe
-│   │   └── jar.exe.sha256
+│   │   ├── jarcli.exe
+│   │   └── jarcli.exe.sha256
 │   └── aarch64/
-│       ├── jar.exe
-│       └── jar.exe.sha256
+│       ├── jarcli.exe
+│       └── jarcli.exe.sha256
 └── checksums.txt
 ```
 
@@ -103,15 +103,15 @@ for target in "${TARGETS[@]}"; do
     # Determine output directory and binary name
     case $target in
         *-linux-*)
-            bin_name="jar"
+            bin_name="jarcli"
             platform="linux"
             ;;
         *-darwin)
-            bin_name="jar"
+            bin_name="jarcli"
             platform="macos"
             ;;
         *-windows-*)
-            bin_name="jar.exe"
+            bin_name="jarcli.exe"
             platform="windows"
             ;;
     esac
@@ -196,11 +196,11 @@ create_package() {
 }
 
 # Create packages for all platforms
-create_package "linux" "x86_64" "jar"
-create_package "linux" "aarch64" "jar"
-create_package "macos" "x86_64" "jar"
-create_package "macos" "aarch64" "jar"
-create_package "windows" "x86_64" "jar.exe"
+create_package "linux" "x86_64" "jarcli"
+create_package "linux" "aarch64" "jarcli"
+create_package "macos" "x86_64" "jarcli"
+create_package "macos" "aarch64" "jarcli"
+create_package "windows" "x86_64" "jarcli.exe"
 ```
 
 ### Checksums Globales
@@ -262,12 +262,12 @@ curl -L -o jar.tar.gz "$binary_url"
 
 # Extract and install
 tar -xzf jar.tar.gz
-sudo mv jar "$install_dir/"
+sudo mv jarcli "$install_dir/"
 
 # Verify installation
-if command -v jar &> /dev/null; then
+if command -v jarcli &> /dev/null; then
     echo "✅ Jarvix-CLI installed successfully!"
-    jar --version
+    jarcli --version
 else
     echo "❌ Installation failed"
     exit 1
@@ -284,7 +284,7 @@ class JarvixCli < Formula
   sha256 "checksum_here"
 
   def install
-    bin.install "jar"
+    bin.install "jarcli"
   end
 
   test do
@@ -418,16 +418,16 @@ gpg --verify bin/linux/x86_64/jar.asc bin/linux/x86_64/jar
 ### Comandos de Distribución
 ```bash
 # Construir todos los binarios
-jar build --all-platforms
+jarcli build --all-platforms
 
 # Crear paquetes de distribución
-jar package --create
+jarcli package --create
 
 # Verificar integridad
-jar verify --checksums
+jarcli verify --checksums
 
 # Subir a releases
-jar release --upload
+jarcli release --upload
 ```
 
 ### Configuración de Build

@@ -16,7 +16,7 @@ use serde_json::json;
 use std::time::{Duration, Instant};
 #[doc = " Jarvix CLI - Enhanced Rust Development Tools"]
 #[derive(Parser, Debug)]
-#[command(name = "jar")]
+#[command(name = "jarcli")]
 #[command(version = "0.2.0")]
 #[command(about = "Jarvix Analysis Runtime - Enhanced cargo with advanced tooling")]
 # [command (long_about = None)]
@@ -178,7 +178,7 @@ impl JarvixCli {
             usage: &'a str,
             highlights: &'a [&'a str],
         }
-        let catalog = vec ! [CommandInfo { name : "build" , usage : "jar build [--release] [--auto-repair] [--analyze]" , highlights : & ["Pipeline con tabla de pasos, métricas FFT y auto-repair opcional." , "Compatibilidad total con argumentos clásicos de cargo; no usa Docker por defecto." ,] , } , CommandInfo { name : "repair" , usage : "jar repair [--auto|--fmt|--clippy|--deps] [--dry-run]" , highlights : & ["Flujo DMAIC con confirmación inteligente y exportación JSON." , "Resumen por fase (clippy, fmt, deps, etc.) reutilizando StepSummary moderno." ,] , } , CommandInfo { name : "simulate" , usage : "jar simulate --scenarios 100000 --stream" , highlights : & ["Motor de simulaciones estilo Ben Bend con streaming de métricas." , "Permite validar patrones de rendimiento antes del build o tests." ,] , } , CommandInfo { name : "mcp" , usage : "jar mcp <tool> [args]" , highlights : & ["Levanta MCPs (MEMORY_P, JarvixServer, etc.) en silencio y segundo plano." , "Ideal para dejar servicios auxiliares activos sin escribir scripts extra." ,] , } , CommandInfo { name : "cargo" , usage : "jar cargo <subcomando> [...args]" , highlights : & ["Proxy neutro a cargo con streaming coloreado y métricas homogéneas." , "Sirve para cualquier proyecto Rust ajeno a Jarvix; cero vendor lock-in." ,] , } , CommandInfo { name : "help-cargo" , usage : "jar help-cargo" , highlights : & ["Muestra el catálogo extendido documentado en CARGO_COMMANDS.md." ,] , } ,] ;
+        let catalog = vec ! [CommandInfo { name : "build" , usage : "jarcli build [--release] [--auto-repair] [--analyze]" , highlights : & ["Pipeline con tabla de pasos, métricas FFT y auto-repair opcional." , "Compatibilidad total con argumentos clásicos de cargo; no usa Docker por defecto." ,] , } , CommandInfo { name : "repair" , usage : "jarcli repair [--auto|--fmt|--clippy|--deps] [--dry-run]" , highlights : & ["Flujo DMAIC con confirmación inteligente y exportación JSON." , "Resumen por fase (clippy, fmt, deps, etc.) reutilizando StepSummary moderno." ,] , } , CommandInfo { name : "simulate" , usage : "jarcli simulate --scenarios 100000 --stream" , highlights : & ["Motor de simulaciones estilo Ben Bend con streaming de métricas." , "Permite validar patrones de rendimiento antes del build o tests." ,] , } , CommandInfo { name : "mcp" , usage : "jarcli mcp <tool> [args]" , highlights : & ["Levanta MCPs (MEMORY_P, JarvixServer, etc.) en silencio y segundo plano." , "Ideal para dejar servicios auxiliares activos sin escribir scripts extra." ,] , } , CommandInfo { name : "cargo" , usage : "jarcli cargo <subcomando> [...args]" , highlights : & ["Proxy neutro a cargo con streaming coloreado y métricas homogéneas." , "Sirve para cualquier proyecto Rust ajeno a Jarvix; cero vendor lock-in." ,] , } , CommandInfo { name : "help-cargo" , usage : "jarcli help-cargo" , highlights : & ["Muestra el catálogo extendido documentado en CARGO_COMMANDS.md." ,] , } ,] ;
         println!("\n{}", "Jarvix Command Catalog".cyan().bold());
         println!(
             "{}",
@@ -195,7 +195,7 @@ impl JarvixCli {
         }
         println!(
             "{}",
-            "Tip: combina `jar commands` + `jar help-cargo` para guías rápidas por etapa.".green()
+            "Tip: combina `jarcli commands` + `jarcli help-cargo` para guías rápidas por etapa.".green()
         );
         Ok(())
     }

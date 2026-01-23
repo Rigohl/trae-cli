@@ -175,7 +175,7 @@ impl McpCommand {
 fn registry_path() -> PathBuf {
     dirs::home_dir()
         .unwrap_or_else(|| PathBuf::from("."))
-        .join(".trae")
+        .join(".jarcli")
         .join("mcp_processes.json")
 }
 #[doc = "Function documentation added by AI refactor"]

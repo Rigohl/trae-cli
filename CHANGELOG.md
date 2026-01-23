@@ -3,9 +3,11 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+- Renamed project to jarcli (Jarvix CLI)
+- Updated binary names from jar to jarcli
 - Improved README and contributor docs.
-- Added persistent analysis snapshot to `.jarvix/metrics`.
-- Added `balanced` profile for `jar analyze`.
+- Added persistent analysis snapshot to `.jarcli/metrics`.
+- Added `balanced` profile for `jarcli analyze`.
 
 ## [0.2.0] - 2025-12-15
 - Enhanced security analysis: Added detection for unsafe blocks, unwrap/expect calls, panic macros

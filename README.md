@@ -1,8 +1,8 @@
 # Jarvix CLI — Advanced Rust Development Toolkit
 
-[![CI](https://github.com/Rigohl/jarvix-cli/workflows/CI/badge.svg)](https://github.com/Rigohl/jarvix-cli/actions)
-[![Version](https://img.shields.io/badge/version-0.2.0-blue.svg)](https://github.com/Rigohl/jarvix-cli/releases)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/Rigohl/jarvix-cli/blob/master/LICENSE)
+[![CI](https://github.com/Rigohl/trae-cli/workflows/CI/badge.svg)](https://github.com/Rigohl/trae-cli/actions)
+[![Version](https://img.shields.io/badge/version-0.2.0-blue.svg)](https://github.com/Rigohl/trae-cli/releases)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/Rigohl/trae-cli/blob/master/LICENSE)
 
 Jarvix CLI (Jarvix Analysis Runtime) is a command-line tool for analyzing, repairing and optimizing Rust projects with JARVIXSERVER integration.
 
@@ -23,13 +23,13 @@ Jarvix CLI (Jarvix Analysis Runtime) is a command-line tool for analyzing, repai
 cargo install --path .
 
 # Run analysis (programmatic API)
-cargo run --bin jar -- repair
+cargo run --bin jarcli -- repair
 
 # Check code quality
-cargo run --bin jar -- clippy --strict
+cargo run --bin jarcli -- clippy --strict
 
 # View available commands
-cargo run --bin jar -- --help
+cargo run --bin jarcli -- --help
 ```
 
 ## 📊 Current Analysis Results
@@ -61,7 +61,7 @@ cargo fmt
 
 ### Project Structure
 ```
-jarvix-cli/
+jarcli/
 ├── src/
 │   ├── main.rs              # CLI entry point
 │   ├── core/
@@ -121,7 +121,7 @@ Jarvix CLI follows strict Rust development practices:
 
 ## 🤝 JARVIXSERVER Integration
 
-Jarvix CLI integrates seamlessly with JARVIXSERVER for enhanced capabilities:
+Jarvix CLI (jarcli) integrates seamlessly with JARVIXSERVER for enhanced capabilities:
 
 ### Architecture
 ```
@@ -136,10 +136,10 @@ Jarvix CLI integrates seamlessly with JARVIXSERVER for enhanced capabilities:
 ```
 
 ### Proxy Endpoints
-- `GET /jar/health` - Health check
-- `POST /jar/api/analyze` - Code analysis
-- `POST /jar/api/repair` - Auto repair
-- `GET /jar/api/metrics` - System metrics
+- `GET /jarcli/health` - Health check
+- `POST /jarcli/api/analyze` - Code analysis
+- `POST /jarcli/api/repair` - Auto repair
+- `GET /jarcli/api/metrics` - System metrics
 
 ### MCP Tools Integration
 - **Nuclear Crawler**: Advanced code analysis
@@ -179,7 +179,7 @@ cargo --version
 curl http://localhost:8080/health
 
 # Test Jarvix CLI integration
-curl http://localhost:8080/jar/health
+curl http://localhost:8080/jarcli/health
 ```
 
 ## 📄 License

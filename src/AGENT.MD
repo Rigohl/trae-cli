@@ -67,7 +67,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
-#[command(name = "jar")]
+#[command(name = "jarcli")]
 #[command(about = "Jarvix-CLI - Cargo extension for code analysis and repair")]
 pub struct Cli {
     #[command(subcommand)]

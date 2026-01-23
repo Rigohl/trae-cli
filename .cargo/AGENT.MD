@@ -255,13 +255,13 @@ du -sh .cargo/
 ### Comandos Jarvix-CLI
 ```bash
 # Análisis de dependencias
-jar analyze --dependencies
+jarcli analyze --dependencies
 
 # Build optimizado
-jar build --release --lto
+jarcli build --release --lto
 
 # Verificar cache
-jar cache --status
+jarcli cache --status
 ```
 
 ### Configuración Jarvix-CLI

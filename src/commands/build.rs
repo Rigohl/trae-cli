@@ -325,7 +325,7 @@ impl BuildCommand {
             format!("{}:/app", std::env::current_dir()?.display()),
             "-w".to_string(),
             "/app".to_string(),
-            "jarvix-cli:latest".to_string(),
+            "jarcli:latest".to_string(),
             "cargo".to_string(),
             "build".to_string(),
         ];
@@ -402,24 +402,24 @@ impl BuildCommand {
         if error_str.contains("could not compile") {
             println!(
                 "  â€¢ Ejecuta: {} para anÃ¡lisis detallado",
-                "jar analyze".green()
+                "jarcli analyze".green()
             );
         }
         if error_str.contains("dependency") {
             println!(
                 "  â€¢ Ejecuta: {} para reparar dependencias",
-                "jar repair --deps".green()
+                "jarcli repair --deps".green()
             );
         }
         if error_str.contains("format") || error_str.contains("clippy") {
             println!(
                 "  â€¢ Ejecuta: {} para formato automÃ¡tico",
-                "jar repair --fmt".green()
+                "jarcli repair --fmt".green()
             );
         }
         println!(
             "  â€¢ Ejecuta: {} para reparaciÃ³n automÃ¡tica completa",
-            "jar repair --auto".green()
+            "jarcli repair --auto".green()
         );
         Ok(())
     }

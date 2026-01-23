@@ -364,16 +364,16 @@ docs/ @docs-team
 ### Comandos Jarvix-CLI para GitHub
 ```bash
 # Validar configuración de GitHub
-jar github --validate
+jarcli github --validate
 
 # Ejecutar workflows localmente
-jar ci --simulate
+jarcli ci --simulate
 
 # Generar templates
-jar github --generate-templates
+jarcli github --generate-templates
 
 # Verificar dependencias
-jar deps --check-updates
+jarcli deps --check-updates
 ```
 
 ### Configuración Jarvix-CLI

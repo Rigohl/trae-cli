@@ -264,14 +264,14 @@ echo "💡 Hooks will run automatically on commit/push."
 ### Comandos Jarvix-CLI
 ```bash
 # Verificar hooks
-jar hooks --status
+jarcli hooks --status
 
 # Instalar hooks
-jar hooks --install
+jarcli hooks --install
 
 # Ejecutar validaciones manualmente
-jar validate --pre-commit
-jar validate --pre-push
+jarcli validate --pre-commit
+jarcli validate --pre-push
 ```
 
 ### Configuración Jarvix-CLI
