@@ -1,10 +1,10 @@
-# TRAE CLI - Referencia de Comandos
+# JARVIX CLI - Referencia de Comandos
 
-Guía completa de todos los comandos disponibles en TRAE CLI.
+Guía completa de todos los comandos disponibles en JARVIX CLI.
 
 ## 🚀 Comandos Principales de Cargo
 
-TRAE CLI proporciona acceso directo a todos los comandos estándar de Cargo:
+JARVIX CLI proporciona acceso directo a todos los comandos estándar de Cargo:
 
 ### Gestión de Proyectos
 ```bash
@@ -93,7 +93,7 @@ trae bench
 trae search tokio
 ```
 
-## 🔧 Super Comandos de TRAE
+## 🔧 Super Comandos de JARVIX
 
 Comandos especiales que combinan múltiples operaciones:
 
@@ -233,7 +233,7 @@ trae web-search "how to use tokio runtime"
 
 ## 🔧 Servidor HTTP
 
-TRAE CLI incluye un servidor HTTP para integración con JARVIXSERVER:
+JARVIX CLI incluye un servidor HTTP para integración con JARVIXSERVER:
 
 ```bash
 # Build del servidor
@@ -265,7 +265,7 @@ cargo build --release
 
 ### GitHub Actions Example
 ```yaml
-- name: Run TRAE checks
+- name: Run JARVIX checks
   run: |
     cargo run --bin trae -- preflight
 ```

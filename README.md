@@ -1,10 +1,10 @@
-# TRAE CLI — Advanced Rust Development Toolkit
+# JARVIX CLI — Advanced Rust Development Toolkit
 
 [![CI](https://github.com/Rigohl/trae-cli/workflows/CI/badge.svg)](https://github.com/Rigohl/trae-cli/actions)
 [![Version](https://img.shields.io/badge/version-0.2.0-blue.svg)](https://github.com/Rigohl/trae-cli/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/Rigohl/trae-cli/blob/master/LICENSE)
 
-TRAE CLI (Total Rust Analysis Engine) is a command-line tool for analyzing, repairing and optimizing Rust projects with JARVIXSERVER integration.
+JARVIX CLI (JAR Command Line Interface) is a command-line tool for analyzing, repairing and optimizing Rust projects with JARVIXSERVER integration.
 
 ## ✨ Features
 
@@ -41,7 +41,7 @@ cargo run --bin server_http
 
 ## 📊 Current Analysis Results
 
-TRAE CLI provides comprehensive analysis capabilities:
+JARVIX CLI provides comprehensive analysis capabilities:
 - **Multi-file analysis**: Analyzes all Rust files in your project
 - **Security detection**: Identifies unsafe blocks and potential vulnerabilities
 - **Code quality metrics**: Provides detailed quality assessments
@@ -131,7 +131,7 @@ strip = true
 
 ## 🔍 Code Quality Standards
 
-TRAE CLI follows strict Rust development practices:
+JARVIX CLI follows strict Rust development practices:
 
 - ✅ **No Mocks**: Real code analysis only (constitution requirement)
 - ✅ **Zero Warnings**: CI enforces clippy -D warnings
@@ -142,12 +142,12 @@ TRAE CLI follows strict Rust development practices:
 
 ## 🤝 JARVIXSERVER Integration
 
-TRAE CLI integrates seamlessly with JARVIXSERVER for enhanced capabilities:
+JARVIX CLI integrates seamlessly with JARVIXSERVER for enhanced capabilities:
 
 ### Architecture
 ```
 ┌─────────────────┐    ┌─────────────────┐
-│   JARVIXSERVER  │    │    TRAE CLI     │
+│   JARVIXSERVER  │    │   JARVIX CLI    │
 │    (Port 8080)  │◄──►│   (Port 3001)   │
 │                 │    │                 │
 │ • API Gateway   │    │ • Code Analysis │
@@ -158,7 +158,7 @@ TRAE CLI integrates seamlessly with JARVIXSERVER for enhanced capabilities:
 
 ### HTTP Server API
 
-TRAE CLI includes an HTTP server for JARVIXSERVER integration. The server provides these endpoints:
+JARVIX CLI includes an HTTP server for JARVIXSERVER integration. The server provides these endpoints:
 
 ```
 GET  /health         - Health check
@@ -212,7 +212,7 @@ cargo --version
 # Check JARVIXSERVER status
 curl http://localhost:8080/health
 
-# Test TRAE CLI server
+# Test JARVIX CLI server
 curl http://localhost:3001/health
 
 # Test via JARVIXSERVER proxy

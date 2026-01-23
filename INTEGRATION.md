@@ -1,14 +1,14 @@
-# 🔗 TRAE CLI - Integration Guide
+# 🔗 JARVIX CLI - Integration Guide
 
 ## JARVIXSERVER Integration
 
-TRAE CLI integrates seamlessly with JARVIXSERVER to provide comprehensive code analysis and repair capabilities through a unified API.
+JARVIX CLI integrates seamlessly with JARVIXSERVER to provide comprehensive code analysis and repair capabilities through a unified API.
 
 ### Architecture
 
 ```
 ┌─────────────────┐    ┌─────────────────┐
-│   JARVIXSERVER  │    │    TRAE CLI     │
+│   JARVIXSERVER  │    │   JARVIX CLI    │
 │    (Port 8080)  │◄──►│   (Port 3001)   │
 │                 │    │                 │
 │ • API Gateway   │    │ • Code Analysis │
@@ -19,7 +19,7 @@ TRAE CLI integrates seamlessly with JARVIXSERVER to provide comprehensive code a
 
 ### Proxy Configuration
 
-JARVIXSERVER automatically proxies TRAE CLI endpoints under `/trae/*`:
+JARVIXSERVER automatically proxies JARVIX CLI endpoints under `/trae/*`:
 
 ```javascript
 // JARVIXSERVER proxy routes
@@ -32,7 +32,7 @@ GET  /trae/api/metrics → http://localhost:3001/api/metrics
 ### Health Check Integration
 
 ```bash
-# Direct TRAE CLI health check
+# Direct JARVIX CLI health check
 curl http://localhost:3001/health
 
 # Via JARVIXSERVER proxy
@@ -56,10 +56,10 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Build TRAE CLI
+      - name: Build JARVIX CLI
         run: cargo build --release --bin server_http
 
-      - name: Start TRAE Server
+      - name: Start JARVIX Server
         run: |
           ./target/release/server_http &
           sleep 3
@@ -96,7 +96,7 @@ pipeline {
         stage('Code Analysis') {
             steps {
                 sh '''
-                    # Build TRAE CLI
+                    # Build JARVIX CLI
                     cargo build --release --bin server_http
 
                     # Start server in background
@@ -128,7 +128,7 @@ pipeline {
 ### Docker Integration
 
 ```dockerfile
-# Dockerfile for TRAE CLI with Chapel support
+# Dockerfile for JARVIX CLI with Chapel support
 FROM rust:1.70-slim as builder
 WORKDIR /app
 COPY . .
@@ -271,7 +271,7 @@ scrape_configs:
 ```json
 {
   "dashboard": {
-    "title": "TRAE CLI Metrics",
+    "title": "JARVIX CLI Metrics",
     "panels": [
       {
         "title": "Quality Score",
@@ -325,7 +325,7 @@ def send_discord_notification(analysis_result):
     webhook_url = "YOUR_DISCORD_WEBHOOK_URL"
 
     embed = {
-        "title": "TRAE CLI Analysis Complete",
+        "title": "JARVIX CLI Analysis Complete",
         "color": 3066993 if analysis_result['data']['quality_score'] > 70 else 15158332,
         "fields": [
             {
@@ -359,7 +359,7 @@ send_discord_notification(analysis)
 ### Custom Analysis Rules
 
 ```rust
-// Extend TRAE CLI with custom analysis rules
+// Extend JARVIX CLI with custom analysis rules
 use trae_cli::core::analyzer::Analyzer;
 
 struct CustomAnalyzer;
@@ -386,7 +386,7 @@ impl Analyzer for CustomAnalyzer {
 ### Plugin System
 
 ```rust
-// TRAE CLI plugin interface
+// JARVIX CLI plugin interface
 pub trait TraePlugin {
     fn name(&self) -> &str;
     fn analyze(&self, project_path: &str) -> Result<AnalysisResult, Box<dyn std::error::Error>>;
@@ -445,7 +445,7 @@ const corsHeaders = {
 ### Load Balancing
 
 ```nginx
-# nginx.conf for load balancing multiple TRAE CLI instances
+# nginx.conf for load balancing multiple JARVIX CLI instances
 upstream trae_backend {
     server localhost:3001;
     server localhost:3002;
@@ -482,4 +482,4 @@ fi
 
 ---
 
-**TRAE CLI Integration Guide** - Comprehensive integration patterns for CI/CD, monitoring, and enterprise deployments.
+**JARVIX CLI Integration Guide** - Comprehensive integration patterns for CI/CD, monitoring, and enterprise deployments.

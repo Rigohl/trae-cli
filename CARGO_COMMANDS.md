@@ -1,4 +1,4 @@
-# 🚀 TRAE CLI - Comandos Cargo Optimizados
+# 🚀 JARVIX CLI - Comandos Cargo Optimizados
 
 ## Comandos Principales
 
