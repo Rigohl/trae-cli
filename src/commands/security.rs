@@ -435,22 +435,22 @@ impl SecurityCommand {
         let mut fixes_failed = Vec::new();
         if let Some(config_check) = &results.config_check {
             for issue in &config_check.issues {
-                if issue.fix_available && matches!(issue.severity, SecuritySeverity::Low)
-                    && issue.title.contains("panic") {
-                        if let Ok(mut content) = fs::read_to_string("Cargo.toml") {
-                            if !content.contains("[profile.release]") {
-                                content.push_str("\n[profile.release]\npanic = \"abort\"\n");
-                                if fs::write("Cargo.toml", content).is_ok() {
-                                    fixes_applied.push(
-                                        "Agregado panic = \"abort\" a Cargo.toml".to_string(),
-                                    );
-                                } else {
-                                    fixes_failed
-                                        .push("No se pudo modificar Cargo.toml".to_string());
-                                }
+                if issue.fix_available
+                    && matches!(issue.severity, SecuritySeverity::Low)
+                    && issue.title.contains("panic")
+                {
+                    if let Ok(mut content) = fs::read_to_string("Cargo.toml") {
+                        if !content.contains("[profile.release]") {
+                            content.push_str("\n[profile.release]\npanic = \"abort\"\n");
+                            if fs::write("Cargo.toml", content).is_ok() {
+                                fixes_applied
+                                    .push("Agregado panic = \"abort\" a Cargo.toml".to_string());
+                            } else {
+                                fixes_failed.push("No se pudo modificar Cargo.toml".to_string());
                             }
                         }
                     }
+                }
             }
         }
         Ok(SecurityFixesResult {
