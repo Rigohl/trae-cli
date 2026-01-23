@@ -1,4 +1,4 @@
-# Contributing to TRAE-CLI
+# Contributing to Jarvix-CLI
 
 Guidelines
 

@@ -1,14 +1,14 @@
 ---
-description: "Contexto TRAE-CLI - Herramienta de Análisis y Reparación Rust"
-agent: "TRAE-CLI"
+description: "Contexto Jarvix-CLI - Herramienta de Análisis y Reparación Rust"
+agent: "Jarvix-CLI"
 capabilities: ["code_analysis", "auto_repair", "build_optimization"]
 triggers: ["cargo_build", "code_change", "error_detection"]
 ---
 
-# TRAE-CLI - CONTEXTO DE CARPETA
+# Jarvix-CLI - CONTEXTO DE CARPETA
 
 ## DESCRIPCIÓN GENERAL
-Esta carpeta contiene TRAE-CLI, la herramienta de línea de comandos en Rust que se integra como subcomando de Cargo (`cargo trae`) para análisis de código, reparación automática y optimización de builds.
+Esta carpeta contiene Jarvix-CLI, la herramienta de línea de comandos en Rust que se integra como subcomando de Cargo (`cargo jar`) para análisis de código, reparación automática y optimización de builds.
 
 ## ARQUITECTURA PRINCIPAL
 
@@ -19,15 +19,15 @@ Esta carpeta contiene TRAE-CLI, la herramienta de línea de comandos en Rust que
 - **Build Optimizer**: Optimizaciones de compilación
 
 ### Funcionalidades Principales
-- `cargo trae analyze` - Análisis de calidad de código
-- `cargo trae repair` - Reparación automática de errores
-- `cargo trae build` - Builds optimizados con métricas
-- `cargo trae test` - Ejecución de tests con análisis
+- `cargo jar analyze` - Análisis de calidad de código
+- `cargo jar repair` - Reparación automática de errores
+- `cargo jar build` - Builds optimizados con métricas
+- `cargo jar test` - Ejecución de tests con análisis
 
 ## INTEGRACIÓN CON SISTEMA
 
 ### Conexión JARVIXSERVER
-- Reportes automáticos a `http://localhost:5050/trae/*`
+- Reportes automáticos a `http://localhost:5050/jar/*`
 - Métricas de build y análisis en tiempo real
 - Sincronización de estado con servidor central
 
@@ -113,9 +113,9 @@ repair = ["analysis"]
 - Eficiencia de reparaciones automáticas
 
 ### Reportes a JARVIXSERVER
-- Métricas de build en `/trae/api/metrics`
-- Logs de análisis en `/trae/api/logs`
-- Estado de reparaciones en `/trae/api/status`
+- Métricas de build en `/jar/api/metrics`
+- Logs de análisis en `/jar/api/logs`
+- Estado de reparaciones en `/jar/api/status`
 
 ## INTEGRACIÓN CON WORKERS
 
@@ -133,18 +133,18 @@ repair = ["analysis"]
 
 ### Instalación como Cargo Subcommand
 ```bash
-cargo install --git https://github.com/usuario/trae-cli.git
-# Esto instala `cargo-trae` en el PATH
+cargo install --git https://github.com/usuario/jarvix-cli.git
+# Esto instala `cargo-jarvix` en el PATH
 ```
 
 ### Configuración
-- Archivo de configuración en `~/.config/trae-cli/config.toml`
+- Archivo de configuración en `~/.config/jarvix-cli/config.toml`
 - Variables de entorno para JARVIXSERVER_URL
 - Flags de línea de comandos para opciones específicas
 
 ## CONTEXTO DE DESARROLLO
 
-TRAE-CLI es la herramienta principal para desarrollo Rust en el ecosistema CLI. Se integra profundamente con Cargo y proporciona automatización inteligente para mantener la calidad del código.
+Jarvix-CLI es la herramienta principal para desarrollo Rust en el ecosistema CLI. Se integra profundamente con Cargo y proporciona automatización inteligente para mantener la calidad del código.
 
 ### Puntos de Contacto
 - **JARVIXSERVER**: Backend central para métricas

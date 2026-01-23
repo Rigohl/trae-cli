@@ -1,11 +1,11 @@
-# 🚀 TRAE CLI - Comandos Cargo Optimizados
+# 🚀 Jarvix CLI - Comandos Cargo Optimizados
 
 ## Comandos Principales
 
 ### Compilación y Build
 ```bash
 # Build optimizado para producción
-cargo build --release --bin trae-server
+cargo build --release --bin jar-server
 
 # Build con todas las features
 cargo build --release --all-features
@@ -94,7 +94,7 @@ cargo clippy
 cargo test
 
 # Build final
-cargo build --release --bin trae-server
+cargo build --release --bin jar-server
 ```
 
 ### Release
@@ -103,7 +103,7 @@ cargo build --release --bin trae-server
 cargo fmt --check
 cargo clippy -- -D warnings
 cargo test
-cargo build --release --bin trae-server
+cargo build --release --bin jar-server
 
 # Crear release
 cargo build --release
@@ -115,11 +115,11 @@ cargo build --release
 cargo build
 
 # Ejecutar con backtrace
-RUST_BACKTRACE=1 cargo run --bin trae-server
+RUST_BACKTRACE=1 cargo run --bin jar-server
 
 # Profiling
 cargo build --release
-perf record ./target/release/trae-server
+perf record ./target/release/jar-server
 perf report
 ```
 
@@ -157,16 +157,16 @@ export JARVIX_URL=http://localhost:8080
 ### Tamaño del Binario
 ```bash
 # Ver tamaño del binario
-ls -lh target/release/trae-server
+ls -lh target/release/jar-server
 
 # Analizar tamaño por crate
-cargo bloat --release --bin trae-server
+cargo bloat --release --bin jar-server
 ```
 
 ### Tiempo de Compilación
 ```bash
 # Medir tiempo de compilación
-time cargo build --release --bin trae-server
+time cargo build --release --bin jar-server
 ```
 
 ### Cobertura de Código
@@ -175,7 +175,7 @@ time cargo build --release --bin trae-server
 cargo install cargo-tarpaulin
 
 # Generar reporte de cobertura
-cargo tarpaulin --bin trae-server
+cargo tarpaulin --bin jar-server
 ```
 
 ## Integración con CI/CD
@@ -194,7 +194,7 @@ jobs:
       - run: cargo fmt --check
       - run: cargo clippy -- -D warnings
       - run: cargo test
-      - run: cargo build --release --bin trae-server
+      - run: cargo build --release --bin jar-server
 ```
 
 ### Docker
@@ -202,12 +202,12 @@ jobs:
 FROM rust:1.70-slim as builder
 WORKDIR /app
 COPY . .
-RUN cargo build --release --bin trae-server
+RUN cargo build --release --bin jar-server
 
 FROM debian:bookworm-slim
-COPY --from=builder /app/target/release/trae-server /usr/local/bin/
+COPY --from=builder /app/target/release/jar-server /usr/local/bin/
 EXPOSE 3001
-CMD ["trae-server"]
+CMD ["jar-server"]
 ```
 
 ## Troubleshooting
@@ -222,15 +222,15 @@ cargo clean
 rm -rf target/
 
 # Rebuild desde cero
-cargo clean && cargo build --release --bin trae-server
+cargo clean && cargo build --release --bin jar-server
 ```
 
 ### Optimización
 ```bash
 # Build con optimizaciones agresivas
-RUSTFLAGS="-C target-cpu=native -C opt-level=3 -C lto=fat" cargo build --release --bin trae-server
+RUSTFLAGS="-C target-cpu=native -C opt-level=3 -C lto=fat" cargo build --release --bin jar-server
 
 # Reducir tamaño del binario
 cargo install cargo-strip
-cargo strip --bin trae-server
+cargo strip --bin jar-server
 ```

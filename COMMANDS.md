@@ -1,6 +1,6 @@
-# Comandos Reproducibles — trae-cli
+# Comandos Reproducibles — jarvix-cli
 
-Este archivo recoge los comandos usados para preparar, validar y empaquetar `cargo-trae`. No incluye commits ni push.
+Este archivo recoge los comandos usados para preparar, validar y empaquetar `jarvix-cli`. No incluye commits ni push.
 
 ## Entorno
 - Rust + Cargo instalados
@@ -28,13 +28,13 @@ cargo build
 cargo build --release
 ```
 
-## Ejecutar servidor HTTP (trae-server)
+## Ejecutar servidor HTTP (jar-server)
 ```bash
 # Ejecutar binario servidor (release)
-./target/release/trae-server
+./target/release/jar-server
 
 # O en Windows
-.\target\release\trae-server.exe
+.\target\release\jar-server.exe
 ```
 
 ## Tests
@@ -49,9 +49,9 @@ cargo test --all
 cargo install --path . --force
 
 # Verificar versión
-cargo-trae --version
+cargo-jarvix --version
 # o
-trae --version    # si apuntas al bin alias local
+jar --version    # si apuntas al bin alias local
 ```
 
 ## Validación de empaquetado (pre-publish)
@@ -88,6 +88,6 @@ cargo build --release
 ```
 
 ## Notas rápidas
-- Ya se eliminó la entrada duplicada de `[[bin]] name = "trae"` en `Cargo.toml`.
+- Ya se eliminó la entrada duplicada de `[[bin]] name = "jar"` en `Cargo.toml`.
 - Archivos añadidos: `LICENSE`, `CHANGELOG.md`, `.github/workflows/ci.yml`.
 - Para publicar, ejecuta los pasos de la sección "Publicar" desde tu máquina local.

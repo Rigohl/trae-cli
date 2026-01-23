@@ -8,51 +8,51 @@ triggers: ["build_success", "release_creation", "binary_deployment"]
 # BIN - CONTEXTO DE CARPETA
 
 ## DESCRIPCIÓN GENERAL
-Esta carpeta contiene los binarios compilados de TRAE-CLI, incluyendo ejecutables para múltiples plataformas y configuraciones de distribución.
+Esta carpeta contiene los binarios compilados de Jarvix-CLI, incluyendo ejecutables para múltiples plataformas y configuraciones de distribución.
 
 ## ARQUITECTURA DE BINARIOS
 
 ### Tipos de Binarios
 
 #### Binarios de Release
-- **trae**: Ejecutable principal de TRAE-CLI
-- **trae.exe**: Versión Windows
-- **trae-macos**: Versión macOS
-- **trae-linux**: Versión Linux
+- **jar**: Ejecutable principal de Jarvix-CLI
+- **jar.exe**: Versión Windows
+- **jar-macos**: Versión macOS
+- **jar-linux**: Versión Linux
 
 #### Binarios de Desarrollo
-- **trae-debug**: Versión con símbolos de debug
-- **trae-dev**: Versión de desarrollo con features adicionales
+- **jar-debug**: Versión con símbolos de debug
+- **jar-dev**: Versión de desarrollo con features adicionales
 
 #### Binarios de Testing
-- **trae-test**: Binario instrumentado para testing
-- **trae-bench**: Binario optimizado para benchmarks
+- **jar-test**: Binario instrumentado para testing
+- **jar-bench**: Binario optimizado para benchmarks
 
 ### Estructura de Distribución
 ```
 bin/
 ├── linux/
 │   ├── x86_64/
-│   │   ├── trae
-│   │   ├── trae.sha256
-│   │   └── trae.tar.gz
+│   │   ├── jar
+│   │   ├── jar.sha256
+│   │   └── jar.tar.gz
 │   └── aarch64/
-│       ├── trae
-│       └── trae.sha256
+│       ├── jar
+│       └── jar.sha256
 ├── macos/
 │   ├── x86_64/
-│   │   ├── trae
-│   │   └── trae.sha256
+│   │   ├── jar
+│   │   └── jar.sha256
 │   └── aarch64/
-│       ├── trae
-│       └── trae.sha256
+│       ├── jar
+│       └── jar.sha256
 ├── windows/
 │   ├── x86_64/
-│   │   ├── trae.exe
-│   │   └── trae.exe.sha256
+│   │   ├── jar.exe
+│   │   └── jar.exe.sha256
 │   └── aarch64/
-│       ├── trae.exe
-│       └── trae.exe.sha256
+│       ├── jar.exe
+│       └── jar.exe.sha256
 └── checksums.txt
 ```
 
@@ -92,7 +92,7 @@ TARGETS=(
     "x86_64-pc-windows-gnu"
 )
 
-echo "🚀 Building TRAE-CLI for multiple platforms..."
+echo "🚀 Building Jarvix-CLI for multiple platforms..."
 
 for target in "${TARGETS[@]}"; do
     echo "📦 Building for $target..."
@@ -103,15 +103,15 @@ for target in "${TARGETS[@]}"; do
     # Determine output directory and binary name
     case $target in
         *-linux-*)
-            bin_name="trae"
+            bin_name="jar"
             platform="linux"
             ;;
         *-darwin)
-            bin_name="trae"
+            bin_name="jar"
             platform="macos"
             ;;
         *-windows-*)
-            bin_name="trae.exe"
+            bin_name="jar.exe"
             platform="windows"
             ;;
     esac
@@ -164,10 +164,10 @@ RUSTFLAGS="-C target-cpu=native" cargo build --release --config 'profile.release
 ### Binary Size Optimization
 ```bash
 # Strip symbols para reducir tamaño
-strip target/release/trae
+strip target/release/jar
 
 # Comprimir con UPX
-upx --best --lzma target/release/trae
+upx --best --lzma target/release/jar
 ```
 
 ## DISTRIBUCIÓN Y PAQUETES
@@ -196,11 +196,11 @@ create_package() {
 }
 
 # Create packages for all platforms
-create_package "linux" "x86_64" "trae"
-create_package "linux" "aarch64" "trae"
-create_package "macos" "x86_64" "trae"
-create_package "macos" "aarch64" "trae"
-create_package "windows" "x86_64" "trae.exe"
+create_package "linux" "x86_64" "jar"
+create_package "linux" "aarch64" "jar"
+create_package "macos" "x86_64" "jar"
+create_package "macos" "aarch64" "jar"
+create_package "windows" "x86_64" "jar.exe"
 ```
 
 ### Checksums Globales
@@ -213,7 +213,7 @@ echo "🔐 Generating global checksums..."
 cd bin
 
 # Find all binaries and generate checksums
-find . -name "trae*" -type f -not -name "*.sha256" -not -name "*.tar.gz" | while read file; do
+find . -name "jar*" -type f -not -name "*.sha256" -not -name "*.tar.gz" | while read file; do
     sha256sum "$file" >> checksums.txt
 done
 
@@ -229,7 +229,7 @@ echo "✅ Checksums generated in bin/checksums.txt"
 
 set -e
 
-echo "🚀 Installing TRAE-CLI..."
+echo "🚀 Installing Jarvix-CLI..."
 
 # Detect platform and architecture
 detect_platform() {
@@ -254,20 +254,20 @@ detect_platform
 detect_arch
 
 # Download appropriate binary
-binary_url="https://github.com/organization/trae-cli/releases/latest/download/trae-${platform}-${arch}.tar.gz"
+binary_url="https://github.com/organization/jarvix-cli/releases/latest/download/jar-${platform}-${arch}.tar.gz"
 install_dir="/usr/local/bin"
 
-echo "📥 Downloading TRAE-CLI for $platform-$arch..."
-curl -L -o trae.tar.gz "$binary_url"
+echo "📥 Downloading Jarvix-CLI for $platform-$arch..."
+curl -L -o jar.tar.gz "$binary_url"
 
 # Extract and install
-tar -xzf trae.tar.gz
-sudo mv trae "$install_dir/"
+tar -xzf jar.tar.gz
+sudo mv jar "$install_dir/"
 
 # Verify installation
-if command -v trae &> /dev/null; then
-    echo "✅ TRAE-CLI installed successfully!"
-    trae --version
+if command -v jar &> /dev/null; then
+    echo "✅ Jarvix-CLI installed successfully!"
+    jar --version
 else
     echo "❌ Installation failed"
     exit 1
@@ -276,19 +276,19 @@ fi
 
 ### Homebrew Formula
 ```ruby
-# Formula/trae-cli.rb
-class TraeCli < Formula
-  desc "TRAE-CLI - Cargo extension for code analysis and repair"
-  homepage "https://github.com/organization/trae-cli"
-  url "https://github.com/organization/trae-cli/releases/download/v1.0.0/trae-macos-x86_64.tar.gz"
+# Formula/jarvix-cli.rb
+class JarvixCli < Formula
+  desc "Jarvix-CLI - Cargo extension for code analysis and repair"
+  homepage "https://github.com/organization/jarvix-cli"
+  url "https://github.com/organization/jarvix-cli/releases/download/v1.0.0/jar-macos-x86_64.tar.gz"
   sha256 "checksum_here"
 
   def install
-    bin.install "trae"
+    bin.install "jar"
   end
 
   test do
-    system "#{bin}/trae", "--version"
+    system "#{bin}/jar", "--version"
   end
 end
 ```
@@ -407,33 +407,33 @@ echo "🎉 All checksums verified!"
 ### Firma de Binarios
 ```bash
 # Firmar binarios con GPG
-gpg --detach-sign --armor bin/linux/x86_64/trae
+gpg --detach-sign --armor bin/linux/x86_64/jar
 
 # Verificar firma
-gpg --verify bin/linux/x86_64/trae.asc bin/linux/x86_64/trae
+gpg --verify bin/linux/x86_64/jar.asc bin/linux/x86_64/jar
 ```
 
-## INTEGRACIÓN CON TRAE-CLI
+## INTEGRACIÓN CON Jarvix-CLI
 
 ### Comandos de Distribución
 ```bash
 # Construir todos los binarios
-trae build --all-platforms
+jar build --all-platforms
 
 # Crear paquetes de distribución
-trae package --create
+jar package --create
 
 # Verificar integridad
-trae verify --checksums
+jar verify --checksums
 
 # Subir a releases
-trae release --upload
+jar release --upload
 ```
 
 ### Configuración de Build
 ```toml
 # Cargo.toml - Configuración de distribución
-[package.metadata.trae.distribution]
+[package.metadata.jarvix.distribution]
 platforms = ["linux", "macos", "windows"]
 architectures = ["x86_64", "aarch64"]
 compression = "gzip"
@@ -442,7 +442,7 @@ signing = true
 
 ## CONTEXTO DE DESARROLLO
 
-La carpeta bin/ contiene todos los artefactos de distribución de TRAE-CLI. Gestiona compilación multiplataforma, optimización de binarios y distribución segura.
+La carpeta bin/ contiene todos los artefactos de distribución de Jarvix-CLI. Gestiona compilación multiplataforma, optimización de binarios y distribución segura.
 
 ### Puntos de Contacto
 - **CI/CD**: Genera binarios automáticamente en releases

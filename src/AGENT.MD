@@ -1,5 +1,5 @@
 ---
-description: "Contexto src - Código Fuente Principal de TRAE-CLI"
+description: "Contexto src - Código Fuente Principal de Jarvix-CLI"
 agent: "Source_Code"
 capabilities: ["code_analysis", "command_execution", "error_repair", "build_optimization"]
 triggers: ["code_changes", "build_commands", "analysis_requests"]
@@ -8,7 +8,7 @@ triggers: ["code_changes", "build_commands", "analysis_requests"]
 # SRC - CONTEXTO DE CARPETA
 
 ## DESCRIPCIÓN GENERAL
-Esta carpeta contiene todo el código fuente de TRAE-CLI, organizado en módulos que implementan análisis de código, reparación automática, integración con Cargo y comandos CLI.
+Esta carpeta contiene todo el código fuente de Jarvix-CLI, organizado en módulos que implementan análisis de código, reparación automática, integración con Cargo y comandos CLI.
 
 ## ARQUITECTURA DEL CÓDIGO FUENTE
 
@@ -28,7 +28,7 @@ src/
 │   └── metrics.rs       # Métricas y reporting
 ├── cargo/
 │   ├── mod.rs           # Integración Cargo
-│   ├── integration.rs   # Subcomando cargo-trae
+│   ├── integration.rs   # Subcomando cargo-jar
 │   └── config.rs        # Configuración Cargo
 ├── utils/
 │   ├── mod.rs           # Utilidades
@@ -46,7 +46,7 @@ src/
 ```rust
 // src/main.rs
 use clap::Parser;
-use trae_cli::{cli::Cli, run};
+use jarvix_cli::{cli::Cli, run};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -67,8 +67,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
-#[command(name = "trae")]
-#[command(about = "TRAE-CLI - Cargo extension for code analysis and repair")]
+#[command(name = "jar")]
+#[command(about = "Jarvix-CLI - Cargo extension for code analysis and repair")]
 pub struct Cli {
     #[command(subcommand)]
     pub command: Commands,
@@ -306,7 +306,7 @@ impl CargoIntegration {
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct TraeConfig {
+pub struct JarvixConfig {
     pub analysis: AnalysisConfig,
     pub repair: RepairConfig,
     pub build: BuildConfig,
@@ -320,7 +320,7 @@ pub struct AnalysisConfig {
     pub performance_threshold: u32,
 }
 
-impl Default for TraeConfig {
+impl Default for JarvixConfig {
     fn default() -> Self {
         Self {
             analysis: AnalysisConfig {
@@ -525,7 +525,7 @@ pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-pub enum TraeError {
+pub enum JarvixError {
     #[error("Analysis failed: {0}")]
     AnalysisError(String),
 
@@ -545,7 +545,7 @@ pub enum TraeError {
 
 ## CONTEXTO DE DESARROLLO
 
-El código fuente de TRAE-CLI implementa análisis avanzado de código Rust, reparación automática de issues comunes, integración profunda con Cargo y una CLI completa. Sigue principios de "No Mocks" y "Zero Warnings".
+El código fuente de Jarvix-CLI implementa análisis avanzado de código Rust, reparación automática de issues comunes, integración profunda con Cargo y una CLI completa. Sigue principios de "No Mocks" y "Zero Warnings".
 
 ### Puntos de Contacto
 - **CLI Layer**: Maneja argumentos y ejecuta comandos

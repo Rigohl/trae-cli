@@ -1,14 +1,14 @@
-# TRAE CLI — Advanced Rust Development Toolkit
+# Jarvix CLI — Advanced Rust Development Toolkit
 
-[![CI](https://github.com/Rigohl/trae-cli/workflows/CI/badge.svg)](https://github.com/Rigohl/trae-cli/actions)
-[![Version](https://img.shields.io/badge/version-0.2.0-blue.svg)](https://github.com/Rigohl/trae-cli/releases)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/Rigohl/trae-cli/blob/master/LICENSE)
+[![CI](https://github.com/Rigohl/jarvix-cli/workflows/CI/badge.svg)](https://github.com/Rigohl/jarvix-cli/actions)
+[![Version](https://img.shields.io/badge/version-0.2.0-blue.svg)](https://github.com/Rigohl/jarvix-cli/releases)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/Rigohl/jarvix-cli/blob/master/LICENSE)
 
-TRAE CLI (Total Rust Analysis Engine) is a command-line tool for analyzing, repairing and optimizing Rust projects with JARVIXSERVER integration.
+Jarvix CLI (Jarvix Analysis Runtime) is a command-line tool for analyzing, repairing and optimizing Rust projects with JARVIXSERVER integration.
 
 ## ✨ Features
 
-- 🚀 **Fast Analysis**: File-system aware analysis with intelligent caching (.trae/cache)
+- 🚀 **Fast Analysis**: File-system aware analysis with intelligent caching (.jarvix/cache)
 - 🔒 **Security First**: Detects unsafe blocks, unwrap calls, and panic macros
 - 📊 **Quality Metrics**: Six Sigma analysis with DPMO calculations
 - 🔧 **Auto Repair**: Automatic code improvements and optimizations
@@ -23,13 +23,13 @@ TRAE CLI (Total Rust Analysis Engine) is a command-line tool for analyzing, repa
 cargo install --path .
 
 # Run analysis (programmatic API)
-cargo run --bin trae -- repair
+cargo run --bin jar -- repair
 
 # Check code quality
-cargo run --bin trae -- clippy --strict
+cargo run --bin jar -- clippy --strict
 
 # View available commands
-cargo run --bin trae -- --help
+cargo run --bin jar -- --help
 ```
 
 ## 📊 Current Analysis Results
@@ -61,7 +61,7 @@ cargo fmt
 
 ### Project Structure
 ```
-trae-cli/
+jarvix-cli/
 ├── src/
 │   ├── main.rs              # CLI entry point
 │   ├── core/
@@ -110,7 +110,7 @@ strip = true
 
 ## 🔍 Code Quality Standards
 
-TRAE CLI follows strict Rust development practices:
+Jarvix CLI follows strict Rust development practices:
 
 - ✅ **No Mocks**: Real code analysis only (constitution requirement)
 - ✅ **Zero Warnings**: CI enforces clippy -D warnings
@@ -121,12 +121,12 @@ TRAE CLI follows strict Rust development practices:
 
 ## 🤝 JARVIXSERVER Integration
 
-TRAE CLI integrates seamlessly with JARVIXSERVER for enhanced capabilities:
+Jarvix CLI integrates seamlessly with JARVIXSERVER for enhanced capabilities:
 
 ### Architecture
 ```
 ┌─────────────────┐    ┌─────────────────┐
-│   JARVIXSERVER  │    │    TRAE CLI     │
+│   JARVIXSERVER  │    │   Jarvix CLI    │
 │    (Port 8080)  │◄──►│   (Port 3001)   │
 │                 │    │                 │
 │ • API Gateway   │    │ • Code Analysis │
@@ -136,10 +136,10 @@ TRAE CLI integrates seamlessly with JARVIXSERVER for enhanced capabilities:
 ```
 
 ### Proxy Endpoints
-- `GET /trae/health` - Health check
-- `POST /trae/api/analyze` - Code analysis
-- `POST /trae/api/repair` - Auto repair
-- `GET /trae/api/metrics` - System metrics
+- `GET /jar/health` - Health check
+- `POST /jar/api/analyze` - Code analysis
+- `POST /jar/api/repair` - Auto repair
+- `GET /jar/api/metrics` - System metrics
 
 ### MCP Tools Integration
 - **Nuclear Crawler**: Advanced code analysis
@@ -178,8 +178,8 @@ cargo --version
 # Check JARVIXSERVER status
 curl http://localhost:8080/health
 
-# Test TRAE CLI integration
-curl http://localhost:8080/trae/health
+# Test Jarvix CLI integration
+curl http://localhost:8080/jar/health
 ```
 
 ## 📄 License

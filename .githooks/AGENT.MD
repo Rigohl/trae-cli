@@ -8,7 +8,7 @@ triggers: ["git_commit", "git_push", "code_changes"]
 # .GITHOOKS - CONTEXTO DE CARPETA
 
 ## DESCRIPCIÓN GENERAL
-Esta carpeta contiene hooks de Git personalizados para TRAE-CLI. Implementa validación automática de código, testing y cumplimiento de estándares antes de commits y pushes.
+Esta carpeta contiene hooks de Git personalizados para Jarvix-CLI. Implementa validación automática de código, testing y cumplimiento de estándares antes de commits y pushes.
 
 ## ARQUITECTURA DE GIT HOOKS
 
@@ -51,7 +51,7 @@ Esta carpeta contiene hooks de Git personalizados para TRAE-CLI. Implementa vali
 
 set -e  # Exit on any error
 
-echo "🚀 Running TRAE-CLI pre-commit hooks..."
+echo "🚀 Running Jarvix-CLI pre-commit hooks..."
 
 # 1. Check if cargo is available
 if ! command -v cargo &> /dev/null; then
@@ -115,7 +115,7 @@ cargo clippy -- \
 
 set -e
 
-echo "🚀 Running TRAE-CLI pre-push validation..."
+echo "🚀 Running Jarvix-CLI pre-push validation..."
 
 # 1. Run full test suite
 echo "🧪 Running full test suite..."
@@ -236,7 +236,7 @@ echo "✅ Post-commit actions completed!"
 #!/bin/bash
 # scripts/install-hooks.sh
 
-echo "🔧 Installing TRAE-CLI git hooks..."
+echo "🔧 Installing Jarvix-CLI git hooks..."
 
 # Set git hooks path
 git config core.hooksPath .githooks
@@ -259,25 +259,25 @@ echo "💡 Hooks will run automatically on commit/push."
     allow_warnings = false
 ```
 
-## INTEGRACIÓN CON TRAE-CLI
+## INTEGRACIÓN CON Jarvix-CLI
 
-### Comandos TRAE-CLI
+### Comandos Jarvix-CLI
 ```bash
 # Verificar hooks
-trae hooks --status
+jar hooks --status
 
 # Instalar hooks
-trae hooks --install
+jar hooks --install
 
 # Ejecutar validaciones manualmente
-trae validate --pre-commit
-trae validate --pre-push
+jar validate --pre-commit
+jar validate --pre-push
 ```
 
-### Configuración TRAE-CLI
+### Configuración Jarvix-CLI
 ```toml
 # Cargo.toml - Configuración de hooks
-[package.metadata.trae.hooks]
+[package.metadata.jarvix.hooks]
 pre_commit = ["cargo check", "cargo clippy", "cargo fmt --check", "cargo test"]
 pre_push = ["cargo test --all-targets", "cargo audit", "cargo doc"]
 commit_msg = ["conventional-commits"]
@@ -337,12 +337,12 @@ git commit -m "test"
 
 ## CONTEXTO DE DESARROLLO
 
-Los git hooks garantizan la calidad del código en TRAE-CLI. Implementan el principio "Zero Warnings" y "No Mocks" al nivel de control de versiones, previniendo commits problemáticos.
+Los git hooks garantizan la calidad del código en Jarvix-CLI. Implementan el principio "Zero Warnings" y "No Mocks" al nivel de control de versiones, previniendo commits problemáticos.
 
 ### Puntos de Contacto
 - **Git Workflow**: Se ejecutan automáticamente en operaciones git
 - **CI/CD**: Complementan las validaciones de GitHub Actions
-- **TRAE-CLI**: Integran con comandos de análisis y validación
+- **Jarvix-CLI**: Integran con comandos de análisis y validación
 
 ### Mejores Prácticas
 - Mantener hooks ligeros para no ralentizar desarrollo

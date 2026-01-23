@@ -8,7 +8,7 @@ triggers: ["pull_request", "push", "issue_opened", "release_created"]
 # .GITHUB - CONTEXTO DE CARPETA
 
 ## DESCRIPCIÓN GENERAL
-Esta carpeta contiene toda la automatización de GitHub para TRAE-CLI, incluyendo workflows de CI/CD, plantillas de issues/PRs, y configuraciones de dependabot.
+Esta carpeta contiene toda la automatización de GitHub para Jarvix-CLI, incluyendo workflows de CI/CD, plantillas de issues/PRs, y configuraciones de dependabot.
 
 ## ARQUITECTURA DE GITHUB AUTOMATION
 
@@ -273,7 +273,7 @@ If applicable, add screenshots to help explain your problem.
 **Environment:**
  - OS: [e.g. Ubuntu 20.04]
  - Rust version: [e.g. 1.70.0]
- - TRAE-CLI version: [e.g. 1.0.0]
+ - Jarvix-CLI version: [e.g. 1.0.0]
 
 **Additional context**
 Add any other context about the problem here.
@@ -359,27 +359,27 @@ docs/ @docs-team
 .github/ @devops-team
 ```
 
-## INTEGRACIÓN CON TRAE-CLI
+## INTEGRACIÓN CON Jarvix-CLI
 
-### Comandos TRAE-CLI para GitHub
+### Comandos Jarvix-CLI para GitHub
 ```bash
 # Validar configuración de GitHub
-trae github --validate
+jar github --validate
 
 # Ejecutar workflows localmente
-trae ci --simulate
+jar ci --simulate
 
 # Generar templates
-trae github --generate-templates
+jar github --generate-templates
 
 # Verificar dependencias
-trae deps --check-updates
+jar deps --check-updates
 ```
 
-### Configuración TRAE-CLI
+### Configuración Jarvix-CLI
 ```toml
 # Cargo.toml - Configuración GitHub
-[package.metadata.trae.github]
+[package.metadata.jarvix.github]
 workflows = ["ci", "release", "security"]
 templates = ["bug_report", "feature_request", "pr"]
 codeowners = true
@@ -453,7 +453,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - run: |
-        echo "Debugging TRAE-CLI CI"
+        echo "Debugging Jarvix-CLI CI"
         rustc --version
         cargo --version
         echo "Environment variables:"
@@ -462,13 +462,13 @@ jobs:
 
 ## CONTEXTO DE DESARROLLO
 
-La carpeta .github automatiza todo el ciclo de desarrollo de TRAE-CLI, desde CI/CD hasta gestión de releases. Garantiza calidad de código, seguridad y distribución automática.
+La carpeta .github automatiza todo el ciclo de desarrollo de Jarvix-CLI, desde CI/CD hasta gestión de releases. Garantiza calidad de código, seguridad y distribución automática.
 
 ### Puntos de Contacto
 - **CI/CD Pipeline**: Workflows ejecutan automáticamente en pushes/PRs
 - **Release Management**: Tags generan releases automáticamente
 - **Security**: Escaneos semanales y en dependencias
-- **TRAE-CLI**: Comandos integrados para gestión de GitHub
+- **Jarvix-CLI**: Comandos integrados para gestión de GitHub
 
 ### Mejores Prácticas
 - Mantener workflows modulares y reutilizables

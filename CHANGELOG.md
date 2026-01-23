@@ -4,8 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 - Improved README and contributor docs.
-- Added persistent analysis snapshot to `.trae/metrics`.
-- Added `balanced` profile for `trae analyze`.
+- Added persistent analysis snapshot to `.jarvix/metrics`.
+- Added `balanced` profile for `jar analyze`.
 
 ## [0.2.0] - 2025-12-15
 - Enhanced security analysis: Added detection for unsafe blocks, unwrap/expect calls, panic macros
@@ -22,6 +22,6 @@ All notable changes to this project will be documented in this file.
 
 - Comandos ejecutados: `cargo fmt`; `cargo clippy --fix --allow-dirty --allow-no-vcs`; `cargo clippy -- -D warnings`; `cargo check`; `cargo install --path . --force`; `cargo package --allow-dirty`; `go build ./...`.
 - Archivos creados: `LICENSE`, `CHANGELOG.md`, `.github/workflows/ci.yml`.
-- Archivos modificados: `src/commands/doc.rs`, `src/commands/cargo.rs`, `src/commands/paths.rs`, `src/cli.rs`, `Cargo.toml` (package name actualizado a `cargo-trae`, entrada `[[bin]] name = "trae"` eliminada).
+- Archivos modificados: `src/commands/doc.rs`, `src/commands/cargo.rs`, `src/commands/paths.rs`, `src/cli.rs`, `Cargo.toml` (package name actualizado a `cargo-jarvix`, entrada `[[bin]] name = "jar"` eliminada).
 - Backups eliminados: `internal/cargo/detector.go.backup`, `internal/auth/middleware.go.backup`.
 - Empaquetado local: `cargo package --allow-dirty` — paquete verificado (49 archivos empaquetados).

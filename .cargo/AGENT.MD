@@ -8,7 +8,7 @@ triggers: ["dependency_update", "build_optimization", "cache_management"]
 # .CARGO - CONTEXTO DE CARPETA
 
 ## DESCRIPCIÓN GENERAL
-Esta carpeta contiene la configuración y caché de Cargo, el gestor de paquetes de Rust. Gestiona dependencias, compilación y optimización del proyecto TRAE-CLI.
+Esta carpeta contiene la configuración y caché de Cargo, el gestor de paquetes de Rust. Gestiona dependencias, compilación y optimización del proyecto Jarvix-CLI.
 
 ## ARQUITECTURA CARGO
 
@@ -28,7 +28,7 @@ Esta carpeta contiene la configuración y caché de Cargo, el gestor de paquetes
 
 ### Config.toml Principal
 ```toml
-# .cargo/config.toml - Configuración TRAE-CLI
+# .cargo/config.toml - Configuración Jarvix-CLI
 [build]
 # Optimizaciones de compilación
 rustflags = ["-C", "target-cpu=native", "-C", "opt-level=3"]
@@ -250,24 +250,24 @@ cargo cache --autoclean-expensive
 du -sh .cargo/
 ```
 
-## INTEGRACIÓN CON TRAE-CLI
+## INTEGRACIÓN CON Jarvix-CLI
 
-### Comandos TRAE-CLI
+### Comandos Jarvix-CLI
 ```bash
 # Análisis de dependencias
-trae analyze --dependencies
+jar analyze --dependencies
 
 # Build optimizado
-trae build --release --lto
+jar build --release --lto
 
 # Verificar cache
-trae cache --status
+jar cache --status
 ```
 
-### Configuración TRAE-CLI
+### Configuración Jarvix-CLI
 ```toml
-# Cargo.toml - Metadata TRAE-CLI
-[package.metadata.trae]
+# Cargo.toml - Metadata Jarvix-CLI
+[package.metadata.jarvix]
 cache_strategy = "aggressive"
 lto_enabled = true
 registry_mirror = "tuna"
@@ -275,7 +275,7 @@ registry_mirror = "tuna"
 
 ## CONTEXTO DE DESARROLLO
 
-La carpeta .cargo es crítica para el desarrollo eficiente de TRAE-CLI. Gestiona todas las dependencias, optimizaciones de build y caching para mantener builds rápidos y confiables.
+La carpeta .cargo es crítica para el desarrollo eficiente de Jarvix-CLI. Gestiona todas las dependencias, optimizaciones de build y caching para mantener builds rápidos y confiables.
 
 ### Puntos de Contacto
 - **Cargo.toml**: Define dependencias y configuración del proyecto
