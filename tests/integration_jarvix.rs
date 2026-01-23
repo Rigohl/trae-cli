@@ -1,11 +1,11 @@
 use std::sync::{Arc, Mutex};
 
-use serde_json::Value;
-use std::thread;
-use tiny_http::{Response, Server};
 use jarvix_cli::commands::analyze::AnalyzeCommand;
 use jarvix_cli::jarvix::client::JarvixClient;
 use jarvix_cli::metrics::collector::MetricsCollector;
+use serde_json::Value;
+use std::thread;
+use tiny_http::{Response, Server};
 
 #[tokio::test]
 async fn jarvix_client_reports_scan_metrics_to_local_server() {
