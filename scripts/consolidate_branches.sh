@@ -20,14 +20,20 @@ echo "Current branch: $CURRENT_BRANCH"
 
 # Switch to master branch
 echo "Switching to master branch..."
-git checkout master || git checkout main || {
+if git checkout master 2>/dev/null; then
+    MAIN_BRANCH="master"
+elif git checkout main 2>/dev/null; then
+    MAIN_BRANCH="main"
+else
     echo "Error: Could not checkout master or main branch"
     exit 1
-}
+fi
+
+echo "Using branch: $MAIN_BRANCH"
 
 # Update master
-echo "Pulling latest changes from master..."
-git pull origin master || git pull origin main || true
+echo "Pulling latest changes from $MAIN_BRANCH..."
+git pull origin "$MAIN_BRANCH" || true
 
 # Get list of all branches except master/main
 echo ""
@@ -51,7 +57,7 @@ for BRANCH in $BRANCHES; do
     echo "Processing branch: $BRANCH"
     
     # Try to merge the branch
-    if git merge --no-ff "origin/$BRANCH" -m "Merge branch '$BRANCH' into master"; then
+    if git merge --no-ff "origin/$BRANCH" -m "Merge branch '$BRANCH' into $MAIN_BRANCH"; then
         echo "  ✓ Successfully merged $BRANCH"
     else
         echo "  ✗ Conflict merging $BRANCH - requires manual resolution"
@@ -63,8 +69,8 @@ for BRANCH in $BRANCHES; do
 done
 
 echo ""
-echo "Merging complete. Pushing to master..."
-git push origin master || git push origin main
+echo "Merging complete. Pushing to $MAIN_BRANCH..."
+git push origin "$MAIN_BRANCH"
 
 echo ""
 echo "Deleting merged branches..."
@@ -77,7 +83,7 @@ echo ""
 echo "Branch consolidation complete!"
 echo ""
 echo "Summary:"
-echo "- All branches have been merged into master"
+echo "- All branches have been merged into $MAIN_BRANCH"
 echo "- Remote branches have been deleted"
 echo ""
 echo "Note: You may need to manually delete local branches with:"
