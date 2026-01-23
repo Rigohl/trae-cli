@@ -5,7 +5,7 @@
 ### Compilación y Build
 ```bash
 # Build optimizado para producción
-cargo build --release --bin jar-server
+cargo build --release --bin jarcli-server
 
 # Build con todas las features
 cargo build --release --all-features
@@ -94,7 +94,7 @@ cargo clippy
 cargo test
 
 # Build final
-cargo build --release --bin jar-server
+cargo build --release --bin jarcli-server
 ```
 
 ### Release
@@ -103,7 +103,7 @@ cargo build --release --bin jar-server
 cargo fmt --check
 cargo clippy -- -D warnings
 cargo test
-cargo build --release --bin jar-server
+cargo build --release --bin jarcli-server
 
 # Crear release
 cargo build --release
@@ -115,11 +115,11 @@ cargo build --release
 cargo build
 
 # Ejecutar con backtrace
-RUST_BACKTRACE=1 cargo run --bin jar-server
+RUST_BACKTRACE=1 cargo run --bin jarcli-server
 
 # Profiling
 cargo build --release
-perf record ./target/release/jar-server
+perf record ./target/release/jarcli-server
 perf report
 ```
 
@@ -157,16 +157,16 @@ export JARVIX_URL=http://localhost:8080
 ### Tamaño del Binario
 ```bash
 # Ver tamaño del binario
-ls -lh target/release/jar-server
+ls -lh target/release/jarcli-server
 
 # Analizar tamaño por crate
-cargo bloat --release --bin jar-server
+cargo bloat --release --bin jarcli-server
 ```
 
 ### Tiempo de Compilación
 ```bash
 # Medir tiempo de compilación
-time cargo build --release --bin jar-server
+time cargo build --release --bin jarcli-server
 ```
 
 ### Cobertura de Código
@@ -175,7 +175,7 @@ time cargo build --release --bin jar-server
 cargo install cargo-tarpaulin
 
 # Generar reporte de cobertura
-cargo tarpaulin --bin jar-server
+cargo tarpaulin --bin jarcli-server
 ```
 
 ## Integración con CI/CD
@@ -194,7 +194,7 @@ jobs:
       - run: cargo fmt --check
       - run: cargo clippy -- -D warnings
       - run: cargo test
-      - run: cargo build --release --bin jar-server
+      - run: cargo build --release --bin jarcli-server
 ```
 
 ### Docker
@@ -202,12 +202,12 @@ jobs:
 FROM rust:1.70-slim as builder
 WORKDIR /app
 COPY . .
-RUN cargo build --release --bin jar-server
+RUN cargo build --release --bin jarcli-server
 
 FROM debian:bookworm-slim
-COPY --from=builder /app/target/release/jar-server /usr/local/bin/
+COPY --from=builder /app/target/release/jarcli-server /usr/local/bin/
 EXPOSE 3001
-CMD ["jar-server"]
+CMD ["jarcli-server"]
 ```
 
 ## Troubleshooting
@@ -222,15 +222,15 @@ cargo clean
 rm -rf target/
 
 # Rebuild desde cero
-cargo clean && cargo build --release --bin jar-server
+cargo clean && cargo build --release --bin jarcli-server
 ```
 
 ### Optimización
 ```bash
 # Build con optimizaciones agresivas
-RUSTFLAGS="-C target-cpu=native -C opt-level=3 -C lto=fat" cargo build --release --bin jar-server
+RUSTFLAGS="-C target-cpu=native -C opt-level=3 -C lto=fat" cargo build --release --bin jarcli-server
 
 # Reducir tamaño del binario
 cargo install cargo-strip
-cargo strip --bin jar-server
+cargo strip --bin jarcli-server
 ```

@@ -12,8 +12,8 @@ use tokio::process::Command;
 #[derive(Args, Debug)]
 #[doc = "Struct documentation added by AI refactor"]
 pub struct DaemonCommand {
-    #[doc = " Ruta del binario a ejecutar (por defecto usa jar-server en PATH)"]
-    #[arg(long, default_value = "jar-server")]
+    #[doc = " Ruta del binario a ejecutar (por defecto usa jarcli-server en PATH)"]
+    #[arg(long, default_value = "jarcli-server")]
     pub binary: String,
     #[doc = " Puerto para el server (exportado como PORT)"]
     #[arg(long, default_value_t = 3001)]

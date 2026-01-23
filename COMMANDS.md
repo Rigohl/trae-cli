@@ -51,7 +51,7 @@ cargo install --path . --force
 # Verificar versión
 cargo-jarvix --version
 # o
-jar --version    # si apuntas al bin alias local
+jarcli --version    # si apuntas al bin alias local
 ```
 
 ## Validación de empaquetado (pre-publish)
@@ -88,6 +88,6 @@ cargo build --release
 ```
 
 ## Notas rápidas
-- Ya se eliminó la entrada duplicada de `[[bin]] name = "jar"` en `Cargo.toml`.
+- Ya se eliminó la entrada duplicada de `[[bin]] name = "jarcli"` en `Cargo.toml`.
 - Archivos añadidos: `LICENSE`, `CHANGELOG.md`, `.github/workflows/ci.yml`.
 - Para publicar, ejecuta los pasos de la sección "Publicar" desde tu máquina local.

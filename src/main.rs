@@ -695,7 +695,7 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
 
             if let Ok(output) = fmt_status {
                 if !output.status.success() {
-                    spinner.finish_with_message("❌ Formato incorrecto (ejecuta 'jar fmt')");
+                    spinner.finish_with_message("❌ Formato incorrecto (ejecuta 'jarcli fmt')");
                 } else {
                     spinner.finish_with_message("✓ Formato verificado");
                 }
@@ -1375,7 +1375,7 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
             {
                 Ok(status) if !status.success() => {
                     pb.finish_with_message("❌ Formato incorrecto");
-                    eprintln!("{} Ejecuta 'jar fmt' para corregir", "!".red());
+                    eprintln!("{} Ejecuta 'jarcli fmt' para corregir", "!".red());
                     let output = Output {
                         status: std::process::ExitStatus::default(),
                         stdout: b"Formato incorrecto".to_vec(),
