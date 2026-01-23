@@ -292,7 +292,10 @@ fn analyze_single_file(path: &Path) -> FileAnalysisResult {
         if function_count > 20 {
             result.issues.push(AnalysisIssue {
                 category: "Complexity".to_string(),
-                description: format!("Archivo con {} funciones - considerar dividir", function_count),
+                description: format!(
+                    "Archivo con {} funciones - considerar dividir",
+                    function_count
+                ),
                 severity: IssueSeverity::Warning,
                 file: Some(path.to_string_lossy().to_string()),
                 line: None,

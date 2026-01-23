@@ -251,7 +251,10 @@ impl CargoCommand {
                         .submit_parallel_analysis_job("cargo_build", job_data)
                         .await
                     {
-                        println!("⚡ Offloading cargo {} to JarvixServer (job {})", command, job_id);
+                        println!(
+                            "⚡ Offloading cargo {} to JarvixServer (job {})",
+                            command, job_id
+                        );
                         // Poll for result with timeout
                         let start = std::time::Instant::now();
                         let timeout = std::time::Duration::from_secs(120);
@@ -261,30 +264,39 @@ impl CargoCommand {
                                 break;
                             }
                             if let Ok(Some(res)) = client.get_job_result(&job_id).await {
-                                        // If remote job returns logs, stream them
-                                        if let Some(logs) = res.get("logs") {
-                                            println!("📤 Remote job logs:\n{}", logs);
-                                        }
-                                        // If remote job provides an artifact URL, try to download it
-                                        if let Some(artifact) = res.get("artifact_url").and_then(|v| v.as_str()) {
-                                            println!("📥 Downloading artifact from {}", artifact);
-                                            match reqwest::get(artifact).await {
-                                                Ok(resp) => {
-                                                    if resp.status().is_success() {
-                                                        let bytes = resp.bytes().await.unwrap_or_default();
-                                                        let path = std::path::Path::new("target").join("remote_artifact.tar.gz");
-                                                        let _ = std::fs::create_dir_all("target");
-                                                        std::fs::write(&path, &bytes).ok();
-                                                        println!("📦 Artifact saved to {}", path.to_string_lossy());
-                                                    } else {
-                                                        eprintln!("⚠️ Failed to download artifact: {}", resp.status());
-                                                    }
-                                                }
-                                                Err(e) => eprintln!("⚠️ Error downloading artifact: {}", e),
+                                // If remote job returns logs, stream them
+                                if let Some(logs) = res.get("logs") {
+                                    println!("📤 Remote job logs:\n{}", logs);
+                                }
+                                // If remote job provides an artifact URL, try to download it
+                                if let Some(artifact) =
+                                    res.get("artifact_url").and_then(|v| v.as_str())
+                                {
+                                    println!("📥 Downloading artifact from {}", artifact);
+                                    match reqwest::get(artifact).await {
+                                        Ok(resp) => {
+                                            if resp.status().is_success() {
+                                                let bytes = resp.bytes().await.unwrap_or_default();
+                                                let path = std::path::Path::new("target")
+                                                    .join("remote_artifact.tar.gz");
+                                                let _ = std::fs::create_dir_all("target");
+                                                std::fs::write(&path, &bytes).ok();
+                                                println!(
+                                                    "📦 Artifact saved to {}",
+                                                    path.to_string_lossy()
+                                                );
+                                            } else {
+                                                eprintln!(
+                                                    "⚠️ Failed to download artifact: {}",
+                                                    resp.status()
+                                                );
                                             }
                                         }
-                                        println!("📤 Remote job result: {}", res);
-                                        return Ok(());
+                                        Err(e) => eprintln!("⚠️ Error downloading artifact: {}", e),
+                                    }
+                                }
+                                println!("📤 Remote job result: {}", res);
+                                return Ok(());
                             }
                             tokio::time::sleep(std::time::Duration::from_secs(2)).await;
                         }
@@ -302,7 +314,8 @@ impl CargoCommand {
             eprintln!("❌ 'cargo' no se encuentra en PATH ni en CARGO_HOME. Instálalo: https://www.rust-lang.org/tools/install");
             return Err(anyhow::anyhow!("cargo not found"));
         }
-        let mut metrics = crate::metrics::collector::MetricsCollector::new(format!("cargo_{}", command));
+        let mut metrics =
+            crate::metrics::collector::MetricsCollector::new(format!("cargo_{}", command));
         let start_time = Instant::now();
         let executor = CargoExecutor::new().with_working_dir(".");
         let mut arg_strings: Vec<String> = Vec::new();
@@ -319,24 +332,42 @@ impl CargoCommand {
             match executor.execute_interactive(&arg_refs).await {
                 Ok(()) => {
                     let duration = start_time.elapsed();
-                    metrics.add_custom_metric("execution_time_ms".to_string(), duration.as_millis() as u64);
+                    metrics.add_custom_metric(
+                        "execution_time_ms".to_string(),
+                        duration.as_millis() as u64,
+                    );
                     metrics.add_custom_metric("success".to_string(), 1);
                     metrics.add_custom_metric("interactive_mode".to_string(), 1);
                     if !no_jarvix {
                         if let Ok(Some(client)) = crate::jarvix::client::JarvixClient::new() {
                             if let Err(e) = client.report_cargo_metrics(metrics.clone()).await {
-                                eprintln!("⚠️ No se pudo reportar métricas cargo a JARVIXSERVER: {e}");
+                                eprintln!(
+                                    "⚠️ No se pudo reportar métricas cargo a JARVIXSERVER: {e}"
+                                );
                             }
                         }
                     }
-                    println!("{} Comando cargo {} (interactivo) completado en {:.2}s", "✅".green(), command, duration.as_secs_f64());
+                    println!(
+                        "{} Comando cargo {} (interactivo) completado en {:.2}s",
+                        "✅".green(),
+                        command,
+                        duration.as_secs_f64()
+                    );
                     Ok(())
                 }
                 Err(e) => {
                     let duration = start_time.elapsed();
-                    metrics.add_custom_metric("execution_time_ms".to_string(), duration.as_millis() as u64);
+                    metrics.add_custom_metric(
+                        "execution_time_ms".to_string(),
+                        duration.as_millis() as u64,
+                    );
                     metrics.add_custom_metric("success".to_string(), 0);
-                    println!("{} Error ejecutando cargo {} (interactivo): {}", "❌".red(), command, e);
+                    println!(
+                        "{} Error ejecutando cargo {} (interactivo): {}",
+                        "❌".red(),
+                        command,
+                        e
+                    );
                     Err(e)
                 }
             }
@@ -377,23 +408,36 @@ impl CargoCommand {
                 Ok(_) => {
                     progress_bar.finish_with_message("Cargo completado");
                     let duration = start_time.elapsed();
-                    metrics.add_custom_metric("execution_time_ms".to_string(), duration.as_millis() as u64);
+                    metrics.add_custom_metric(
+                        "execution_time_ms".to_string(),
+                        duration.as_millis() as u64,
+                    );
                     metrics.add_custom_metric("success".to_string(), 1);
                     metrics.add_custom_metric("streaming_mode".to_string(), 1);
                     if !no_jarvix {
                         if let Ok(Some(client)) = crate::jarvix::client::JarvixClient::new() {
                             if let Err(e) = client.report_cargo_metrics(metrics.clone()).await {
-                                eprintln!("⚠️ No se pudo reportar métricas cargo a JARVIXSERVER: {e}");
+                                eprintln!(
+                                    "⚠️ No se pudo reportar métricas cargo a JARVIXSERVER: {e}"
+                                );
                             }
                         }
                     }
-                    println!("{} Comando cargo {} completado en {:.2}s", "✅".green(), command, duration.as_secs_f64());
+                    println!(
+                        "{} Comando cargo {} completado en {:.2}s",
+                        "✅".green(),
+                        command,
+                        duration.as_secs_f64()
+                    );
                     Ok(())
                 }
                 Err(e) => {
                     progress_bar.abandon_with_message("Cargo falló");
                     let duration = start_time.elapsed();
-                    metrics.add_custom_metric("execution_time_ms".to_string(), duration.as_millis() as u64);
+                    metrics.add_custom_metric(
+                        "execution_time_ms".to_string(),
+                        duration.as_millis() as u64,
+                    );
                     metrics.add_custom_metric("success".to_string(), 0);
                     println!("{} Error ejecutando cargo {}: {}", "❌".red(), command, e);
                     Err(e)

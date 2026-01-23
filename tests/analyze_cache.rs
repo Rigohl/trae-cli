@@ -27,7 +27,10 @@ async fn analyze_cache_and_force_refresh_and_profile() {
 
     let cache_dir = PathBuf::from(".trae").join("cache");
     assert!(cache_dir.exists(), "cache dir not created");
-    let entries: Vec<_> = fs::read_dir(&cache_dir).expect("read cache dir").filter_map(|e| e.ok()).collect();
+    let entries: Vec<_> = fs::read_dir(&cache_dir)
+        .expect("read cache dir")
+        .filter_map(|e| e.ok())
+        .collect();
     assert!(!entries.is_empty(), "no cache files created");
 
     // pick the first cache file and get modified time
@@ -41,16 +44,35 @@ async fn analyze_cache_and_force_refresh_and_profile() {
     let res2 = AnalyzeCommand::run_simple(false, false, false, true, None, true, None).await;
     assert!(res2.is_ok());
     // there should be at least one cache file now
-    let entries_after: Vec<_> = fs::read_dir(&cache_dir).expect("read cache dir after").filter_map(|e| e.ok()).collect();
-    assert!(!entries_after.is_empty(), "cache not created after force_refresh");
+    let entries_after: Vec<_> = fs::read_dir(&cache_dir)
+        .expect("read cache dir after")
+        .filter_map(|e| e.ok())
+        .collect();
+    assert!(
+        !entries_after.is_empty(),
+        "cache not created after force_refresh"
+    );
 
     // Test profile output writing
     let out_path = "analysis_out.json";
-    let res3 = AnalyzeCommand::run_simple(false, false, false, true, Some("fast".to_string()), true, Some(out_path.to_string())).await;
+    let res3 = AnalyzeCommand::run_simple(
+        false,
+        false,
+        false,
+        true,
+        Some("fast".to_string()),
+        true,
+        Some(out_path.to_string()),
+    )
+    .await;
     assert!(res3.is_ok());
     let full = fs::read_to_string(out_path).expect("read output");
     let v: serde_json::Value = serde_json::from_str(&full).expect("parse json");
-    let profile = v.get("analysis").and_then(|a| a.get("profile")).and_then(|p| p.as_str()).unwrap_or("");
+    let profile = v
+        .get("analysis")
+        .and_then(|a| a.get("profile"))
+        .and_then(|p| p.as_str())
+        .unwrap_or("");
     assert_eq!(profile, "fast");
 
     // cleanup and restore cwd

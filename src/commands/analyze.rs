@@ -85,9 +85,9 @@ impl AnalyzeCommand {
         force_refresh: bool,
         output: Option<String>,
     ) -> Result<()> {
+        use sha2::{Digest, Sha256};
         use std::fs;
         use std::path::Path;
-        use sha2::{Digest, Sha256};
 
         // Minimal equivalent of AnalyzeCommand::execute with caching
         println!("{}", "🔍 Análisis profundo del proyecto...".cyan().bold());
@@ -118,7 +118,12 @@ impl AnalyzeCommand {
         {
             if let Ok(md) = fs::metadata(entry.path()) {
                 let p = entry.path().to_string_lossy();
-                let mtime = md.modified().ok().and_then(|t| t.elapsed().ok()).map(|d| d.as_secs()).unwrap_or(0);
+                let mtime = md
+                    .modified()
+                    .ok()
+                    .and_then(|t| t.elapsed().ok())
+                    .map(|d| d.as_secs())
+                    .unwrap_or(0);
                 hasher.update(p.as_bytes());
                 hasher.update(mtime.to_string().as_bytes());
             }
@@ -129,12 +134,26 @@ impl AnalyzeCommand {
         let cache_file = cache_dir.join(format!("analyze_{}.json", fingerprint));
 
         // TTL = 1 hour
-        let use_cache = !force_refresh && cache_file.exists() && cache_file.metadata().ok().and_then(|m| m.modified().ok()).map(|t| { t.elapsed().map(|d| d.as_secs() < 3600).unwrap_or(false) }).unwrap_or(false);
+        let use_cache = !force_refresh
+            && cache_file.exists()
+            && cache_file
+                .metadata()
+                .ok()
+                .and_then(|m| m.modified().ok())
+                .map(|t| t.elapsed().map(|d| d.as_secs() < 3600).unwrap_or(false))
+                .unwrap_or(false);
         if use_cache {
             if let Ok(s) = fs::read_to_string(&cache_file) {
                 if let Ok(json) = serde_json::from_str::<serde_json::Value>(&s) {
-                    println!("📦 Usando cache de análisis ({})", cache_file.to_string_lossy());
-                    println!("Resumen: {}", json.get("summary").unwrap_or(&serde_json::Value::String("(nocontent)".to_string())));
+                    println!(
+                        "📦 Usando cache de análisis ({})",
+                        cache_file.to_string_lossy()
+                    );
+                    println!(
+                        "Resumen: {}",
+                        json.get("summary")
+                            .unwrap_or(&serde_json::Value::String("(nocontent)".to_string()))
+                    );
                     let _ = std::env::set_current_dir(orig_cwd);
                     return Ok(());
                 }
@@ -169,11 +188,17 @@ impl AnalyzeCommand {
         let analysis = tokio::task::spawn_blocking(move || analyzer.analyze_project(".")).await??;
         println!("\n📊 Resultados del Análisis:");
         println!("  • Issues detectados: {}", analysis.issues.len());
-        println!("  • Optimizaciones sugeridas: {}", analysis.suggestions.len());
+        println!(
+            "  • Optimizaciones sugeridas: {}",
+            analysis.suggestions.len()
+        );
         println!("  • Líneas de código: {}", analysis.total_lines);
         println!("  • Archivos analizados: {}", analysis.files_count);
         metrics.add_custom_metric("issues_found".to_string(), analysis.issues.len() as u64);
-        metrics.add_custom_metric("suggestions_count".to_string(), analysis.suggestions.len() as u64);
+        metrics.add_custom_metric(
+            "suggestions_count".to_string(),
+            analysis.suggestions.len() as u64,
+        );
         metrics.add_custom_metric("total_lines".to_string(), analysis.total_lines as u64);
         metrics.add_custom_metric("files_analyzed".to_string(), analysis.files_count as u64);
 
@@ -185,7 +210,10 @@ impl AnalyzeCommand {
             "lines": analysis.total_lines,
             "profile": profile.unwrap_or_else(|| "default".to_string()),
         });
-        let _ = fs::write(&cache_file, serde_json::to_string_pretty(&summary).unwrap_or_default());
+        let _ = fs::write(
+            &cache_file,
+            serde_json::to_string_pretty(&summary).unwrap_or_default(),
+        );
 
         // Also persist metrics and full analysis snapshot for offline inspection
         let metrics_dir = Path::new(".trae").join("metrics");
@@ -195,7 +223,10 @@ impl AnalyzeCommand {
             "summary": summary,
             "analysis_metrics": analysis.metrics,
         });
-        let _ = fs::write(&metrics_file, serde_json::to_string_pretty(&snapshot).unwrap_or_default());
+        let _ = fs::write(
+            &metrics_file,
+            serde_json::to_string_pretty(&snapshot).unwrap_or_default(),
+        );
 
         // Optionally write full JSON output
         if let Some(out) = output {

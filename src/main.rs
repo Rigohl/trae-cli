@@ -7,15 +7,15 @@
 #![allow(clippy::useless_vec)]
 use clap::{Parser, Subcommand};
 use colored::*;
+use console::{style, Emoji};
+use indicatif::{ProgressBar, ProgressStyle};
+use regex::Regex;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
-use std::process::{Command, Output};
-use std::path::PathBuf;
-use indicatif::{ProgressBar, ProgressStyle};
-use console::{style, Emoji};
 use std::fs;
+use std::path::PathBuf;
+use std::process::{Command, Output};
 use walkdir::WalkDir;
-use regex::Regex;
 
 /// TRAE-CLI: Ejecutor de comandos Rust que reporta a JARVIXSERVER
 #[derive(Parser)]
@@ -28,7 +28,12 @@ struct Args {
     command: Option<CargoCommand>,
 
     /// URL del servidor JARVIXSERVER
-    #[arg(long, global = true, default_value = "http://localhost:8080", env = "JARVIX_URL")]
+    #[arg(
+        long,
+        global = true,
+        default_value = "http://localhost:8080",
+        env = "JARVIX_URL"
+    )]
     jarvix: String,
 
     /// Ruta del proyecto Rust a ejecutar
@@ -470,7 +475,6 @@ enum CargoCommand {
     },
 
     // Mock generation command removed to honor No-Mocks policy
-
     /// 📦 Analizar módulos no utilizados
     Modules {
         /// Mostrar solo módulos sin usar
@@ -554,7 +558,10 @@ async fn main() {
 
     // Validar que cargo existe
     if !check_cargo_installed() {
-        eprintln!("{} Cargo no está instalado o no está en el PATH", "✗".red().bold());
+        eprintln!(
+            "{} Cargo no está instalado o no está en el PATH",
+            "✗".red().bold()
+        );
         std::process::exit(1);
     }
 
@@ -600,12 +607,34 @@ async fn main() {
 
 /// Imprime el encabezado de la aplicación
 fn print_header(args: &Args) {
-    println!("{}", "╔════════════════════════════════════════════════════════╗".cyan());
-    println!("{}", "║        ▶ TRAE-CLI v0.2.0 - Ejecutor de Rust            ║".cyan().bold());
-    println!("{}", "║     Compilación, Testing & Reporting Integrado         ║".bright_cyan());
-    println!("{}", "╚════════════════════════════════════════════════════════╝".cyan());
-    println!("  {} {}", style("JARVIXSERVER:").cyan().bold(), args.jarvix.green());
-    println!("  {} {}", style("Proyecto:").cyan().bold(), args.project.display().to_string().green());
+    println!(
+        "{}",
+        "╔════════════════════════════════════════════════════════╗".cyan()
+    );
+    println!(
+        "{}",
+        "║        ▶ TRAE-CLI v0.2.0 - Ejecutor de Rust            ║"
+            .cyan()
+            .bold()
+    );
+    println!(
+        "{}",
+        "║     Compilación, Testing & Reporting Integrado         ║".bright_cyan()
+    );
+    println!(
+        "{}",
+        "╚════════════════════════════════════════════════════════╝".cyan()
+    );
+    println!(
+        "  {} {}",
+        style("JARVIXSERVER:").cyan().bold(),
+        args.jarvix.green()
+    );
+    println!(
+        "  {} {}",
+        style("Proyecto:").cyan().bold(),
+        args.project.display().to_string().green()
+    );
     if args.verbose {
         println!("  {} ACTIVADO", style("Verbose:").cyan().bold());
     }
@@ -629,18 +658,31 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
     // Esto es especialmente útil para 'run' y 'test', pero no hace daño en otros.
     if let Ok(env_vars) = load_env_file(&args.project) {
         if !env_vars.is_empty() {
-             println!("{} Cargadas {} variables desde .env", "ℹ".blue(), env_vars.len());
-             cmd.envs(env_vars);
+            println!(
+                "{} Cargadas {} variables desde .env",
+                "ℹ".blue(),
+                env_vars.len()
+            );
+            cmd.envs(env_vars);
         }
     }
 
     let cmd_name = match &args.command {
-        Some(CargoCommand::Check { examples, tests, workspace, all_features, jobs, target, deny_warnings }) => {
+        Some(CargoCommand::Check {
+            examples,
+            tests,
+            workspace,
+            all_features,
+            jobs,
+            target,
+            deny_warnings,
+        }) => {
             let spinner = ProgressBar::new_spinner();
             spinner.set_style(
                 ProgressStyle::default_spinner()
                     .tick_strings(&["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"])
-                    .template("{spinner} {msg}").unwrap()
+                    .template("{spinner} {msg}")
+                    .unwrap(),
             );
             spinner.set_message("Verificando estilo de código...");
             spinner.enable_steady_tick(std::time::Duration::from_millis(100));
@@ -662,46 +704,116 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
             }
 
             cmd.arg("check");
-            if *examples { cmd.arg("--examples"); }
-            if *tests { cmd.arg("--tests"); }
-            if *workspace { cmd.arg("--workspace"); }
-            if *all_features { cmd.arg("--all-features"); }
-            if let Some(j) = jobs { cmd.args(&["--jobs", &j.to_string()]); }
-            if let Some(t) = target { cmd.args(&["--target", t]); }
-            if *deny_warnings { cmd.args(&["--", "-D", "warnings"]); }
+            if *examples {
+                cmd.arg("--examples");
+            }
+            if *tests {
+                cmd.arg("--tests");
+            }
+            if *workspace {
+                cmd.arg("--workspace");
+            }
+            if *all_features {
+                cmd.arg("--all-features");
+            }
+            if let Some(j) = jobs {
+                cmd.args(&["--jobs", &j.to_string()]);
+            }
+            if let Some(t) = target {
+                cmd.args(&["--target", t]);
+            }
+            if *deny_warnings {
+                cmd.args(&["--", "-D", "warnings"]);
+            }
             "check"
         }
-        Some(CargoCommand::Build { release, debug, workspace, all_features, target, timings, keep_going, jobs }) => {
+        Some(CargoCommand::Build {
+            release,
+            debug,
+            workspace,
+            all_features,
+            target,
+            timings,
+            keep_going,
+            jobs,
+        }) => {
             cmd.arg("build");
-            if *release { cmd.arg("--release"); }
-            if *debug { cmd.arg("--debug"); }
-            if *workspace { cmd.arg("--workspace"); }
-            if *all_features { cmd.arg("--all-features"); }
-            if let Some(t) = target { cmd.args(&["--target", t]); }
-            if *timings { cmd.arg("--timings"); }
-            if *keep_going { cmd.arg("--keep-going"); }
-            if let Some(j) = jobs { cmd.args(&["--jobs", &j.to_string()]); }
+            if *release {
+                cmd.arg("--release");
+            }
+            if *debug {
+                cmd.arg("--debug");
+            }
+            if *workspace {
+                cmd.arg("--workspace");
+            }
+            if *all_features {
+                cmd.arg("--all-features");
+            }
+            if let Some(t) = target {
+                cmd.args(&["--target", t]);
+            }
+            if *timings {
+                cmd.arg("--timings");
+            }
+            if *keep_going {
+                cmd.arg("--keep-going");
+            }
+            if let Some(j) = jobs {
+                cmd.args(&["--jobs", &j.to_string()]);
+            }
             "build"
         }
-        Some(CargoCommand::Test { args: test_args, workspace, release, doc, nocapture, single_threaded }) => {
+        Some(CargoCommand::Test {
+            args: test_args,
+            workspace,
+            release,
+            doc,
+            nocapture,
+            single_threaded,
+        }) => {
             cmd.arg("test");
-            if *workspace { cmd.arg("--workspace"); }
-            if *release { cmd.arg("--release"); }
-            if *doc { cmd.arg("--doc"); }
+            if *workspace {
+                cmd.arg("--workspace");
+            }
+            if *release {
+                cmd.arg("--release");
+            }
+            if *doc {
+                cmd.arg("--doc");
+            }
             cmd.arg("--");
-            if *nocapture { cmd.arg("--nocapture"); }
-            if *single_threaded { cmd.arg("--test-threads=1"); }
+            if *nocapture {
+                cmd.arg("--nocapture");
+            }
+            if *single_threaded {
+                cmd.arg("--test-threads=1");
+            }
             for arg in test_args {
                 cmd.arg(arg);
             }
             "test"
         }
-        Some(CargoCommand::Run { args: run_args, release, example, bin, manifest_path }) => {
+        Some(CargoCommand::Run {
+            args: run_args,
+            release,
+            example,
+            bin,
+            manifest_path,
+        }) => {
             cmd.arg("run");
-            if *release { cmd.arg("--release"); }
-            if let Some(e) = example { cmd.args(&["--example", e]); }
-            if let Some(b) = bin { cmd.args(&["--bin", b]); }
-            if let Some(m) = manifest_path { cmd.args(&["--manifest-path", m]); }
+            if *release {
+                cmd.arg("--release");
+            }
+            if let Some(e) = example {
+                cmd.args(&["--example", e]);
+            }
+            if let Some(b) = bin {
+                cmd.args(&["--bin", b]);
+            }
+            if let Some(m) = manifest_path {
+                cmd.args(&["--manifest-path", m]);
+            }
             cmd.arg("--");
             for arg in run_args {
                 cmd.arg(arg);
@@ -711,54 +823,109 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
         Some(CargoCommand::New { path, lib }) => {
             cmd.arg("new");
             cmd.arg(path);
-            if *lib { cmd.arg("--lib"); }
+            if *lib {
+                cmd.arg("--lib");
+            }
             "new"
         }
         Some(CargoCommand::Init { path, lib }) => {
             cmd.arg("init");
-            if let Some(p) = path { cmd.arg(p); }
-            if *lib { cmd.arg("--lib"); }
+            if let Some(p) = path {
+                cmd.arg(p);
+            }
+            if *lib {
+                cmd.arg("--lib");
+            }
             "init"
         }
-        Some(CargoCommand::Add { crates, dev, build, features, version, git, path, branch }) => {
+        Some(CargoCommand::Add {
+            crates,
+            dev,
+            build,
+            features,
+            version,
+            git,
+            path,
+            branch,
+        }) => {
             cmd.arg("add");
-            for krate in crates { cmd.arg(krate); }
-            if *dev { cmd.arg("--dev"); }
-            if *build { cmd.arg("--build"); }
+            for krate in crates {
+                cmd.arg(krate);
+            }
+            if *dev {
+                cmd.arg("--dev");
+            }
+            if *build {
+                cmd.arg("--build");
+            }
             for feature in features {
                 cmd.args(&["--features", feature]);
             }
-            if let Some(v) = version { cmd.args(&["--version", v]); }
-            if let Some(g) = git { cmd.args(&["--git", g]); }
-            if let Some(p) = path { cmd.args(&["--path", p]); }
-            if let Some(b) = branch { cmd.args(&["--branch", b]); }
+            if let Some(v) = version {
+                cmd.args(&["--version", v]);
+            }
+            if let Some(g) = git {
+                cmd.args(&["--git", g]);
+            }
+            if let Some(p) = path {
+                cmd.args(&["--path", p]);
+            }
+            if let Some(b) = branch {
+                cmd.args(&["--branch", b]);
+            }
             "add"
         }
         Some(CargoCommand::Remove { crates }) => {
             cmd.arg("remove");
-            for krate in crates { cmd.arg(krate); }
+            for krate in crates {
+                cmd.arg(krate);
+            }
             "remove"
         }
-        Some(CargoCommand::Bench { args: bench_args, bench, verbose, no_run }) => {
+        Some(CargoCommand::Bench {
+            args: bench_args,
+            bench,
+            verbose,
+            no_run,
+        }) => {
             cmd.arg("bench");
-            if let Some(b) = bench { cmd.arg(b); }
-            if *verbose { cmd.arg("--verbose"); }
-            if *no_run { cmd.arg("--no-run"); }
+            if let Some(b) = bench {
+                cmd.arg(b);
+            }
+            if *verbose {
+                cmd.arg("--verbose");
+            }
+            if *no_run {
+                cmd.arg("--no-run");
+            }
             cmd.arg("--");
-            for arg in bench_args { cmd.arg(arg); }
+            for arg in bench_args {
+                cmd.arg(arg);
+            }
             "bench"
         }
-        Some(CargoCommand::Search { query, limit, verbose, format }) => {
+        Some(CargoCommand::Search {
+            query,
+            limit,
+            verbose,
+            format,
+        }) => {
             cmd.arg("search");
             cmd.arg(query);
             cmd.args(&["--limit", &limit.to_string()]);
-            if *verbose { cmd.arg("--verbose"); }
-            if let Some(f) = format { cmd.args(&["--format", f]); }
+            if *verbose {
+                cmd.arg("--verbose");
+            }
+            if let Some(f) = format {
+                cmd.args(&["--format", f]);
+            }
             "search"
         }
         Some(CargoCommand::Install { args: install_args }) => {
             cmd.arg("install");
-            for arg in install_args { cmd.arg(arg); }
+            for arg in install_args {
+                cmd.arg(arg);
+            }
             "install"
         }
         Some(CargoCommand::Uninstall { package }) => {
@@ -768,33 +935,74 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
         }
         Some(CargoCommand::Fmt { check }) => {
             cmd.arg("fmt");
-            if *check { cmd.arg("--check"); }
+            if *check {
+                cmd.arg("--check");
+            }
             "fmt"
         }
-        Some(CargoCommand::Clippy { strict, fix, workspace, all_targets, pedantic, allow, jobs }) => {
+        Some(CargoCommand::Clippy {
+            strict,
+            fix,
+            workspace,
+            all_targets,
+            pedantic,
+            allow,
+            jobs,
+        }) => {
             cmd.arg("clippy");
-            if *fix { cmd.arg("--fix"); }
-            if *workspace { cmd.arg("--workspace"); }
-            if *all_targets { cmd.arg("--all-targets"); }
-            if let Some(j) = jobs { cmd.args(&["--jobs", &j.to_string()]); }
+            if *fix {
+                cmd.arg("--fix");
+            }
+            if *workspace {
+                cmd.arg("--workspace");
+            }
+            if *all_targets {
+                cmd.arg("--all-targets");
+            }
+            if let Some(j) = jobs {
+                cmd.args(&["--jobs", &j.to_string()]);
+            }
 
             cmd.arg("--");
-            if *strict { cmd.args(&["-D", "warnings"]); }
-            if *pedantic { cmd.arg("-W"); cmd.arg("clippy::pedantic"); }
-            if let Some(a) = allow { cmd.arg(format!("-A {}", a)); }
+            if *strict {
+                cmd.args(&["-D", "warnings"]);
+            }
+            if *pedantic {
+                cmd.arg("-W");
+                cmd.arg("clippy::pedantic");
+            }
+            if let Some(a) = allow {
+                cmd.arg(format!("-A {}", a));
+            }
             "clippy"
         }
         Some(CargoCommand::Clean) => {
             cmd.arg("clean");
             "clean"
         }
-        Some(CargoCommand::Doc { open, document_private_items, no_deps, workspace, jobs }) => {
+        Some(CargoCommand::Doc {
+            open,
+            document_private_items,
+            no_deps,
+            workspace,
+            jobs,
+        }) => {
             cmd.arg("doc");
-            if *open { cmd.arg("--open"); }
-            if *document_private_items { cmd.arg("--document-private-items"); }
-            if *no_deps { cmd.arg("--no-deps"); }
-            if *workspace { cmd.arg("--workspace"); }
-            if let Some(j) = jobs { cmd.args(&["--jobs", &j.to_string()]); }
+            if *open {
+                cmd.arg("--open");
+            }
+            if *document_private_items {
+                cmd.arg("--document-private-items");
+            }
+            if *no_deps {
+                cmd.arg("--no-deps");
+            }
+            if *workspace {
+                cmd.arg("--workspace");
+            }
+            if let Some(j) = jobs {
+                cmd.args(&["--jobs", &j.to_string()]);
+            }
             "doc"
         }
         Some(CargoCommand::Tree { depth }) => {
@@ -818,13 +1026,24 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
             }
             "custom"
         }
-        Some(CargoCommand::Deadcode { verbose, workspace: _workspace, functions, structs, enums }) => {
-            println!("{} {} Analizando dead code y extrayendo información del proyecto...", "→".blue().bold(), Emoji("🪦", ""));
+        Some(CargoCommand::Deadcode {
+            verbose,
+            workspace: _workspace,
+            functions,
+            structs,
+            enums,
+        }) => {
+            println!(
+                "{} {} Analizando dead code y extrayendo información del proyecto...",
+                "→".blue().bold(),
+                Emoji("🪦", "")
+            );
             let spinner = ProgressBar::new_spinner();
             spinner.set_style(
                 ProgressStyle::default_spinner()
                     .tick_strings(&["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"])
-                    .template("{spinner} {msg}").unwrap()
+                    .template("{spinner} {msg}")
+                    .unwrap(),
             );
             spinner.set_message("Ejecutando crawling avanzado del proyecto...");
             spinner.enable_steady_tick(std::time::Duration::from_millis(100));
@@ -833,43 +1052,76 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
             let crawled = advanced_project_crawler(&args.project);
 
             spinner.finish_with_message(format!(
-                "✓ Crawling completado: {} funciones, {} structs, {} traits, {} tests"
-            , crawled.functions.len(), crawled.structs.len(), crawled.traits.len(), crawled.tests.len()));
+                "✓ Crawling completado: {} funciones, {} structs, {} traits, {} tests",
+                crawled.functions.len(),
+                crawled.structs.len(),
+                crawled.traits.len(),
+                crawled.tests.len()
+            ));
             println!();
 
             // Mostrar estadísticas del proyecto
             if *verbose {
-                println!("{}", "┌─ MÉTRICAS DEL PROYECTO ─────────────────────┐".cyan().bold());
+                println!(
+                    "{}",
+                    "┌─ MÉTRICAS DEL PROYECTO ─────────────────────┐"
+                        .cyan()
+                        .bold()
+                );
                 println!("  {} líneas de código", crawled.metrics.total_lines);
                 println!("  {} archivos Rust", crawled.metrics.code_files);
                 println!("  {} funciones totales", crawled.metrics.total_functions);
                 println!("  {} structs", crawled.metrics.total_structs);
                 println!("  {} traits", crawled.metrics.total_traits);
-                println!("  {} tests (cobertura estimada: {:.1}%)", crawled.metrics.total_tests, crawled.metrics.test_coverage_estimate);
+                println!(
+                    "  {} tests (cobertura estimada: {:.1}%)",
+                    crawled.metrics.total_tests, crawled.metrics.test_coverage_estimate
+                );
                 println!("  {} dependencias", crawled.dependencies.len());
-                println!("{}", "└─────────────────────────────────────────────┘".cyan().bold());
+                println!(
+                    "{}",
+                    "└─────────────────────────────────────────────┘"
+                        .cyan()
+                        .bold()
+                );
                 println!();
 
                 // Mostrar dependencias
                 if !crawled.dependencies.is_empty() {
-                    println!("{}", "┌─ DEPENDENCIAS ──────────────────────────────┐".yellow().bold());
+                    println!(
+                        "{}",
+                        "┌─ DEPENDENCIAS ──────────────────────────────┐"
+                            .yellow()
+                            .bold()
+                    );
                     for (i, dep) in crawled.dependencies.iter().take(10).enumerate() {
-                        println!("  {} {}", format!("{}.", i+1).bright_black(), dep);
+                        println!("  {} {}", format!("{}.", i + 1).bright_black(), dep);
                     }
                     if crawled.dependencies.len() > 10 {
                         println!("  ... y {} más", crawled.dependencies.len() - 10);
                     }
-                    println!("{}", "└─────────────────────────────────────────────┘".yellow().bold());
+                    println!(
+                        "{}",
+                        "└─────────────────────────────────────────────┘"
+                            .yellow()
+                            .bold()
+                    );
                     println!();
                 }
             }
 
             // Mostrar funciones encontradas
             if !crawled.functions.is_empty() {
-                println!("{}", "┌─ FUNCIONES DETECTADAS ──────────────────────┐".green().bold());
+                println!(
+                    "{}",
+                    "┌─ FUNCIONES DETECTADAS ──────────────────────┐"
+                        .green()
+                        .bold()
+                );
                 for func in crawled.functions.iter().take(20) {
                     let pub_marker = if func.is_pub { "pub " } else { "" };
-                    println!("  {} {}{}({})",
+                    println!(
+                        "  {} {}{}({})",
                         "→".green(),
                         pub_marker,
                         func.name.cyan(),
@@ -879,16 +1131,27 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
                 if crawled.functions.len() > 20 {
                     println!("  ... y {} más", crawled.functions.len() - 20);
                 }
-                println!("{}", "└─────────────────────────────────────────────┘".green().bold());
+                println!(
+                    "{}",
+                    "└─────────────────────────────────────────────┘"
+                        .green()
+                        .bold()
+                );
                 println!();
             }
 
             // Mostrar structs
             if !crawled.structs.is_empty() {
-                println!("{}", "┌─ STRUCTS DEFINIDAS ─────────────────────────┐".magenta().bold());
+                println!(
+                    "{}",
+                    "┌─ STRUCTS DEFINIDAS ─────────────────────────┐"
+                        .magenta()
+                        .bold()
+                );
                 for st in crawled.structs.iter().take(15) {
                     let pub_marker = if st.is_pub { "pub " } else { "" };
-                    println!("  {} {}{} {{ {} }}",
+                    println!(
+                        "  {} {}{} {{ {} }}",
                         "⚙".magenta(),
                         pub_marker,
                         st.name.cyan(),
@@ -898,15 +1161,26 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
                 if crawled.structs.len() > 15 {
                     println!("  ... y {} más", crawled.structs.len() - 15);
                 }
-                println!("{}", "└─────────────────────────────────────────────┘".magenta().bold());
+                println!(
+                    "{}",
+                    "└─────────────────────────────────────────────┘"
+                        .magenta()
+                        .bold()
+                );
                 println!();
             }
 
             // Mostrar traits
             if !crawled.traits.is_empty() {
-                println!("{}", "┌─ TRAITS DEFINIDAS ──────────────────────────┐".cyan().bold());
+                println!(
+                    "{}",
+                    "┌─ TRAITS DEFINIDAS ──────────────────────────┐"
+                        .cyan()
+                        .bold()
+                );
                 for tr in crawled.traits.iter().take(15) {
-                    println!("  {} {} with {} methods",
+                    println!(
+                        "  {} {} with {} methods",
                         "╬".cyan(),
                         tr.name.yellow(),
                         tr.methods.len()
@@ -915,15 +1189,26 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
                 if crawled.traits.len() > 15 {
                     println!("  ... y {} más", crawled.traits.len() - 15);
                 }
-                println!("{}", "└─────────────────────────────────────────────┘".cyan().bold());
+                println!(
+                    "{}",
+                    "└─────────────────────────────────────────────┘"
+                        .cyan()
+                        .bold()
+                );
                 println!();
             }
 
             // Mostrar TODOs y FIXMEs
             if !crawled.todos.is_empty() {
-                println!("{}", "┌─ TAREAS PENDIENTES (TODO/FIXME) ────────────┐".yellow().bold());
+                println!(
+                    "{}",
+                    "┌─ TAREAS PENDIENTES (TODO/FIXME) ────────────┐"
+                        .yellow()
+                        .bold()
+                );
                 for todo in crawled.todos.iter().take(15) {
-                    println!("  {} {} ({}:{})",
+                    println!(
+                        "  {} {} ({}:{})",
                         "⚠".yellow(),
                         todo.text.yellow(),
                         todo.file.bright_black(),
@@ -933,7 +1218,12 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
                 if crawled.todos.len() > 15 {
                     println!("  ... y {} más", crawled.todos.len() - 15);
                 }
-                println!("{}", "└─────────────────────────────────────────────┘".yellow().bold());
+                println!(
+                    "{}",
+                    "└─────────────────────────────────────────────┘"
+                        .yellow()
+                        .bold()
+                );
                 println!();
             }
 
@@ -950,10 +1240,16 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
             }
 
             if !filtered.is_empty() {
-                println!("{}", "┌─ CÓDIGO POTENCIALMENTE MUERTO ──────────────┐".red().bold());
+                println!(
+                    "{}",
+                    "┌─ CÓDIGO POTENCIALMENTE MUERTO ──────────────┐"
+                        .red()
+                        .bold()
+                );
                 for item in filtered.iter().take(20) {
                     let pub_marker = if item.is_pub { "pub " } else { "" };
-                    println!("{} {} {} ({}:{})",
+                    println!(
+                        "{} {} {} ({}:{})",
                         "  ✗".red(),
                         item.item_type.red().bold(),
                         format!("{}{}", pub_marker, item.name).bright_red(),
@@ -964,7 +1260,12 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
                 if filtered.len() > 20 {
                     println!("  ... y {} más", filtered.len() - 20);
                 }
-                println!("{}", "└─────────────────────────────────────────────┘".red().bold());
+                println!(
+                    "{}",
+                    "└─────────────────────────────────────────────┘"
+                        .red()
+                        .bold()
+                );
             }
 
             // Usar cargo check como fallback
@@ -973,23 +1274,30 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
             "deadcode"
         }
 
-        Some(CargoCommand::Modules { unused_only, with_deps: _with_deps, tree, depth }) => {
-            println!("{} {} Analizando módulos...", "→".blue().bold(), Emoji("📦", ""));
+        Some(CargoCommand::Modules {
+            unused_only,
+            with_deps: _with_deps,
+            tree,
+            depth,
+        }) => {
+            println!(
+                "{} {} Analizando módulos...",
+                "→".blue().bold(),
+                Emoji("📦", "")
+            );
             let spinner = ProgressBar::new_spinner();
             spinner.set_style(
                 ProgressStyle::default_spinner()
                     .tick_strings(&["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"])
-                    .template("{spinner} {msg}").unwrap()
+                    .template("{spinner} {msg}")
+                    .unwrap(),
             );
             spinner.set_message("Escaneando estructura...");
             spinner.enable_steady_tick(std::time::Duration::from_millis(100));
 
             let modules = scan_modules(&args.project);
 
-            spinner.finish_with_message(format!(
-                "✓ Encontrados {} módulos",
-                modules.len()
-            ));
+            spinner.finish_with_message(format!("✓ Encontrados {} módulos", modules.len()));
             println!();
 
             if *tree {
@@ -997,8 +1305,13 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
                 for (idx, module) in modules.iter().enumerate() {
                     let is_last = idx == modules.len() - 1;
                     let prefix = if is_last { "└──" } else { "├──" };
-                    let status = if module.used { "✓".green() } else { "✗".red() };
-                    println!("{} {} {} ({} files)",
+                    let status = if module.used {
+                        "✓".green()
+                    } else {
+                        "✗".red()
+                    };
+                    println!(
+                        "{} {} {} ({} files)",
                         prefix.bright_black(),
                         status,
                         module.name.cyan(),
@@ -1007,9 +1320,14 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
                 }
             } else {
                 for module in &modules {
-                    let status = if module.used { "✓".green() } else { "✗".red() };
+                    let status = if module.used {
+                        "✓".green()
+                    } else {
+                        "✗".red()
+                    };
                     if !*unused_only || !module.used {
-                        println!("{} {} - {} archivos",
+                        println!(
+                            "{} {} - {} archivos",
                             status,
                             module.name.cyan(),
                             module.file_count
@@ -1026,7 +1344,11 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
             "modules"
         }
         Some(CargoCommand::Preflight) => {
-            println!("{} {} Iniciando secuencia de PREFLIGHT", "→".cyan().bold(), Emoji("🚀", ""));
+            println!(
+                "{} {} Iniciando secuencia de PREFLIGHT",
+                "→".cyan().bold(),
+                Emoji("🚀", "")
+            );
             println!();
 
             let steps = vec![
@@ -1039,13 +1361,18 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
             let pb = ProgressBar::new(4);
             pb.set_style(
                 ProgressStyle::default_bar()
-                    .template("[{bar:30.cyan/blue}] {pos}/4 {msg}").unwrap()
-                    .progress_chars("█▓░")
+                    .template("[{bar:30.cyan/blue}] {pos}/4 {msg}")
+                    .unwrap()
+                    .progress_chars("█▓░"),
             );
 
             // 1. Check Format
             pb.set_message(steps[0].0);
-            match Command::new("cargo").args(&["fmt", "--check"]).current_dir(&args.project).status() {
+            match Command::new("cargo")
+                .args(&["fmt", "--check"])
+                .current_dir(&args.project)
+                .status()
+            {
                 Ok(status) if !status.success() => {
                     pb.finish_with_message("❌ Formato incorrecto");
                     eprintln!("{} Ejecuta 'trae fmt' para corregir", "!".red());
@@ -1072,7 +1399,11 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
 
             // 2. Clippy
             pb.set_message(steps[1].0);
-            match Command::new("cargo").args(&["clippy", "--", "-D", "warnings"]).current_dir(&args.project).status() {
+            match Command::new("cargo")
+                .args(&["clippy", "--", "-D", "warnings"])
+                .current_dir(&args.project)
+                .status()
+            {
                 Ok(status) if !status.success() => {
                     pb.finish_with_message("❌ Clippy detectó problemas");
                     eprintln!("{} Clippy encontró problemas de código", "!".red());
@@ -1099,7 +1430,11 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
 
             // 3. Tests
             pb.set_message(steps[2].0);
-            match Command::new("cargo").arg("test").current_dir(&args.project).status() {
+            match Command::new("cargo")
+                .arg("test")
+                .current_dir(&args.project)
+                .status()
+            {
                 Ok(status) if !status.success() => {
                     pb.finish_with_message("❌ Tests fallaron");
                     eprintln!("{} Los tests no pasaron", "!".red());
@@ -1135,38 +1470,59 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
             "preflight"
         }
         Some(CargoCommand::Repair) => {
-            println!("{} {} Iniciando secuencia de REPARACIÓN", "→".cyan().bold(), Emoji("🔧", ""));
+            println!(
+                "{} {} Iniciando secuencia de REPARACIÓN",
+                "→".cyan().bold(),
+                Emoji("🔧", "")
+            );
             println!();
 
-            let steps = vec!["Aplicando cargo fix", "Aplicando formato", "Aplicando clippy fix"];
+            let steps = vec![
+                "Aplicando cargo fix",
+                "Aplicando formato",
+                "Aplicando clippy fix",
+            ];
 
             for (idx, step) in steps.iter().enumerate() {
                 let spinner = ProgressBar::new_spinner();
                 spinner.set_style(
                     ProgressStyle::default_spinner()
                         .tick_strings(&["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"])
-                        .template("{spinner} {msg}").unwrap()
+                        .template("{spinner} {msg}")
+                        .unwrap(),
                 );
                 spinner.set_message(format!("{}/{} {}", idx + 1, 3, step));
                 spinner.enable_steady_tick(std::time::Duration::from_millis(100));
 
                 match idx {
                     0 => {
-                        if let Err(e) = Command::new("cargo").args(&["fix", "--allow-dirty", "--allow-staged"]).current_dir(&args.project).status() {
+                        if let Err(e) = Command::new("cargo")
+                            .args(&["fix", "--allow-dirty", "--allow-staged"])
+                            .current_dir(&args.project)
+                            .status()
+                        {
                             spinner.finish_with_message(format!("⚠ {}: {}", step, e));
                         } else {
                             spinner.finish_with_message(format!("✓ {}", step));
                         }
                     }
                     1 => {
-                        if let Err(e) = Command::new("cargo").arg("fmt").current_dir(&args.project).status() {
+                        if let Err(e) = Command::new("cargo")
+                            .arg("fmt")
+                            .current_dir(&args.project)
+                            .status()
+                        {
                             spinner.finish_with_message(format!("⚠ {}: {}", step, e));
                         } else {
                             spinner.finish_with_message(format!("✓ {}", step));
                         }
                     }
                     2 => {
-                        if let Err(e) = Command::new("cargo").args(&["clippy", "--fix", "--allow-dirty", "--allow-staged"]).current_dir(&args.project).status() {
+                        if let Err(e) = Command::new("cargo")
+                            .args(&["clippy", "--fix", "--allow-dirty", "--allow-staged"])
+                            .current_dir(&args.project)
+                            .status()
+                        {
                             spinner.finish_with_message(format!("⚠ {}: {}", step, e));
                         } else {
                             spinner.finish_with_message(format!("✓ {}", step));
@@ -1180,15 +1536,27 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
             cmd.arg("build");
             "repair"
         }
-        Some(CargoCommand::WebSearch { query, limit, include_code, rust_docs, crates }) => {
-            println!("{} {} Buscando '{}' en internet...", "→".blue().bold(), Emoji("🌐", ""), query.cyan().bold());
+        Some(CargoCommand::WebSearch {
+            query,
+            limit,
+            include_code,
+            rust_docs,
+            crates,
+        }) => {
+            println!(
+                "{} {} Buscando '{}' en internet...",
+                "→".blue().bold(),
+                Emoji("🌐", ""),
+                query.cyan().bold()
+            );
             println!();
 
             let spinner = ProgressBar::new_spinner();
             spinner.set_style(
                 ProgressStyle::default_spinner()
                     .tick_strings(&["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"])
-                    .template("{spinner} {msg}").unwrap()
+                    .template("{spinner} {msg}")
+                    .unwrap(),
             );
             spinner.set_message("Consultando JARVIXSERVER...");
             spinner.enable_steady_tick(std::time::Duration::from_millis(100));
@@ -1226,62 +1594,125 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
                         200..=299 => {
                             match resp.json::<serde_json::Value>().await {
                                 Ok(json_response) => {
-                                    spinner.finish_with_message("✓ Búsqueda completada".green().to_string());
+                                    spinner.finish_with_message(
+                                        "✓ Búsqueda completada".green().to_string(),
+                                    );
 
                                     // Procesar y mostrar resultados
-                                    if let Some(results) = json_response.get("search_results").and_then(|r| r.as_array()) {
+                                    if let Some(results) = json_response
+                                        .get("search_results")
+                                        .and_then(|r| r.as_array())
+                                    {
                                         println!();
-                                        println!("{}", "┌─ RESULTADOS DE BÚSQUEDA ─────────────────────┐".cyan().bold());
+                                        println!(
+                                            "{}",
+                                            "┌─ RESULTADOS DE BÚSQUEDA ─────────────────────┐"
+                                                .cyan()
+                                                .bold()
+                                        );
 
                                         for (i, result) in results.iter().enumerate() {
-                                            if i >= *limit { break; }
+                                            if i >= *limit {
+                                                break;
+                                            }
 
-                                            let title = result.get("title").and_then(|t| t.as_str()).unwrap_or("Sin título");
-                                            let url = result.get("url").and_then(|u| u.as_str()).unwrap_or("");
-                                            let snippet = result.get("snippet").and_then(|s| s.as_str()).unwrap_or("");
+                                            let title = result
+                                                .get("title")
+                                                .and_then(|t| t.as_str())
+                                                .unwrap_or("Sin título");
+                                            let url = result
+                                                .get("url")
+                                                .and_then(|u| u.as_str())
+                                                .unwrap_or("");
+                                            let snippet = result
+                                                .get("snippet")
+                                                .and_then(|s| s.as_str())
+                                                .unwrap_or("");
 
-                                            println!("  {}. {} {}", (i+1).to_string().bright_yellow().bold(), title.cyan().bold(), format!("({})", url).bright_black());
+                                            println!(
+                                                "  {}. {} {}",
+                                                (i + 1).to_string().bright_yellow().bold(),
+                                                title.cyan().bold(),
+                                                format!("({})", url).bright_black()
+                                            );
                                             if !snippet.is_empty() {
                                                 println!("     {}", snippet.bright_white());
                                             }
 
                                             if *include_code {
-                                                if let Some(code) = result.get("code").and_then(|c| c.as_str()) {
-                                                    println!("     {} {}", "💻".green(), code.bright_green());
+                                                if let Some(code) =
+                                                    result.get("code").and_then(|c| c.as_str())
+                                                {
+                                                    println!(
+                                                        "     {} {}",
+                                                        "💻".green(),
+                                                        code.bright_green()
+                                                    );
                                                 }
                                             }
                                             println!();
                                         }
 
-                                        println!("{}", "└─────────────────────────────────────────────┘".cyan().bold());
-                                        println!("{} {} resultados encontrados", "ℹ".blue(), results.len());
+                                        println!(
+                                            "{}",
+                                            "└─────────────────────────────────────────────┘"
+                                                .cyan()
+                                                .bold()
+                                        );
+                                        println!(
+                                            "{} {} resultados encontrados",
+                                            "ℹ".blue(),
+                                            results.len()
+                                        );
                                     } else {
                                         println!("{} No se encontraron resultados", "⚠".yellow());
                                     }
                                 }
                                 Err(e) => {
-                                    spinner.finish_with_message("✗ Error procesando respuesta JSON".red().to_string());
+                                    spinner.finish_with_message(
+                                        "✗ Error procesando respuesta JSON".red().to_string(),
+                                    );
                                     eprintln!("Error: {}", e);
                                 }
                             }
                         }
                         404 => {
-                            spinner.finish_with_message("✗ BrowserMCP no disponible (404)".red().to_string());
-                            eprintln!("{} El servicio BrowserMCP no está disponible en JARVIXSERVER", "!".red());
-                            eprintln!("{} Verifica que BrowserMCP esté ejecutándose en el puerto 3000", "💡".blue());
+                            spinner.finish_with_message(
+                                "✗ BrowserMCP no disponible (404)".red().to_string(),
+                            );
+                            eprintln!(
+                                "{} El servicio BrowserMCP no está disponible en JARVIXSERVER",
+                                "!".red()
+                            );
+                            eprintln!(
+                                "{} Verifica que BrowserMCP esté ejecutándose en el puerto 3000",
+                                "💡".blue()
+                            );
                         }
                         500..=599 => {
-                            spinner.finish_with_message(format!("✗ Error del servidor: {}", resp.status()).red().to_string());
+                            spinner.finish_with_message(
+                                format!("✗ Error del servidor: {}", resp.status())
+                                    .red()
+                                    .to_string(),
+                            );
                         }
                         _ => {
-                            spinner.finish_with_message(format!("✗ Error inesperado: {}", resp.status()).red().to_string());
+                            spinner.finish_with_message(
+                                format!("✗ Error inesperado: {}", resp.status())
+                                    .red()
+                                    .to_string(),
+                            );
                         }
                     }
                 }
                 Err(e) => {
                     spinner.finish_with_message("✗ Error de conexión".red().to_string());
                     eprintln!("{} No se pudo conectar a JARVIXSERVER: {}", "✗".red(), e);
-                    eprintln!("{} Verifica que JARVIXSERVER esté ejecutándose en {}", "💡".blue(), args.jarvix);
+                    eprintln!(
+                        "{} Verifica que JARVIXSERVER esté ejecutándose en {}",
+                        "💡".blue(),
+                        args.jarvix
+                    );
                 }
             }
 
@@ -1299,7 +1730,11 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
         }
     };
 
-    println!("{} Ejecutando: {}", "→".yellow(), format!("cargo {}", cmd_name).bright_white());
+    println!(
+        "{} Ejecutando: {}",
+        "→".yellow(),
+        format!("cargo {}", cmd_name).bright_white()
+    );
     println!();
 
     let output = match cmd.output() {
@@ -1332,7 +1767,8 @@ async fn report_to_jarvix(args: &Args, result: &CommandResult) {
     spinner.set_style(
         ProgressStyle::default_spinner()
             .tick_strings(&["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"])
-            .template("{spinner} {msg}").unwrap()
+            .template("{spinner} {msg}")
+            .unwrap(),
     );
     spinner.set_message("Reportando a JARVIXSERVER...");
     spinner.enable_steady_tick(std::time::Duration::from_millis(100));
@@ -1353,50 +1789,55 @@ async fn report_to_jarvix(args: &Args, result: &CommandResult) {
             .send()
             .await
         {
-            Ok(resp) => {
-                match resp.status().as_u16() {
-                    200..=299 => {
-                        spinner.finish_with_message("✓ Reportado exitosamente".green().to_string());
-                        return;
-                    }
-                    400 => {
-                        spinner.finish_with_message("✗ Error: Solicitud inválida (400)".red().to_string());
-                        return;
-                    }
-                    401 => {
-                        spinner.finish_with_message("✗ Error: No autorizado (401)".red().to_string());
-                        return;
-                    }
-                    404 => {
-                        spinner.finish_with_message("✗ Error: Endpoint no encontrado (404)".red().to_string());
-                        return;
-                    }
-                    500..=599 => {
-                        if attempt < max_retries {
-                            spinner.set_message(format!(
-                                "⟳ Reintentando... {}/{} (Error {})",
-                                attempt, max_retries, resp.status()
-                            ));
-                            attempt += 1;
-                            tokio::time::sleep(std::time::Duration::from_secs(attempt as u64)).await;
-                            continue;
-                        } else {
-                            spinner.finish_with_message(format!(
-                                "✗ Error servidor después de {} intentos",
-                                max_retries
-                            ).red().to_string());
-                            return;
-                        }
-                    }
-                    _ => {
-                        spinner.finish_with_message(format!(
-                            "✗ Error inesperado: {}",
+            Ok(resp) => match resp.status().as_u16() {
+                200..=299 => {
+                    spinner.finish_with_message("✓ Reportado exitosamente".green().to_string());
+                    return;
+                }
+                400 => {
+                    spinner
+                        .finish_with_message("✗ Error: Solicitud inválida (400)".red().to_string());
+                    return;
+                }
+                401 => {
+                    spinner.finish_with_message("✗ Error: No autorizado (401)".red().to_string());
+                    return;
+                }
+                404 => {
+                    spinner.finish_with_message(
+                        "✗ Error: Endpoint no encontrado (404)".red().to_string(),
+                    );
+                    return;
+                }
+                500..=599 => {
+                    if attempt < max_retries {
+                        spinner.set_message(format!(
+                            "⟳ Reintentando... {}/{} (Error {})",
+                            attempt,
+                            max_retries,
                             resp.status()
-                        ).red().to_string());
+                        ));
+                        attempt += 1;
+                        tokio::time::sleep(std::time::Duration::from_secs(attempt as u64)).await;
+                        continue;
+                    } else {
+                        spinner.finish_with_message(
+                            format!("✗ Error servidor después de {} intentos", max_retries)
+                                .red()
+                                .to_string(),
+                        );
                         return;
                     }
                 }
-            }
+                _ => {
+                    spinner.finish_with_message(
+                        format!("✗ Error inesperado: {}", resp.status())
+                            .red()
+                            .to_string(),
+                    );
+                    return;
+                }
+            },
             Err(e) => {
                 if attempt < max_retries {
                     spinner.set_message(format!(
@@ -1407,10 +1848,14 @@ async fn report_to_jarvix(args: &Args, result: &CommandResult) {
                     tokio::time::sleep(std::time::Duration::from_secs(attempt as u64)).await;
                     continue;
                 } else {
-                    spinner.finish_with_message(format!(
-                        "⚠ No se pudo conectar a JARVIXSERVER después de {} intentos",
-                        max_retries
-                    ).yellow().to_string());
+                    spinner.finish_with_message(
+                        format!(
+                            "⚠ No se pudo conectar a JARVIXSERVER después de {} intentos",
+                            max_retries
+                        )
+                        .yellow()
+                        .to_string(),
+                    );
                     return;
                 }
             }
@@ -1424,13 +1869,15 @@ fn print_summary(result: &CommandResult) {
     println!("{}", "═".repeat(70));
 
     if result.success {
-        println!("{} {} Éxito en {} ms",
+        println!(
+            "{} {} Éxito en {} ms",
             Emoji("✓", "✓").to_string().green().bold(),
             "Comando ejecutado correctamente".green().bold(),
             result.duration_ms
         );
     } else {
-        println!("{} {} Falló con código {} en {} ms",
+        println!(
+            "{} {} Falló con código {} en {} ms",
             Emoji("✗", "✗").to_string().red().bold(),
             "Comando fallido".red().bold(),
             result.exit_code,
@@ -1510,9 +1957,13 @@ fn extract_functions(project_path: &PathBuf) -> Vec<FunctionInfo> {
                     let is_pub = caps.get(1).is_some();
                     let name = caps.get(2).unwrap().as_str().to_string();
                     let params_str = caps.get(3).unwrap().as_str();
-                    let return_type = caps.get(4).map(|m| m.as_str().trim().to_string()).unwrap_or_else(|| "()".to_string());
+                    let return_type = caps
+                        .get(4)
+                        .map(|m| m.as_str().trim().to_string())
+                        .unwrap_or_else(|| "()".to_string());
 
-                    let params: Vec<String> = params_str.split(',')
+                    let params: Vec<String> = params_str
+                        .split(',')
                         .map(|p| p.trim().to_string())
                         .filter(|p| !p.is_empty())
                         .collect();
@@ -1542,7 +1993,8 @@ fn extract_structs(project_path: &PathBuf) -> Vec<StructInfo> {
         return structs;
     }
 
-    let struct_pattern = Regex::new(r#"(?m)^\s*(pub\s+)?struct\s+([A-Z]\w*)\s*(?:\{([^}]*)\})?"#).unwrap();
+    let struct_pattern =
+        Regex::new(r#"(?m)^\s*(pub\s+)?struct\s+([A-Z]\w*)\s*(?:\{([^}]*)\})?"#).unwrap();
     let field_pattern = Regex::new(r#"(\w+)\s*:\s*([^,}]+)"#).unwrap();
 
     for entry in WalkDir::new(&src_path)
@@ -1588,7 +2040,8 @@ fn extract_traits(project_path: &PathBuf) -> Vec<TraitInfo> {
         return traits;
     }
 
-    let trait_pattern = Regex::new(r#"(?m)^\s*pub\s+trait\s+([A-Z]\w*)\s*(?:\{([^}]*)\})?"#).unwrap();
+    let trait_pattern =
+        Regex::new(r#"(?m)^\s*pub\s+trait\s+([A-Z]\w*)\s*(?:\{([^}]*)\})?"#).unwrap();
     let method_pattern = Regex::new(r#"fn\s+([a-z_]\w*)"#).unwrap();
 
     for entry in WalkDir::new(&src_path)
@@ -1685,7 +2138,11 @@ fn extract_todos(project_path: &PathBuf) -> Vec<TodoItem> {
 
             for (line_num, line) in content.lines().enumerate() {
                 if let Some(caps) = todo_pattern.captures(line) {
-                    let text = format!("[{}] {}", caps.get(1).unwrap().as_str(), caps.get(2).unwrap().as_str());
+                    let text = format!(
+                        "[{}] {}",
+                        caps.get(1).unwrap().as_str(),
+                        caps.get(2).unwrap().as_str()
+                    );
                     todos.push(TodoItem {
                         text,
                         file: file_path.clone(),
@@ -1738,7 +2195,8 @@ fn calculate_metrics(project_path: &PathBuf) -> ProjectMetrics {
     }
 
     if metrics.total_functions > 0 {
-        metrics.test_coverage_estimate = (metrics.total_tests as f64 / metrics.total_functions as f64) * 100.0;
+        metrics.test_coverage_estimate =
+            (metrics.total_tests as f64 / metrics.total_functions as f64) * 100.0;
     }
 
     metrics
@@ -1832,7 +2290,11 @@ fn scan_modules(project_path: &PathBuf) -> Vec<ModuleInfo> {
 
         let file_count = WalkDir::new(entry.path())
             .into_iter()
-            .filter(|e| e.as_ref().map_or(false, |f| f.path().extension().map_or(false, |ext| ext == "rs")))
+            .filter(|e| {
+                e.as_ref().map_or(false, |f| {
+                    f.path().extension().map_or(false, |ext| ext == "rs")
+                })
+            })
             .count();
 
         if file_count > 0 {
@@ -1852,7 +2314,9 @@ fn scan_modules(project_path: &PathBuf) -> Vec<ModuleInfo> {
 // Mock generation scanner removed to comply with No-Mocks directive.
 
 /// Carga variables de entorno desde un archivo .env simple
-fn load_env_file(project_path: &PathBuf) -> std::io::Result<std::collections::HashMap<String, String>> {
+fn load_env_file(
+    project_path: &PathBuf,
+) -> std::io::Result<std::collections::HashMap<String, String>> {
     let env_path = project_path.join(".env");
     if !env_path.exists() {
         return Ok(std::collections::HashMap::new());
@@ -1869,7 +2333,11 @@ fn load_env_file(project_path: &PathBuf) -> std::io::Result<std::collections::Ha
 
         if let Some((key, value)) = line.split_once('=') {
             let key = key.trim().to_string();
-            let value = value.trim().trim_matches('"').trim_matches('\'').to_string();
+            let value = value
+                .trim()
+                .trim_matches('"')
+                .trim_matches('\'')
+                .to_string();
             vars.insert(key, value);
         }
     }
