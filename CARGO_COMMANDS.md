@@ -106,7 +106,7 @@ cargo build --release
 cargo fmt --check
 cargo clippy -- -D warnings
 cargo test
-cargo build --release --bin trae-server
+cargo build --release
 
 # Crear release
 cargo build --release
