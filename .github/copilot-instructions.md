@@ -10,7 +10,7 @@
 - **Comandos CI reales**: `.github/workflows/ci.yml` ejecuta `cargo fmt -- --check`, `cargo clippy --all-targets --all-features -- -D warnings`, `cargo test --all --release`, `cargo build --release`.
 - **Alias local**: `.cargo/config.toml` define `cargo clippy-clean` → `cargo clippy --all-targets -- -D warnings`.
 - **build.rs**: en Windows copia `target/release/trae.exe` a `bin/`.
-- **Hook**: `.githooks/pre-commit` intenta ejecutar `verify-clippy.ps1` (no existe en el repo). Si tienes PowerShell instalado puede fallar; en Linux sin pwsh cae a `cargo clippy --all-targets -- -D warnings`.
+- **Hook**: `.githooks/pre-commit` intenta ejecutar `verify-clippy.ps1`, pero ese script no está en el repo. **Known issue**: si tienes PowerShell instalado puede fallar; en Linux sin pwsh cae a `cargo clippy --all-targets -- -D warnings`.
 
 ## Bootstrap/Build/Test/Lint (validado)
 > **Siempre** usa la toolchain stable. En esta máquina funcionó con `rustc 1.92.0` y `cargo 1.92.0`.
@@ -51,8 +51,7 @@ cargo run --bin trae -- --help
 # Servidor HTTP (puerto 3001)
 JARVIX_URL=http://localhost:5051 cargo run --bin server_http
 
-# Binario adicional (servidor HTTP "full" basado en tiny_http en puerto 3001)
-cargo run --bin trae_server_final
+# Binarios disponibles están definidos en Cargo.toml: `trae` y `server_http`.
 ```
 
 ## Layout del proyecto (rutas importantes)
