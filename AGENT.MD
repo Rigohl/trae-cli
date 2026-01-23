@@ -8,7 +8,7 @@ triggers: ["cargo_build", "code_change", "error_detection"]
 # Jarvix-CLI - CONTEXTO DE CARPETA
 
 ## DESCRIPCIÓN GENERAL
-Esta carpeta contiene Jarvix-CLI, la herramienta de línea de comandos en Rust que se integra como subcomando de Cargo (`cargo jar`) para análisis de código, reparación automática y optimización de builds.
+Esta carpeta contiene Jarvix-CLI, la herramienta de línea de comandos en Rust que se integra como subcomando de Cargo (`cargo jarcli`) para análisis de código, reparación automática y optimización de builds.
 
 ## ARQUITECTURA PRINCIPAL
 
@@ -19,10 +19,10 @@ Esta carpeta contiene Jarvix-CLI, la herramienta de línea de comandos en Rust q
 - **Build Optimizer**: Optimizaciones de compilación
 
 ### Funcionalidades Principales
-- `cargo jar analyze` - Análisis de calidad de código
-- `cargo jar repair` - Reparación automática de errores
-- `cargo jar build` - Builds optimizados con métricas
-- `cargo jar test` - Ejecución de tests con análisis
+- `cargo jarcli analyze` - Análisis de calidad de código
+- `cargo jarcli repair` - Reparación automática de errores
+- `cargo jarcli build` - Builds optimizados con métricas
+- `cargo jarcli test` - Ejecución de tests con análisis
 
 ## INTEGRACIÓN CON SISTEMA
 
