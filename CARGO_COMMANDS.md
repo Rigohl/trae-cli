@@ -4,8 +4,11 @@
 
 ### Compilación y Build
 ```bash
-# Build optimizado para producción
-cargo build --release --bin trae-server
+# Build del servidor HTTP
+cargo build --release --bin server_http
+
+# Build del CLI principal
+cargo build --release --bin trae
 
 # Build con todas las features
 cargo build --release --all-features
@@ -94,7 +97,7 @@ cargo clippy
 cargo test
 
 # Build final
-cargo build --release --bin trae-server
+cargo build --release
 ```
 
 ### Release
@@ -114,12 +117,20 @@ cargo build --release
 # Build con debug symbols
 cargo build
 
-# Ejecutar con backtrace
-RUST_BACKTRACE=1 cargo run --bin trae-server
+# Ejecutar con backtrace (servidor HTTP)
+RUST_BACKTRACE=1 cargo run --bin server_http
 
-# Profiling
-cargo build --release
-perf record ./target/release/trae-server
+# Ejecutar CLI con backtrace
+RUST_BACKTRACE=1 cargo run --bin trae
+
+# Profiling del servidor HTTP
+cargo build --release --bin server_http
+perf record ./target/release/server_http
+perf report
+
+# Profiling del CLI
+cargo build --release --bin trae
+perf record ./target/release/trae --help
 perf report
 ```
 
@@ -156,17 +167,24 @@ export JARVIX_URL=http://localhost:8080
 
 ### Tamaño del Binario
 ```bash
-# Ver tamaño del binario
-ls -lh target/release/trae-server
+# Ver tamaño de binarios
+ls -lh target/release/server_http
+ls -lh target/release/trae
 
-# Analizar tamaño por crate
-cargo bloat --release --bin trae-server
+# Analizar tamaño por crate (servidor)
+cargo bloat --release --bin server_http
+
+# Analizar tamaño por crate (CLI)
+cargo bloat --release --bin trae
 ```
 
 ### Tiempo de Compilación
 ```bash
-# Medir tiempo de compilación
-time cargo build --release --bin trae-server
+# Medir tiempo de compilación completa
+time cargo build --release
+
+# Medir tiempo de compilación del servidor
+time cargo build --release --bin server_http
 ```
 
 ### Cobertura de Código
@@ -174,8 +192,12 @@ time cargo build --release --bin trae-server
 # Instalar herramienta de cobertura
 cargo install cargo-tarpaulin
 
-# Generar reporte de cobertura
-cargo tarpaulin --bin trae-server
+# Generar reporte de cobertura completo
+cargo tarpaulin --all
+
+# Generar reporte de cobertura para binarios específicos
+cargo tarpaulin --bin trae
+cargo tarpaulin --bin server_http
 ```
 
 ## Integración con CI/CD
@@ -194,7 +216,7 @@ jobs:
       - run: cargo fmt --check
       - run: cargo clippy -- -D warnings
       - run: cargo test
-      - run: cargo build --release --bin trae-server
+      - run: cargo build --release
 ```
 
 ### Docker
@@ -202,12 +224,12 @@ jobs:
 FROM rust:1.70-slim as builder
 WORKDIR /app
 COPY . .
-RUN cargo build --release --bin trae-server
+RUN cargo build --release --bin server_http
 
 FROM debian:bookworm-slim
-COPY --from=builder /app/target/release/trae-server /usr/local/bin/
+COPY --from=builder /app/target/release/server_http /usr/local/bin/
 EXPOSE 3001
-CMD ["trae-server"]
+CMD ["server_http"]
 ```
 
 ## Troubleshooting
@@ -222,15 +244,15 @@ cargo clean
 rm -rf target/
 
 # Rebuild desde cero
-cargo clean && cargo build --release --bin trae-server
+cargo clean && cargo build --release
 ```
 
 ### Optimización
 ```bash
 # Build con optimizaciones agresivas
-RUSTFLAGS="-C target-cpu=native -C opt-level=3 -C lto=fat" cargo build --release --bin trae-server
+RUSTFLAGS="-C target-cpu=native -C opt-level=3 -C lto=fat" cargo build --release
 
-# Reducir tamaño del binario
-cargo install cargo-strip
-cargo strip --bin trae-server
+# Reducir tamaño de los binarios
+strip target/release/server_http
+strip target/release/trae
 ```
