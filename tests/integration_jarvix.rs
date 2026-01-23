@@ -1,8 +1,8 @@
 use std::sync::{Arc, Mutex};
 
-use jarvix_cli::commands::analyze::AnalyzeCommand;
-use jarvix_cli::jarvix::client::JarvixClient;
-use jarvix_cli::metrics::collector::MetricsCollector;
+use jarcli::commands::analyze::AnalyzeCommand;
+use jarcli::jarvix::client::JarvixClient;
+use jarcli::metrics::collector::MetricsCollector;
 use serde_json::Value;
 use std::thread;
 use tiny_http::{Response, Server};
