@@ -223,6 +223,16 @@ curl http://localhost:8080/trae/health
 
 Licensed under MIT OR Apache-2.0.
 
+## 🔧 Repository Management
+
+### Branch Consolidation
+
+For instructions on consolidating branches and cleaning up the repository, see [BRANCH_CONSOLIDATION.md](BRANCH_CONSOLIDATION.md).
+
+Scripts are available in the `scripts/` directory:
+- `consolidate_branches.sh` - Linux/macOS
+- `consolidate_branches.ps1` - Windows/PowerShell
+
 ## 🤝 Contributing
 
 1. Fork the repository
