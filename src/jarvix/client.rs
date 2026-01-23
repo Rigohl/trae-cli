@@ -35,7 +35,7 @@ impl JarvixClient {
             });
         }
         if let Ok(home) = std::env::var("HOME").or_else(|_| std::env::var("USERPROFILE")) {
-            let config_path = format!("{home}/.trae/config.toml");
+            let config_path = format!("{home}/.jarcli/config.toml");
             if let Ok(content) = std::fs::read_to_string(&config_path) {
                 if let Ok(config) = toml::from_str::<JarvixConfig>(&content) {
                     return Ok(config);

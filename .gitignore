@@ -24,5 +24,7 @@ Thumbs.db
 # Jarvix specific
 .jarvix/
 .trae/
+.jarcli/
 *.jarvix
 *.trae
+*.jarcli

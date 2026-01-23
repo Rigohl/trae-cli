@@ -16,7 +16,7 @@ use serde_json::json;
 use std::time::{Duration, Instant};
 #[doc = " Jarvix CLI - Enhanced Rust Development Tools"]
 #[derive(Parser, Debug)]
-#[command(name = "jar")]
+#[command(name = "jarcli")]
 #[command(version = "0.2.0")]
 #[command(about = "Jarvix Analysis Runtime - Enhanced cargo with advanced tooling")]
 # [command (long_about = None)]

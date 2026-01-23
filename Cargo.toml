@@ -1,20 +1,20 @@
 [package]
-name = "jarvix-cli"
+name = "jarcli"
 version = "0.2.0"
 edition = "2021"
 authors = ["Jarvix Team"]
-description = "CLI de Rust que ejecuta comandos cargo y reporta resultados a JARVIXSERVER"
-repository = "https://github.com/Rigohl/jarvix-cli"
+description = "Jarvix CLI - Advanced Rust Development Toolkit que ejecuta comandos cargo y reporta resultados a JARVIXSERVER"
+repository = "https://github.com/Rigohl/trae-cli"
 license = "MIT"
 keywords = ["cli", "cargo", "automation", "rust"]
 categories = ["command-line-utilities", "development-tools"]
 
 [[bin]]
-name = "jar"
+name = "jarcli"
 path = "src/main.rs"
 
 [[bin]]
-name = "server_http"
+name = "jarcli-server"
 path = "src/bin/server_http.rs"
 
 [dependencies]

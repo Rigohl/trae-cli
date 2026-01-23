@@ -19,14 +19,14 @@ Jarvix CLI integrates seamlessly with JARVIXSERVER to provide comprehensive code
 
 ### Proxy Configuration
 
-JARVIXSERVER automatically proxies Jarvix CLI endpoints under `/jar/*`:
+JARVIXSERVER automatically proxies Jarvix CLI endpoints under `/jarcli/*`:
 
 ```javascript
 // JARVIXSERVER proxy routes
-GET  /jar/health     → http://localhost:3001/health
-POST /jar/api/analyze → http://localhost:3001/api/analyze
-POST /jar/api/repair → http://localhost:3001/api/repair
-GET  /jar/api/metrics → http://localhost:3001/api/metrics
+GET  /jarcli/health     → http://localhost:3001/health
+POST /jarcli/api/analyze → http://localhost:3001/api/analyze
+POST /jarcli/api/repair → http://localhost:3001/api/repair
+GET  /jarcli/api/metrics → http://localhost:3001/api/metrics
 ```
 
 ### Health Check Integration
@@ -36,7 +36,7 @@ GET  /jar/api/metrics → http://localhost:3001/api/metrics
 curl http://localhost:3001/health
 
 # Via JARVIXSERVER proxy
-curl http://localhost:8080/jar/health
+curl http://localhost:8080/jarcli/health
 ```
 
 ## CI/CD Integration
@@ -57,11 +57,11 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Build Jarvix CLI
-        run: cargo build --release --bin jar-server
+        run: cargo build --release --bin jarcli-server
 
       - name: Start Jarvix Server
         run: |
-          ./target/release/jar-server &
+          ./target/release/jarcli-server &
           sleep 3
 
       - name: Run Code Analysis
@@ -97,10 +97,10 @@ pipeline {
             steps {
                 sh '''
                     # Build Jarvix CLI
-                    cargo build --release --bin jar-server
+                    cargo build --release --bin jarcli-server
 
                     # Start server in background
-                    ./target/release/jar-server &
+                    ./target/release/jarcli-server &
                     sleep 3
 
                     # Run analysis
@@ -132,7 +132,7 @@ pipeline {
 FROM rust:1.70-slim as builder
 WORKDIR /app
 COPY . .
-RUN cargo build --release --bin jar-server
+RUN cargo build --release --bin jarcli-server
 
 FROM debian:bookworm-slim
 # Install dependencies for Chapel
@@ -161,18 +161,18 @@ RUN wget -O chapel.tar.gz https://github.com/chapel-lang/chapel/releases/downloa
 ENV CHPL_HOME=/usr/local/chapel
 ENV PATH=$PATH:$CHPL_HOME/bin
 
-COPY --from=builder /app/target/release/jar-server /usr/local/bin/
+COPY --from=builder /app/target/release/jarcli-server /usr/local/bin/
 EXPOSE 3001
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:3001/health || exit 1
-CMD ["jar-server"]
+CMD ["jarcli-server"]
 ```
 
 ```yaml
 # docker-compose.yml
 version: '3.8'
 services:
-  jarvix-cli:
+  jarcli:
     build: .
     ports:
       - "3001:3001"
@@ -187,7 +187,7 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      jarvix-cli:
+      jarcli:
         condition: service_healthy
 ```
 
@@ -360,7 +360,7 @@ send_discord_notification(analysis)
 
 ```rust
 // Extend Jarvix CLI with custom analysis rules
-use jarvix_cli::core::analyzer::Analyzer;
+use jarcli::core::analyzer::Analyzer;
 
 struct CustomAnalyzer;
 
@@ -412,7 +412,7 @@ fn load_plugins() -> Vec<Box<dyn JarvixPlugin>> {
 curl http://localhost:3001/health
 
 # Test via JARVIXSERVER proxy
-curl http://localhost:8080/jar/health
+curl http://localhost:8080/jarcli/health
 
 # Check port availability
 netstat -tlnp | grep :3001
@@ -454,7 +454,7 @@ upstream jarvix_backend {
 
 server {
     listen 8080;
-    location /jar/ {
+    location /jarcli/ {
         proxy_pass http://jarvix_backend;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;

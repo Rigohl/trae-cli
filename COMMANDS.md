@@ -1,6 +1,6 @@
-# Comandos Reproducibles — jarvix-cli
+# Comandos Reproducibles — jarcli
 
-Este archivo recoge los comandos usados para preparar, validar y empaquetar `jarvix-cli`. No incluye commits ni push.
+Este archivo recoge los comandos usados para preparar, validar y empaquetar `jarcli`. No incluye commits ni push.
 
 ## Entorno
 - Rust + Cargo instalados
@@ -28,13 +28,13 @@ cargo build
 cargo build --release
 ```
 
-## Ejecutar servidor HTTP (jar-server)
+## Ejecutar servidor HTTP (jarcli-server)
 ```bash
 # Ejecutar binario servidor (release)
-./target/release/jar-server
+./target/release/jarcli-server
 
 # O en Windows
-.\target\release\jar-server.exe
+.\target\release\jarcli-server.exe
 ```
 
 ## Tests

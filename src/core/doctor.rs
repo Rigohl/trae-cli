@@ -130,7 +130,7 @@ async fn check_jarvix_connection() -> Result<bool> {
         }
         Err(e) => {
             println!("{}", format!("❌ Error de conexión: {e}").red());
-            println!("   💡 Verificar configuración en ~/.trae/config.toml");
+            println!("   💡 Verificar configuración en ~/.jarcli/config.toml");
             Ok(false)
         }
     }

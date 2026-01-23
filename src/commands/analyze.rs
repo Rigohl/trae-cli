@@ -129,7 +129,7 @@ impl AnalyzeCommand {
             }
         }
         let fingerprint = hex::encode(hasher.finalize());
-        let cache_dir = Path::new(".trae").join("cache");
+        let cache_dir = Path::new(".jarcli").join("cache");
         let _ = fs::create_dir_all(&cache_dir);
         let cache_file = cache_dir.join(format!("analyze_{}.json", fingerprint));
 
@@ -216,7 +216,7 @@ impl AnalyzeCommand {
         );
 
         // Also persist metrics and full analysis snapshot for offline inspection
-        let metrics_dir = Path::new(".trae").join("metrics");
+        let metrics_dir = Path::new(".jarcli").join("metrics");
         let _ = fs::create_dir_all(&metrics_dir);
         let metrics_file = metrics_dir.join(format!("analyze_{}.json", fingerprint));
         let snapshot = serde_json::json!({

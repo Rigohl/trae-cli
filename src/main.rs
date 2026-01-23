@@ -19,7 +19,7 @@ use walkdir::WalkDir;
 
 /// Jarvix-CLI: Ejecutor de comandos Rust que reporta a JARVIXSERVER
 #[derive(Parser)]
-#[command(name = "jar")]
+#[command(name = "jarcli")]
 #[command(about = "Ejecuta comandos Rust (cargo) y reporta resultados a JARVIXSERVER")]
 #[command(version = "0.2.0")]
 #[command(author = "Jarvix Team")]

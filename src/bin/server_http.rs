@@ -1,5 +1,5 @@
-//! HTTP Server for TRAE CLI
-//! Expone comandos de trae-cli como REST API integrado con JARVIXSERVER
+//! HTTP Server for Jarvix CLI (jarcli)
+//! Expone comandos de jarcli como REST API integrado con JARVIXSERVER
 
 use axum::{
     extract::{Json, State},
@@ -244,7 +244,7 @@ async fn metrics_handler() -> impl IntoResponse {
 /// Function documentation added by AI refactor
 async fn status_handler() -> impl IntoResponse {
     Json(serde_json::json!({
-        "service": "jarvix-cli",
+        "service": "jarcli",
         "version": env!("CARGO_PKG_VERSION"),
         "status": "operational",
         "endpoints": ["/health", "/api/build", "/api/analyze", "/api/repair", "/api/metrics"]

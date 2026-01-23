@@ -325,7 +325,7 @@ impl BuildCommand {
             format!("{}:/app", std::env::current_dir()?.display()),
             "-w".to_string(),
             "/app".to_string(),
-            "jarvix-cli:latest".to_string(),
+            "jarcli:latest".to_string(),
             "cargo".to_string(),
             "build".to_string(),
         ];
