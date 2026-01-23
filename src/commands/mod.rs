@@ -1,6 +1,6 @@
 #![doc = " # Commands Module - All command implementations"]
 #![doc = ""]
-#![doc = " Contiene todos los subcomandos de TRAE CLI"]
+#![doc = " Contiene todos los subcomandos de Jarvix CLI"]
 pub mod analyze;
 pub mod build;
 pub mod build_help;
