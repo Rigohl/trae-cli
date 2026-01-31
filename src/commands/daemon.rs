@@ -60,7 +60,7 @@ impl DaemonCommand {
         let child = cmd.spawn().context("No se pudo iniciar trae-server")?;
         let pid = child
             .id()
-            .map(|v| v.to_string())
+            .map(|id_value| id_value.to_string())
             .unwrap_or_else(|| "desconocido".to_string());
         println ! ("{}" , format ! ("✅ trae-server iniciado (pid {}) en background. Usa Ctrl+C para detener el CLI; el server sigue activo." , pid) . green ());
         Ok(())

@@ -30,12 +30,12 @@ impl TraeMetadataCommand {
         let pkgs: Vec<_> = meta
             .packages
             .iter()
-            .map(|p| {
+            .map(|package| {
                 serde_json::json!({
-                    "name": p.name,
-                    "version": p.version.to_string(),
-                    "id": p.id.to_string(),
-                    "manifest_path": p.manifest_path.to_string()
+                    "name": package.name,
+                    "version": package.version.to_string(),
+                    "id": package.id.to_string(),
+                    "manifest_path": package.manifest_path.to_string()
                 })
             })
             .collect();
@@ -57,7 +57,7 @@ impl TraeMetadataCommand {
             let deps: Vec<_> = meta
                 .packages
                 .iter()
-                .flat_map(|p| p.dependencies.iter().map(move |d| serde_json::json!({"pkg": p.name, "dep": d.name, "req": d.req.to_string()})))
+                .flat_map(|package| package.dependencies.iter().map(move |dependency| serde_json::json!({"pkg": package.name, "dep": dependency.name, "req": dependency.req.to_string()})))
                 .collect();
             out["dependencies"] = serde_json::Value::Array(deps);
         }
@@ -68,8 +68,13 @@ impl TraeMetadataCommand {
             for entry in walkdir::WalkDir::new(".")
                 .into_iter()
                 .filter_map(|e| e.ok())
-                .filter(|e| {
-                    e.path().is_file() && e.path().extension().map(|s| s == "rs").unwrap_or(false)
+                .filter(|entry| {
+                    entry.path().is_file()
+                        && entry
+                            .path()
+                            .extension()
+                            .map(|ext| ext == "rs")
+                            .unwrap_or(false)
                 })
             {
                 if let Ok(s) = fs::read_to_string(entry.path()) {

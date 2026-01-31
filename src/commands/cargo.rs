@@ -44,11 +44,11 @@ fn resolve_executable(name: &str) -> Option<String> {
     if let Some(home) = dirs::home_dir() {
         candidates.push(home.join(".cargo").join("bin").join(name));
     }
-    for p in candidates {
-        if p.exists() {
-            return Some(p.to_string_lossy().to_string());
+    for candidate in candidates {
+        if candidate.exists() {
+            return Some(candidate.to_string_lossy().to_string());
         }
-        let mut pexe = p.clone();
+        let mut pexe = candidate.clone();
         pexe.set_extension("exe");
         if pexe.exists() {
             return Some(pexe.to_string_lossy().to_string());
@@ -82,7 +82,7 @@ impl CargoCommand {
         {
             arg_strings.push("--color=always".to_string());
         }
-        let arg_refs: Vec<&str> = arg_strings.iter().map(|s| s.as_str()).collect();
+        let arg_refs: Vec<&str> = arg_strings.iter().map(|arg| arg.as_str()).collect();
         if self.interactive {
             self.run_interactive(cli, &executor, &mut metrics, &arg_refs, start_time)
                 .await
@@ -327,7 +327,7 @@ impl CargoCommand {
         {
             arg_strings.push("--color=always".to_string());
         }
-        let arg_refs: Vec<&str> = arg_strings.iter().map(|s| s.as_str()).collect();
+        let arg_refs: Vec<&str> = arg_strings.iter().map(|arg| arg.as_str()).collect();
         if interactive {
             match executor.execute_interactive(&arg_refs).await {
                 Ok(()) => {

@@ -15,7 +15,7 @@ fn analyze_code_fourier(data: &[f64]) -> f64 {
         return 0.0;
     }
     let mean = data.iter().sum::<f64>() / data.len() as f64;
-    let variance = data.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / data.len() as f64;
+    let variance = data.iter().map(|value| (value - mean).powi(2)).sum::<f64>() / data.len() as f64;
     (variance.sqrt() / (mean + 1.0)).min(10.0)
 }
 #[doc = " Cálculo de tensor estructural para análisis de curvatura del código"]
@@ -109,7 +109,10 @@ impl ProjectAnalyzer {
                 |entry| analyze_single_file(entry.path()),
                 &self.perf_config,
             );
-            let line_distribution: Vec<f64> = file_results.iter().map(|r| r.lines as f64).collect();
+            let line_distribution: Vec<f64> = file_results
+                .iter()
+                .map(|result| result.lines as f64)
+                .collect();
             let fourier_complexity = analyze_code_fourier(&line_distribution);
             for result in file_results {
                 analysis.total_lines += result.lines;

@@ -117,14 +117,14 @@ impl AnalyzeCommand {
             .filter(|e| e.path().is_file())
         {
             if let Ok(md) = fs::metadata(entry.path()) {
-                let p = entry.path().to_string_lossy();
+                let path_string = entry.path().to_string_lossy();
                 let mtime = md
                     .modified()
                     .ok()
-                    .and_then(|t| t.elapsed().ok())
-                    .map(|d| d.as_secs())
+                    .and_then(|time| time.elapsed().ok())
+                    .map(|duration| duration.as_secs())
                     .unwrap_or(0);
-                hasher.update(p.as_bytes());
+                hasher.update(path_string.as_bytes());
                 hasher.update(mtime.to_string().as_bytes());
             }
         }

@@ -1358,8 +1358,8 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
                 ("Compilando release", "build"),
             ];
 
-            let pb = ProgressBar::new(4);
-            pb.set_style(
+            let progress_bar = ProgressBar::new(4);
+            progress_bar.set_style(
                 ProgressStyle::default_bar()
                     .template("[{bar:30.cyan/blue}] {pos}/4 {msg}")
                     .unwrap()
@@ -1367,14 +1367,14 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
             );
 
             // 1. Check Format
-            pb.set_message(steps[0].0);
+            progress_bar.set_message(steps[0].0);
             match Command::new("cargo")
                 .args(&["fmt", "--check"])
                 .current_dir(&args.project)
                 .status()
             {
                 Ok(status) if !status.success() => {
-                    pb.finish_with_message("❌ Formato incorrecto");
+                    progress_bar.finish_with_message("❌ Formato incorrecto");
                     eprintln!("{} Ejecuta 'trae fmt' para corregir", "!".red());
                     let output = Output {
                         status: std::process::ExitStatus::default(),
@@ -1384,7 +1384,7 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
                     return ("preflight-fmt-failed", output);
                 }
                 Err(e) => {
-                    pb.finish_with_message("❌ Error");
+                    progress_bar.finish_with_message("❌ Error");
                     eprintln!("{} Error ejecutando cargo fmt: {}", "✗".red(), e);
                     let output = Output {
                         status: std::process::ExitStatus::default(),
@@ -1395,17 +1395,17 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
                 }
                 _ => {}
             }
-            pb.inc(1);
+            progress_bar.inc(1);
 
             // 2. Clippy
-            pb.set_message(steps[1].0);
+            progress_bar.set_message(steps[1].0);
             match Command::new("cargo")
                 .args(&["clippy", "--", "-D", "warnings"])
                 .current_dir(&args.project)
                 .status()
             {
                 Ok(status) if !status.success() => {
-                    pb.finish_with_message("❌ Clippy detectó problemas");
+                    progress_bar.finish_with_message("❌ Clippy detectó problemas");
                     eprintln!("{} Clippy encontró problemas de código", "!".red());
                     let output = Output {
                         status: std::process::ExitStatus::default(),
@@ -1415,7 +1415,7 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
                     return ("preflight-clippy-failed", output);
                 }
                 Err(e) => {
-                    pb.finish_with_message("❌ Error");
+                    progress_bar.finish_with_message("❌ Error");
                     eprintln!("{} Error ejecutando clippy: {}", "✗".red(), e);
                     let output = Output {
                         status: std::process::ExitStatus::default(),
@@ -1426,17 +1426,17 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
                 }
                 _ => {}
             }
-            pb.inc(1);
+            progress_bar.inc(1);
 
             // 3. Tests
-            pb.set_message(steps[2].0);
+            progress_bar.set_message(steps[2].0);
             match Command::new("cargo")
                 .arg("test")
                 .current_dir(&args.project)
                 .status()
             {
                 Ok(status) if !status.success() => {
-                    pb.finish_with_message("❌ Tests fallaron");
+                    progress_bar.finish_with_message("❌ Tests fallaron");
                     eprintln!("{} Los tests no pasaron", "!".red());
                     let output = Output {
                         status: std::process::ExitStatus::default(),
@@ -1446,7 +1446,7 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
                     return ("preflight-test-failed", output);
                 }
                 Err(e) => {
-                    pb.finish_with_message("❌ Error");
+                    progress_bar.finish_with_message("❌ Error");
                     eprintln!("{} Error ejecutando tests: {}", "✗".red(), e);
                     let output = Output {
                         status: std::process::ExitStatus::default(),
@@ -1457,12 +1457,12 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
                 }
                 _ => {}
             }
-            pb.inc(1);
+            progress_bar.inc(1);
 
             // 4. Build Release
-            pb.set_message(steps[3].0);
-            pb.inc(1);
-            pb.finish_with_message("✓ Preflight completado - procediendo a build");
+            progress_bar.set_message(steps[3].0);
+            progress_bar.inc(1);
+            progress_bar.finish_with_message("✓ Preflight completado - procediendo a build");
             println!();
 
             cmd.arg("build");
@@ -1959,13 +1959,13 @@ fn extract_functions(project_path: &PathBuf) -> Vec<FunctionInfo> {
                     let params_str = caps.get(3).unwrap().as_str();
                     let return_type = caps
                         .get(4)
-                        .map(|m| m.as_str().trim().to_string())
+                        .map(|match_obj| match_obj.as_str().trim().to_string())
                         .unwrap_or_else(|| "()".to_string());
 
                     let params: Vec<String> = params_str
                         .split(',')
-                        .map(|p| p.trim().to_string())
-                        .filter(|p| !p.is_empty())
+                        .map(|param| param.trim().to_string())
+                        .filter(|param| !param.is_empty())
                         .collect();
 
                     functions.push(FunctionInfo {
@@ -2009,7 +2009,10 @@ fn extract_structs(project_path: &PathBuf) -> Vec<StructInfo> {
                 if let Some(caps) = struct_pattern.captures(line) {
                     let is_pub = caps.get(1).is_some();
                     let name = caps.get(2).unwrap().as_str().to_string();
-                    let fields_str = caps.get(3).map(|m| m.as_str()).unwrap_or("");
+                    let fields_str = caps
+                        .get(3)
+                        .map(|match_obj| match_obj.as_str())
+                        .unwrap_or("");
 
                     let mut fields = Vec::new();
                     for field_cap in field_pattern.captures_iter(fields_str) {
@@ -2055,7 +2058,10 @@ fn extract_traits(project_path: &PathBuf) -> Vec<TraitInfo> {
             for _ in content.lines() {
                 if let Some(caps) = trait_pattern.captures(&content[..]) {
                     let name = caps.get(1).unwrap().as_str().to_string();
-                    let trait_body = caps.get(2).map(|m| m.as_str()).unwrap_or("");
+                    let trait_body = caps
+                        .get(2)
+                        .map(|match_obj| match_obj.as_str())
+                        .unwrap_or("");
 
                     let mut methods = Vec::new();
                     for method_cap in method_pattern.captures_iter(trait_body) {

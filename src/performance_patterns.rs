@@ -228,7 +228,11 @@ impl MetricsCollector {
             .map(|op| op.duration.as_millis() as f64)
             .collect();
         let mean = signal.iter().sum::<f64>() / signal.len() as f64;
-        let variance = signal.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / signal.len() as f64;
+        let variance = signal
+            .iter()
+            .map(|value| (value - mean).powi(2))
+            .sum::<f64>()
+            / signal.len() as f64;
         1.0 / (1.0 + variance / (mean + 1.0))
     }
     #[doc = "Method documentation added by AI refactor"]

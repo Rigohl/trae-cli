@@ -43,7 +43,7 @@ impl RustupCommand {
         let mut arg_strings = Vec::new();
         arg_strings.push(self.command.clone());
         arg_strings.extend(self.args.clone());
-        let arg_refs: Vec<&str> = arg_strings.iter().map(|s| s.as_str()).collect();
+        let arg_refs: Vec<&str> = arg_strings.iter().map(|arg| arg.as_str()).collect();
         if self.interactive {
             self.execute_interactive(&program, &arg_refs).await
         } else {
@@ -130,11 +130,11 @@ fn resolve_executable(name: &str) -> Option<String> {
     if let Some(home) = dirs::home_dir() {
         candidates.push(home.join(".cargo").join("bin").join(name));
     }
-    for p in candidates {
-        if p.exists() {
-            return Some(p.to_string_lossy().to_string());
+    for candidate in candidates {
+        if candidate.exists() {
+            return Some(candidate.to_string_lossy().to_string());
         }
-        let mut pexe = p.clone();
+        let mut pexe = candidate.clone();
         pexe.set_extension("exe");
         if pexe.exists() {
             return Some(pexe.to_string_lossy().to_string());

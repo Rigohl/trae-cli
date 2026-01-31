@@ -544,8 +544,8 @@ impl RepairCommand {
             } else {
                 let msg = cat_results
                     .into_iter()
-                    .find(|r| !r.success)
-                    .map(|r| r.message.clone())
+                    .find(|result| !result.success)
+                    .map(|result| result.message.clone())
                     .unwrap_or_else(|| "Fallo en reparacion".to_string());
                 steps.push(StepSummary::failed(label, duration, msg));
             }
@@ -989,10 +989,10 @@ impl RepairCommand {
 
         // If rollback requested, create a simple backup copy of the workspace
         let backup_dir = if opts.rollback {
-            let ts = chrono::Utc::now().format("%Y%m%dT%H%M%SZ").to_string();
+            let timestamp = chrono::Utc::now().format("%Y%m%dT%H%M%SZ").to_string();
             let backup = std::path::Path::new(".trae")
                 .join("backups")
-                .join(format!("repair_{}", ts));
+                .join(format!("repair_{}", timestamp));
             if let Err(e) = std::fs::create_dir_all(&backup) {
                 eprintln!("⚠️ No se pudo crear backup dir: {e}");
                 None

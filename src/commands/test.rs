@@ -62,30 +62,30 @@ impl TestCommand {
                 ProgressStyle::default_spinner()
             }
         };
-        let pb = ProgressBar::new_spinner();
-        pb.set_style(style);
-        pb.set_message("Ejecutando tests básicos...");
+        let progress_bar = ProgressBar::new_spinner();
+        progress_bar.set_style(style);
+        progress_bar.set_message("Ejecutando tests básicos...");
         let test_result = self.run_basic_tests(cli)?;
-        pb.finish_with_message("Tests básicos completados");
+        progress_bar.finish_with_message("Tests básicos completados");
         let mut coverage_data = None;
         if self.coverage || self.html_coverage {
-            pb.set_message("Generando reporte de cobertura...");
+            progress_bar.set_message("Generando reporte de cobertura...");
             coverage_data = Some(self.run_coverage_analysis(cli)?);
-            pb.finish_with_message("Cobertura analizada");
+            progress_bar.finish_with_message("Cobertura analizada");
         }
         let mut bench_results = None;
         if self.bench {
-            pb.set_message("Ejecutando benchmarks...");
+            progress_bar.set_message("Ejecutando benchmarks...");
             bench_results = Some(self.run_benchmarks(cli)?);
-            pb.finish_with_message("Benchmarks completados");
+            progress_bar.finish_with_message("Benchmarks completados");
         }
         let mut perf_analysis = None;
         if self.analyze {
-            pb.set_message("Analizando performance de tests...");
+            progress_bar.set_message("Analizando performance de tests...");
             perf_analysis = Some(self.analyze_test_performance(cli)?);
-            pb.finish_with_message("Análisis completado");
+            progress_bar.finish_with_message("Análisis completado");
         }
-        pb.set_message("Generando reporte final...");
+        progress_bar.set_message("Generando reporte final...");
         self.generate_test_report(
             &test_result,
             coverage_data.as_ref(),
@@ -94,7 +94,7 @@ impl TestCommand {
             start_time.elapsed(),
             &mut metrics,
         )?;
-        pb.finish_with_message("Reporte generado");
+        progress_bar.finish_with_message("Reporte generado");
         if !cli.no_jarvix {
             if let Ok(Some(client)) = JarvixClient::new() {
                 if let Err(e) = client.report_test_metrics(metrics).await {
@@ -273,9 +273,12 @@ impl TestCommand {
         }
         if let Some(bench) = benchmarks {
             println!("\n{}", "⚡ BENCHMARKS".purple().bold());
-            for b in &bench.benchmarks {
-                println!("{}: {:.2}ms ({} iter)", b.name, b.time, b.iterations);
-                if let Some(throughput) = b.throughput {
+            for benchmark in &bench.benchmarks {
+                println!(
+                    "{}: {:.2}ms ({} iter)",
+                    benchmark.name, benchmark.time, benchmark.iterations
+                );
+                if let Some(throughput) = benchmark.throughput {
                     println!("  Throughput: {throughput:.0} ops/sec");
                 }
             }

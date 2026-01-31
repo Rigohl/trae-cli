@@ -58,49 +58,49 @@ impl SecurityCommand {
                 ProgressStyle::default_spinner()
             }
         };
-        let pb = ProgressBar::new_spinner();
-        pb.set_style(style);
+        let progress_bar = ProgressBar::new_spinner();
+        progress_bar.set_style(style);
         let mut results = SecurityResults::default();
         let severity_filter = self.parse_severity_level();
         if self.audit {
-            pb.set_message("Ejecutando auditoría completa de seguridad...");
+            progress_bar.set_message("Ejecutando auditoría completa de seguridad...");
             results.audit = Some(self.run_full_audit(cli, severity_filter)?);
-            pb.finish_with_message("Auditoría completada");
+            progress_bar.finish_with_message("Auditoría completada");
         }
         if self.deps {
-            pb.set_message("Escaneando dependencias vulnerables...");
+            progress_bar.set_message("Escaneando dependencias vulnerables...");
             results.dependencies = Some(self.check_vulnerable_deps(cli)?);
-            pb.finish_with_message("Dependencias verificadas");
+            progress_bar.finish_with_message("Dependencias verificadas");
         }
         if self.code {
-            pb.set_message("Escaneando código por vulnerabilidades...");
+            progress_bar.set_message("Escaneando código por vulnerabilidades...");
             results.code_scan = Some(self.scan_code_security(cli, severity_filter)?);
-            pb.finish_with_message("Código escaneado");
+            progress_bar.finish_with_message("Código escaneado");
         }
         if self.config_check {
-            pb.set_message("Verificando configuración de seguridad...");
+            progress_bar.set_message("Verificando configuración de seguridad...");
             results.config_check = Some(self.check_security_config(cli)?);
-            pb.finish_with_message("Configuración verificada");
+            progress_bar.finish_with_message("Configuración verificada");
         }
         if self.secrets {
-            pb.set_message("Buscando secrets hardcodeados...");
+            progress_bar.set_message("Buscando secrets hardcodeados...");
             results.secrets_scan = Some(self.scan_hardcoded_secrets(cli)?);
-            pb.finish_with_message("Secrets escaneados");
+            progress_bar.finish_with_message("Secrets escaneados");
         }
         if self.cargo_audit {
-            pb.set_message("Ejecutando cargo audit...");
+            progress_bar.set_message("Ejecutando cargo audit...");
             results.cargo_audit = Some(self.run_cargo_audit(cli)?);
-            pb.finish_with_message("Cargo audit completado");
+            progress_bar.finish_with_message("Cargo audit completado");
         }
         if self.fix {
-            pb.set_message("Aplicando fixes automáticos...");
+            progress_bar.set_message("Aplicando fixes automáticos...");
             results.fixes = Some(self.apply_auto_fixes(cli, &results)?);
-            pb.finish_with_message("Fixes aplicados");
+            progress_bar.finish_with_message("Fixes aplicados");
         }
         if self.report {
-            pb.set_message("Generando reporte de seguridad...");
+            progress_bar.set_message("Generando reporte de seguridad...");
             self.generate_security_report(&results, start_time.elapsed(), &mut metrics)?;
-            pb.finish_with_message("Reporte generado");
+            progress_bar.finish_with_message("Reporte generado");
         }
         if !cli.no_jarvix {
             if let Ok(Some(client)) = JarvixClient::new() {
@@ -467,7 +467,7 @@ impl SecurityCommand {
         let base_score = 100.0;
         let penalty = findings
             .iter()
-            .map(|f| match f.severity {
+            .map(|finding| match finding.severity {
                 SecuritySeverity::Critical => 25.0,
                 SecuritySeverity::High => 15.0,
                 SecuritySeverity::Medium => 8.0,

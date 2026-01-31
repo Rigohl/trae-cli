@@ -447,7 +447,11 @@ fn analyze_fourier_complexity(metrics: &HashMap<String, f64>) -> f64 {
     }
     let values: Vec<f64> = metrics.values().copied().collect();
     let mean = values.iter().sum::<f64>() / values.len() as f64;
-    let variance = values.iter().map(|v| (v - mean).powi(2)).sum::<f64>() / values.len() as f64;
+    let variance = values
+        .iter()
+        .map(|value| (value - mean).powi(2))
+        .sum::<f64>()
+        / values.len() as f64;
     variance.sqrt()
 }
 

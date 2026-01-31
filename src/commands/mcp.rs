@@ -109,7 +109,7 @@ impl McpCommand {
             pid,
             port,
             binary: binary.to_string(),
-            log: log.map(|p| p.display().to_string()),
+            log: log.map(|log_path| log_path.display().to_string()),
             started_at: chrono::Utc::now().to_rfc3339(),
         });
         save_registry(&registry)?;

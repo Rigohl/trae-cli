@@ -54,7 +54,7 @@ impl DocCommand {
         let metrics = MetricsCollector::new("doc".to_string());
         println!("{}", "📚 TRAE DOC - Documentation Suite".cyan().bold());
         println!("{}", "================================\n".cyan());
-        let pb = ProgressBar::new_spinner();
+        let progress_bar = ProgressBar::new_spinner();
         let style = match ProgressStyle::default_spinner().template("{spinner:.green} {msg}") {
             Ok(s) => s,
             Err(e) => {
@@ -62,36 +62,36 @@ impl DocCommand {
                 ProgressStyle::default_spinner()
             }
         };
-        pb.set_style(style);
+        progress_bar.set_style(style);
         if self.generate {
-            pb.set_message("Generando documentación...");
+            progress_bar.set_message("Generando documentación...");
             self.generate_docs(cli)?;
-            pb.finish_with_message("✓ Documentación generada");
+            progress_bar.finish_with_message("✓ Documentación generada");
         }
         if self.validate {
-            pb.set_message("Validando documentación...");
+            progress_bar.set_message("Validando documentación...");
             self.validate_docs(cli)?;
-            pb.finish_with_message("✓ Validación completada");
+            progress_bar.finish_with_message("✓ Validación completada");
         }
         if self.coverage {
-            pb.set_message("Analizando cobertura de documentación...");
+            progress_bar.set_message("Analizando cobertura de documentación...");
             self.check_doc_coverage(cli)?;
-            pb.finish_with_message("✓ Cobertura analizada");
+            progress_bar.finish_with_message("✓ Cobertura analizada");
         }
         if self.readme {
-            pb.set_message("Generando README...");
+            progress_bar.set_message("Generando README...");
             self.generate_readme(cli)?;
-            pb.finish_with_message("✓ README generado");
+            progress_bar.finish_with_message("✓ README generado");
         }
         if self.open {
-            pb.set_message("Abriendo documentación en navegador...");
+            progress_bar.set_message("Abriendo documentación en navegador...");
             self.open_docs()?;
-            pb.finish_with_message("✓ Documentación abierta");
+            progress_bar.finish_with_message("✓ Documentación abierta");
         }
         if self.publish {
-            pb.set_message("Publicando documentación...");
+            progress_bar.set_message("Publicando documentación...");
             self.publish_docs(cli)?;
-            pb.finish_with_message("✓ Documentación publicada");
+            progress_bar.finish_with_message("✓ Documentación publicada");
         }
         let elapsed = start_time.elapsed();
         println!("\n{}", "✓ OPERACIÓN COMPLETADA".green().bold());

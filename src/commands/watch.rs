@@ -48,7 +48,7 @@ impl WatchCommand {
                 "👀 Watch activo en: {}",
                 watch_paths
                     .iter()
-                    .map(|p| p.display().to_string())
+                    .map(|path| path.display().to_string())
                     .collect::<Vec<_>>()
                     .join(", ")
             )
@@ -94,7 +94,7 @@ impl WatchCommand {
             let mut parts: Vec<String> = self
                 .command
                 .split_whitespace()
-                .map(|s| s.to_string())
+                .map(|part| part.to_string())
                 .collect();
             if !parts.is_empty() && parts[0] == "cargo" {
                 parts.remove(0);

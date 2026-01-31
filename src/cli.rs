@@ -297,7 +297,7 @@ impl TraeCli {
                                             line: issue
                                                 .get("line")
                                                 .and_then(serde_json::Value::as_u64)
-                                                .map(|l| l as usize),
+                                                .map(|line_num| line_num as usize),
                                         });
                                     }
                                 }
@@ -348,7 +348,7 @@ impl TraeCli {
                                         line: issue
                                             .get("line")
                                             .and_then(serde_json::Value::as_u64)
-                                            .map(|l| l as usize),
+                                            .map(|line_num| line_num as usize),
                                     });
                                 }
                             }
