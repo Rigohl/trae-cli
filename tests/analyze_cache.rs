@@ -25,7 +25,7 @@ async fn analyze_cache_and_force_refresh_and_profile() {
     let res = AnalyzeCommand::run_simple(false, false, false, true, None, false, None).await;
     assert!(res.is_ok());
 
-    let cache_dir = PathBuf::from(".trae").join("cache");
+    let cache_dir = PathBuf::from(".jarcli").join("cache");
     assert!(cache_dir.exists(), "cache dir not created");
     let entries: Vec<_> = fs::read_dir(&cache_dir)
         .expect("read cache dir")
