@@ -6,7 +6,7 @@ use crate::commands::{
     cargo::CargoCommand, clippy::ClippyCommand, daemon::DaemonCommand, doc::DocCommand,
     math::MathCommand, mcp::McpCommand, metadata::JarvixMetadataCommand, metrics::MetricsCommand,
     paths::PathsCommand, release::ReleaseCommand, repair::RepairCommand, rustup::RustupCommand,
-    security::SecurityCommand, simulate::SimulateCommand, test::TestCommand, watch::WatchCommand,
+    scan::ScanCommand, security::SecurityCommand, simulate::SimulateCommand, test::TestCommand, watch::WatchCommand,
 };
 use crate::core::cargo::CargoExecutor;
 use anyhow::Result;
@@ -114,6 +114,8 @@ pub enum Commands {
     Doc(DocCommand),
     #[doc = " 🔬 Mathematical analysis with Julia workers"]
     Math(MathCommand),
+    #[doc = " 🌐 Enhanced multilanguage scanning with chaos mathematics"]
+    Scan(ScanCommand),
     #[doc = " � Security audit and vulnerability scanning"]
     Security(SecurityCommand),
 }
