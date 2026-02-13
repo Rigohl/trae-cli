@@ -22,15 +22,33 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache incremental target
+        uses: actions/cache@v4
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
+
       - name: Run fmt check
         run: |
           cargo fmt -- --check
+
+      - name: Run code-health (fast static checks)
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -NoLogo -ExecutionPolicy Bypass -File ./scripts/code-health.ps1
 
       - name: Affected-only checks (fast-path for PRs)
         if: github.event_name == 'pull_request'
         shell: pwsh
         run: |
           pwsh -NoProfile -NoLogo -ExecutionPolicy Bypass -File ./scripts/affected-checks.ps1 -Ci
+
+      - name: Affected-only tests (fast-path for PRs)
+        if: github.event_name == 'pull_request'
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -NoLogo -ExecutionPolicy Bypass -File ./scripts/affected-tests.ps1 -Ci
 
       - name: Run clippy
         run: |
