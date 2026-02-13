@@ -33,6 +33,8 @@ tabled = "0.15"
 clap_complete = "4"
 walkdir = "2"
 regex = "1"
+
+# walkdir and regex are used by the new code-health command (no extra deps)
 syn = { version = "2", features = ["full"] }
 quote = "1"
 proc-macro2 = "1"

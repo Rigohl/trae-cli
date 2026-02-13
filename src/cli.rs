@@ -3,7 +3,7 @@
 #![doc = " Define la estructura principal de comandos y subcomandos de TRAE CLI"]
 use crate::commands::{
     analyze::AnalyzeCommand, build::BuildCommand, build_help::BuildHelpCommand,
-    cargo::CargoCommand, clippy::ClippyCommand, daemon::DaemonCommand, doc::DocCommand,
+    cargo::CargoCommand, clippy::ClippyCommand, code_health::CodeHealthCommand, diagnostics::DiagnosticsCommand, daemon::DaemonCommand, doc::DocCommand,
     math::MathCommand, mcp::McpCommand, metadata::TraeMetadataCommand, metrics::MetricsCommand,
     paths::PathsCommand, release::ReleaseCommand, repair::RepairCommand, rustup::RustupCommand,
     security::SecurityCommand, simulate::SimulateCommand, test::TestCommand, watch::WatchCommand,
@@ -97,6 +97,12 @@ pub enum Commands {
         #[arg(long)]
         export: Option<String>,
     },
+    #[doc = " 🔍 Show cargo diagnostics (parse JSON and surface file:line:col)"]
+    Diagnostics(DiagnosticsCommand),
+
+    #[doc = " 🔎 Code health checks (unwrap/unsafe/TODO)"]
+    CodeHealth(CodeHealthCommand),
+
     #[doc = " 🧪 Enhanced testing with coverage and analysis"]
     Test(TestCommand),
     #[doc = "Generate project metadata JSON"]
@@ -127,6 +133,8 @@ impl TraeCli {
             Commands::Analyze(cmd) => cmd.execute(self).await,
             Commands::BuildHelp(cmd) => cmd.execute(self).await,
             Commands::Clippy(cmd) => cmd.execute().await,
+            Commands::Diagnostics(cmd) => cmd.execute(self).await,
+            Commands::CodeHealth(cmd) => cmd.execute(self).await,
             Commands::Simulate(cmd) => cmd.execute(self).await,
             Commands::Daemon(cmd) => cmd.execute(self).await,
             Commands::Mcp(cmd) => cmd.execute().await,

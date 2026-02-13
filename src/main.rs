@@ -372,6 +372,25 @@ enum CargoCommand {
         check: bool,
     },
 
+    /// traе diagnostics - Parsea salida JSON de cargo y muestra file:line:col
+    Diagnostics {
+        /// Ejecutar `cargo build` en lugar de `cargo check`
+        #[arg(long)]
+        build: bool,
+        /// Abrir ubicación en editor (`code -g` por defecto)
+        #[arg(long)]
+        open: bool,
+        /// Editor a usar cuando se solicita `--open`
+        #[arg(long)]
+        editor: Option<String>,
+        /// Imprimir JSON agregado de diagnostics
+        #[arg(long)]
+        json: bool,
+        /// Incluir spans no primarios
+        #[arg(long)]
+        include_all_spans: bool,
+    },
+
     /// cargo clippy - Análisis estático de código
     #[command(visible_alias = "lint")]
     Clippy {
@@ -939,6 +958,23 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
                 cmd.arg("--check");
             }
             "fmt"
+        }
+
+        Some(CargoCommand::Diagnostics { build, open, editor, json, include_all_spans }) => {
+            // Reuse the diagnostics implementation from `src/commands/diagnostics.rs`
+            let cmd = trae_cli::commands::diagnostics::DiagnosticsCommand {
+                build: *build,
+                open: *open,
+                editor: editor.clone(),
+                json: *json,
+                include_all_spans: *include_all_spans,
+            };
+            if let Err(e) = trae_cli::commands::diagnostics::DiagnosticsCommand::run_simple(cmd).await {
+                eprintln!("Error running diagnostics: {e}");
+                std::process::exit(1);
+            }
+            let output = Output { status: std::process::ExitStatus::default(), stdout: Vec::new(), stderr: Vec::new() };
+            return ("diagnostics", output);
         }
         Some(CargoCommand::Clippy {
             strict,

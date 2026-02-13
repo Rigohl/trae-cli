@@ -25,6 +25,13 @@ jobs:
       - name: Run fmt check
         run: |
           cargo fmt -- --check
+
+      - name: Affected-only checks (fast-path for PRs)
+        if: github.event_name == 'pull_request'
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -NoLogo -ExecutionPolicy Bypass -File ./scripts/affected-checks.ps1 -Ci
+
       - name: Run clippy
         run: |
           cargo clippy --all-targets --all-features -- -D warnings
@@ -34,3 +41,9 @@ jobs:
       - name: Build release
         run: |
           cargo build --release
+
+      - name: Run code-health (PowerShell)
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -NoLogo -ExecutionPolicy Bypass -File scripts/code-health.ps1
+

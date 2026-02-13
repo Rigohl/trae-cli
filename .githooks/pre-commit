@@ -5,9 +5,11 @@
 set -e
 
 if command -v pwsh >/dev/null 2>&1; then
-  pwsh -NoProfile -NoLogo -ExecutionPolicy Bypass -File "./verify-clippy.ps1"
+  pwsh -NoProfile -NoLogo -ExecutionPolicy Bypass -File "./scripts/code-health.ps1"
+  pwsh -NoProfile -NoLogo -ExecutionPolicy Bypass -File "./scripts/affected-checks.ps1" -Staged
 elif command -v powershell >/dev/null 2>&1; then
-  powershell -NoProfile -ExecutionPolicy Bypass -File "./verify-clippy.ps1"
+  powershell -NoProfile -ExecutionPolicy Bypass -File "./scripts/code-health.ps1"
+  powershell -NoProfile -ExecutionPolicy Bypass -File "./scripts/affected-checks.ps1" -Staged
 else
   echo "pwsh/powershell not found, running cargo clippy directly"
   cargo clippy --all-targets -- -D warnings
