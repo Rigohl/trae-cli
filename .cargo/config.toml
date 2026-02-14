@@ -1,2 +1,5 @@
+[build]
+rustc-wrapper = "sccache"
+
 [alias]
 clippy-clean = "clippy --all-targets -- -D warnings"

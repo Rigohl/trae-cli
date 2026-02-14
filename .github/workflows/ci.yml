@@ -11,6 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RUSTC_WRAPPER: sccache
+      # Optional remote/backing configuration (set as repo secrets to enable remote caching)
+      SCCACHE_BUCKET: ${{ secrets.SCCACHE_BUCKET }}
+      SCCACHE_REGION: ${{ secrets.SCCACHE_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # Example Redis URL for server-backed sccache (optional)
+      SCCACHE_REDIS: ${{ secrets.SCCACHE_REDIS }}
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust
@@ -28,6 +35,10 @@ jobs:
       - name: Install sccache
         run: |
           cargo install sccache --locked
+
+      - name: Zero sccache stats
+        run: |
+          sccache --zero-stats || true
 
       - name: Cache sccache directory
         uses: actions/cache@v4
@@ -82,4 +93,17 @@ jobs:
         shell: pwsh
         run: |
           pwsh -NoProfile -NoLogo -ExecutionPolicy Bypass -File scripts/code-health.ps1
+
+      - name: Show sccache stats
+        if: always()
+        run: |
+          echo "\n--- sccache stats ---\n"
+          sccache --show-stats | tee sccache-stats.txt || true
+
+      - name: Upload sccache stats
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sccache-stats
+          path: sccache-stats.txt
 
