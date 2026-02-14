@@ -7,5 +7,6 @@ This file confirms automation has been configured and activated.
 - CodeQL: workflow added
 - cargo-chef + actions/cache: CI configured
 - sccache validation workflow: added
+- Mergify: please ensure the app is installed to enable automerge/backports
 
 If you installed Mergify in the repository, `.mergify.yml` rules will be active after merging PR #17.
