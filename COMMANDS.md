@@ -95,6 +95,10 @@ trae search tokio
 
 ## 🔧 Super Comandos de TRAE
 
+### Copilot integration
+- `trae copilot [--prompt "text"] [--dry-run] [--model <model>] [-- <args>]` — Wrapper para GitHub Copilot CLI / `gh copilot`. Use `--dry-run` to see the resolved command without executing it.
+
+
 Comandos especiales que combinan múltiples operaciones:
 
 ### Preflight Check

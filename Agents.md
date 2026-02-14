@@ -554,6 +554,7 @@ Agente ejecuta:
 - 🔄 Skills marketplace
 - 🔄 Métricas avanzadas de agentes
 - 🔄 Soporte para más lenguajes y frameworks
+- 🔁 Integración Copilot CLI + SDK + MCP Memory + Notion (ver `FUTURS.md` and `docs/COPILOT-INTEGRATION.md`)
 
 ## Conclusión
 

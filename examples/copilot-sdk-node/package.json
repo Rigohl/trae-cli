@@ -1,0 +1,11 @@
+{
+  "name": "trae-copilot-sdk-example",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@github/copilot-sdk": "^0.1.23"
+  }
+}

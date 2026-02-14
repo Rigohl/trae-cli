@@ -6,11 +6,28 @@ on:
   pull_request:
     branches: [ main, master ]
 
+# Minimum required permissions for this workflow — restrict token scope to reduce risk
+permissions:
+  contents: read        # needed by checkout
+  issues: write         # needed to post sccache stats as PR comment
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      RUSTC_WRAPPER: sccache
+      # Optional remote/backing configuration (set as repo secrets to enable remote caching)
+      SCCACHE_BUCKET: ${{ secrets.SCCACHE_BUCKET }}
+      SCCACHE_REGION: ${{ secrets.SCCACHE_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # Example Redis URL for server-backed sccache (optional)
+      SCCACHE_REDIS: ${{ secrets.SCCACHE_REDIS }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
       - name: Install Rust
         uses: dtolnay/rust-toolchain@v1
         with:
@@ -22,9 +39,70 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install sccache
+        run: |
+          cargo install sccache --locked
+
+      - name: Zero sccache stats
+        run: |
+          sccache --zero-stats || true
+
+      - name: Cache sccache directory
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/sccache
+          key: ${{ runner.os }}-sccache-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install cargo-chef
+        run: |
+          cargo install cargo-chef --locked
+
+      - name: Prepare cargo-chef recipe
+        run: |
+          cargo chef prepare --recipe-path recipe.json
+
+      - name: Cache target (cargo-chef)
+        uses: actions/cache@v4
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-target-${{ hashFiles('**/Cargo.lock', '**/recipe.json') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-target-
+
+      - name: Cook dependencies (cargo-chef)
+        run: |
+          cargo chef cook --release --recipe-path recipe.json
+
+      - name: Cache incremental target
+        uses: actions/cache@v4
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-target-
+
       - name: Run fmt check
         run: |
           cargo fmt -- --check
+
+      - name: Run code-health (fast static checks)
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -NoLogo -ExecutionPolicy Bypass -File ./scripts/code-health.ps1
+
+      - name: Affected-only checks (fast-path for PRs)
+        if: github.event_name == 'pull_request'
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -NoLogo -ExecutionPolicy Bypass -File ./scripts/affected-checks.ps1 -Ci
+
+      - name: Affected-only tests (fast-path for PRs)
+        if: github.event_name == 'pull_request'
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -NoLogo -ExecutionPolicy Bypass -File ./scripts/affected-tests.ps1 -Ci
+
       - name: Run clippy
         run: |
           cargo clippy --all-targets --all-features -- -D warnings
@@ -34,3 +112,64 @@ jobs:
       - name: Build release
         run: |
           cargo build --release
+
+      - name: Run code-health (PowerShell)
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -NoLogo -ExecutionPolicy Bypass -File scripts/code-health.ps1
+
+      - name: Show sccache stats
+        if: always()
+        run: |
+          echo "\n--- sccache stats ---\n"
+          sccache --show-stats | tee sccache-stats.txt || true
+
+      - name: Upload sccache stats
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sccache-stats
+          path: sccache-stats.txt
+
+      - name: Post sccache stats to PR
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const stats = fs.existsSync('sccache-stats.txt') ? fs.readFileSync('sccache-stats.txt','utf8') : 'sccache stats not available';
+            const pr = context.payload.pull_request ? context.payload.pull_request.number : undefined;
+            if (pr) {
+              const body = `**sccache statistics**\n\n` + '```' + `\n${stats}\n` + '```';
+              await github.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: pr, body });
+            } else {
+              core.info('Not a PR event - skipping sccache comment');
+            }
+  copilot-sdk-smoke:
+    name: Copilot SDK smoke test
+    runs-on: ubuntu-latest
+    needs: build
+    if: ${{ secrets.COPILOT_GITHUB_TOKEN != '' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install example deps
+        working-directory: examples/copilot-sdk-node
+        run: npm ci
+
+      - name: Run Copilot SDK example (smoke)
+        working-directory: examples/copilot-sdk-node
+        env:
+          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+        run: |
+          node index.js
+
