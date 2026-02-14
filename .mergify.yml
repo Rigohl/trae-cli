@@ -1,0 +1,22 @@
+pull_request_rules:
+  - name: "automerge Dependabot / dependency PRs when CI passes"
+    conditions:
+      - author=dependabot[bot]
+      - label=dependencies
+      - check-success=CI
+    actions:
+      merge:
+        method: squash
+        commit_message: title+body
+        strict: smart
+
+  - name: "automerge when labelled `automerge` and CI is green + approved"
+    conditions:
+      - label=automerge
+      - check-success=CI
+      - approved-reviews-by>=1
+    actions:
+      merge:
+        method: squash
+        commit_message: title+body
+        strict: smart
