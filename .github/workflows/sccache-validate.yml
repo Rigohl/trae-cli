@@ -15,6 +15,9 @@ jobs:
       SCCACHE_REDIS: ${{ secrets.SCCACHE_REDIS }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
 
       - name: Install sccache
         run: |
@@ -22,8 +25,8 @@ jobs:
 
       - name: Show configured backend (masked)
         run: |
-          echo "SCCACHE_BUCKET=${SCCACHE_BUCKET:-<not set>}"
-          echo "SCCACHE_REDIS=${SCCACHE_REDIS:-<not set>}"
+          if [ -n "${SCCACHE_BUCKET:-}" ]; then echo "SCCACHE_BUCKET configured"; else echo "SCCACHE_BUCKET not set"; fi
+          if [ -n "${SCCACHE_REDIS:-}" ]; then echo "SCCACHE_REDIS configured"; else echo "SCCACHE_REDIS not set"; fi
 
       - name: Validate S3-backed sccache (if configured)
         if: env.SCCACHE_BUCKET != '' && env.AWS_ACCESS_KEY_ID != '' && env.AWS_SECRET_ACCESS_KEY != ''
@@ -36,9 +39,8 @@ jobs:
       - name: Check S3 bucket access
         if: env.SCCACHE_BUCKET != '' && env.AWS_ACCESS_KEY_ID != '' && env.AWS_SECRET_ACCESS_KEY != ''
         run: |
-          echo "Checking access to S3 bucket: $SCCACHE_BUCKET"
-          aws s3api head-bucket --bucket "$SCCACHE_BUCKET" --region "${SCCACHE_REGION:-us-east-1}"
-          echo "S3 bucket is reachable with provided credentials"
+          echo "Checking access to S3 bucket (name masked)"
+          aws s3api head-bucket --bucket "$SCCACHE_BUCKET" --region "${SCCACHE_REGION:-us-east-1}" >/dev/null 2>&1 && echo "S3 bucket is reachable with provided credentials" || (echo "S3 bucket access check failed" >&2; exit 1)
 
       - name: Validate Redis connectivity (if configured)
         if: env.SCCACHE_REDIS != ''
