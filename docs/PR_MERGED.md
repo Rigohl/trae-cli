@@ -1,0 +1,1 @@
+PR #17 merged — automation enabled (Dependabot, Mergify config, CodeQL, cargo-chef).
