@@ -1,0 +1,1 @@
+Post-merge checklist: verify Mergify installed, run CI, confirm CodeQL analysis passes.
