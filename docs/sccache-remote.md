@@ -31,3 +31,19 @@ Notes:
 ## 5) Troubleshooting
 - `sccache --show-stats` to inspect hits/misses.
 - If remote fails, sccache falls back to local cache; check network/credentials.
+
+## 6) Validate remote from CI (quick check)
+- A validation workflow has been added: `.github/workflows/sccache-validate.yml` (run it from the Actions tab or via `workflow_dispatch`).
+- What it does:
+  - Installs `sccache` in the runner and prints `sccache --show-stats`.
+  - If `SCCACHE_BUCKET` + AWS credentials are present it will run `aws s3api head-bucket` to verify access.
+  - If `SCCACHE_REDIS` is set the workflow reports the value is configured (Redis connectivity must be validated separately).
+
+How to use
+1. Add the repository secrets (see section above).
+2. Open the repository Actions → `sccache-validate` → `Run workflow`.
+3. Inspect the job logs — the workflow will fail if S3 credentials cannot access the bucket.
+
+Notes
+- This workflow is purely a validation aid and does not change cache contents.
+- If validation fails, check IAM permissions, bucket region, and that the secrets are set correctly.

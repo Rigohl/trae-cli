@@ -1,0 +1,51 @@
+name: sccache-validate
+
+on:
+  workflow_dispatch:
+
+jobs:
+  validate-remote:
+    runs-on: ubuntu-latest
+    env:
+      RUSTC_WRAPPER: sccache
+      SCCACHE_BUCKET: ${{ secrets.SCCACHE_BUCKET }}
+      SCCACHE_REGION: ${{ secrets.SCCACHE_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SCCACHE_REDIS: ${{ secrets.SCCACHE_REDIS }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install sccache
+        run: |
+          cargo install sccache --locked
+
+      - name: Show configured backend (masked)
+        run: |
+          echo "SCCACHE_BUCKET=${SCCACHE_BUCKET:-<not set>}"
+          echo "SCCACHE_REDIS=${SCCACHE_REDIS:-<not set>}"
+
+      - name: Validate S3-backed sccache (if configured)
+        if: env.SCCACHE_BUCKET != '' && env.AWS_ACCESS_KEY_ID != '' && env.AWS_SECRET_ACCESS_KEY != ''
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.SCCACHE_REGION }}
+
+      - name: Check S3 bucket access
+        if: env.SCCACHE_BUCKET != '' && env.AWS_ACCESS_KEY_ID != '' && env.AWS_SECRET_ACCESS_KEY != ''
+        run: |
+          echo "Checking access to S3 bucket: $SCCACHE_BUCKET"
+          aws s3api head-bucket --bucket "$SCCACHE_BUCKET" --region "${SCCACHE_REGION:-us-east-1}"
+          echo "S3 bucket is reachable with provided credentials"
+
+      - name: Redis backend info (if configured)
+        if: env.SCCACHE_REDIS != ''
+        run: |
+          echo "SCCACHE_REDIS is set (value masked). CI will attempt to use Redis if configured."
+          echo "To fully validate Redis connectivity run a dedicated check outside this workflow."
+
+      - name: Show sccache stats
+        run: |
+          sccache --show-stats || true
