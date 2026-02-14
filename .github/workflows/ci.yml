@@ -107,3 +107,19 @@ jobs:
           name: sccache-stats
           path: sccache-stats.txt
 
+      - name: Post sccache stats to PR
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const stats = fs.existsSync('sccache-stats.txt') ? fs.readFileSync('sccache-stats.txt','utf8') : 'sccache stats not available';
+            const pr = context.payload.pull_request ? context.payload.pull_request.number : undefined;
+            if (pr) {
+              const body = `**sccache statistics**\n\n` + '```' + `\n${stats}\n` + '```';
+              await github.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: pr, body });
+            } else {
+              core.info('Not a PR event - skipping sccache comment');
+            }
+

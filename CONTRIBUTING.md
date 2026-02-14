@@ -15,7 +15,7 @@ Guidelines
     [build]
     rustc-wrapper = "sccache"
     ```
-  - Remote sccache in CI: set repository secrets `SCCACHE_BUCKET`, `SCCACHE_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` (or `SCCACHE_REDIS`) and the CI will use S3/Redis-backed caching. CI prints `sccache --show-stats` after each run and uploads the stats artifact for inspection.- Write tests for new behavior and document public API changes.
+  - Remote sccache in CI: set repository secrets `SCCACHE_BUCKET`, `SCCACHE_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` (or `SCCACHE_REDIS`) and the CI will use S3/Redis-backed caching. CI prints `sccache --show-stats` after each run and uploads the stats artifact for inspection. See `docs/sccache-remote.md` for detailed examples and troubleshooting.- Write tests for new behavior and document public API changes.
 - Keep commits small and focused.
 
 Code style
