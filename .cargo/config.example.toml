@@ -1,0 +1,5 @@
+# Optional: enable sccache for local development
+# Copy this file to .cargo/config.toml to enable
+
+[build]
+rustc-wrapper = "sccache"

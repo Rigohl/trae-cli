@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      RUSTC_WRAPPER: sccache
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust
@@ -22,6 +24,22 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
           key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install sccache
+        run: |
+          cargo install sccache --locked
+
+      - name: Cache sccache directory
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/sccache
+          key: ${{ runner.os }}-sccache-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache incremental target
+        uses: actions/cache@v4
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Cache incremental target
         uses: actions/cache@v4

@@ -11,7 +11,8 @@ foreach ($f in $rs) {
     if ($fmtFound) {
         Write-Host "Formatting (rustfmt): $f" -ForegroundColor Cyan
         rustfmt --edition 2021 $f
-    } else {
+    }
+    else {
         Write-Host "Formatting (cargo fmt fallback)" -ForegroundColor Yellow
         cargo fmt -- $f
     }

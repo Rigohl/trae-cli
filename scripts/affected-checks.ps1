@@ -17,12 +17,14 @@ function Get-ChangedFiles {
     param([switch]$Staged, [switch]$Ci)
     if ($Staged) {
         git diff --name-only --cached 2>$null
-    } elseif ($Ci) {
+    }
+    elseif ($Ci) {
         $base = $env:GITHUB_BASE_REF
         if ([string]::IsNullOrEmpty($base)) { $base = 'main' }
         git fetch origin $base --depth=1 2>$null
         git diff --name-only origin/$base...HEAD
-    } else {
+    }
+    else {
         git fetch origin main --depth=1 2>$null | Out-Null
         git diff --name-only origin/main...HEAD
     }
