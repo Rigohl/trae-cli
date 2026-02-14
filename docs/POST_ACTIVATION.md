@@ -1,0 +1,1 @@
+Activation complete. Mergify should be installed by repo admins to enable automerge/backport rules. Dependabot and CodeQL are configured.
