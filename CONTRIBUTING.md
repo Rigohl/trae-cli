@@ -15,15 +15,18 @@ Guidelines
     [build]
     rustc-wrapper = "sccache"
     ```
-  - Remote sccache in CI: set repository secrets `SCCACHE_BUCKET`, `SCCACHE_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` (or `SCCACHE_REDIS`) and the CI will use S3/Redis-backed caching. CI prints `sccache --show-stats` after each run and uploads the stats artifact for inspection. See `docs/sccache-remote.md` for examples and troubleshooting.
+  - Remote sccache in CI: **we recommend Redis** (`SCCACHE_REDIS`) for low-latency shared caching across runners. CI still supports S3 (`SCCACHE_BUCKET` + AWS creds) as an alternate. CI prints `sccache --show-stats` after each run and uploads the stats artifact for inspection. See `docs/sccache-remote.md` for examples and troubleshooting.
 
-    # Quick: add repository secrets using GitHub CLI
+    # Quick: add repository secret for Redis (recommended)
+    echo -n "redis://:PASSWORD@host:6379" | gh secret set SCCACHE_REDIS --repo OWNER/REPO
+
+    # Optional: S3-backed example (alternate)
     echo -n "my-bucket" | gh secret set SCCACHE_BUCKET --repo OWNER/REPO
     echo -n "us-east-1" | gh secret set SCCACHE_REGION --repo OWNER/REPO
     echo -n "AKIA..." | gh secret set AWS_ACCESS_KEY_ID --repo OWNER/REPO
     echo -n "...secret..." | gh secret set AWS_SECRET_ACCESS_KEY --repo OWNER/REPO
 
-  - After adding secrets you can run the validation workflow: `Actions → sccache-validate` (or run `workflow_dispatch`). The workflow will verify S3 access when configured.
+  - After adding secrets you can run the validation workflow: `Actions → sccache-validate` (or run `workflow_dispatch`). The validation workflow now checks Redis TCP connectivity when `SCCACHE_REDIS` is set. The workflow will verify S3 access when configured.
 
   - Write tests for new behavior and document public API changes.
 - Keep commits small and focused.

@@ -40,11 +40,27 @@ jobs:
           aws s3api head-bucket --bucket "$SCCACHE_BUCKET" --region "${SCCACHE_REGION:-us-east-1}"
           echo "S3 bucket is reachable with provided credentials"
 
-      - name: Redis backend info (if configured)
+      - name: Validate Redis connectivity (if configured)
         if: env.SCCACHE_REDIS != ''
         run: |
-          echo "SCCACHE_REDIS is set (value masked). CI will attempt to use Redis if configured."
-          echo "To fully validate Redis connectivity run a dedicated check outside this workflow."
+          python3 - <<'PY'
+          import os, sys, urllib.parse, socket
+          url = os.environ.get('SCCACHE_REDIS')
+          if not url:
+              print('SCCACHE_REDIS not set')
+              sys.exit(1)
+          parsed = urllib.parse.urlparse(url)
+          host = parsed.hostname
+          port = parsed.port or 6379
+          print(f'Testing TCP connection to {host}:{port} (value masked)')
+          try:
+              sock = socket.create_connection((host, port), timeout=5)
+              sock.close()
+              print('TCP connection OK')
+          except Exception as e:
+              print(f'Failed to connect to Redis at {host}:{port}: {e}')
+              sys.exit(1)
+          PY
 
       - name: Show sccache stats
         run: |

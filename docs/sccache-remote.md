@@ -2,19 +2,22 @@
 
 This document shows how to enable **remote sccache** backing (S3 or Redis) for faster, shared CI caching.
 
-## 1) S3-backed sccache (recommended)
-- Create an S3 bucket (private).
-- Add these repository secrets in GitHub: `SCCACHE_BUCKET`, `SCCACHE_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`.
-- CI (already configured) will read these secrets and sccache will use S3 for storing cache objects.
+## 1) Redis-backed sccache (recommended — low-latency)
+- Use a managed Redis (Elasticache, Azure Cache) or a hosted Redis reachable from CI.
+- Set the repository secret `SCCACHE_REDIS` to `redis://[:password@]host:port` (example: `redis://:hunter2@cache.example.internal:6379`).
+- Benefits: low-latency shared cache across runners, simpler object lifecycle and faster hit rates for typical CI runs.
+
+Notes:
+- Ensure the Redis instance is accessible from the GitHub Actions runner network (VPC peering / public endpoint + firewall rules as needed).
+- If you provide credentials in the URL, keep them secret (use GitHub Secrets).
+
+## 2) S3-backed sccache (alternate — durable object store)
+- Create an S3 bucket (private) and set these repository secrets: `SCCACHE_BUCKET`, `SCCACHE_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`.
+- Use S3 when you prefer durable storage of cache objects or need long-term retention.
 
 Notes:
 - Objects are keyed by compilation fingerprint; multiple runners can share the cache.
 - Ensure your IAM policy allows `s3:GetObject`, `s3:PutObject`, `s3:ListBucket` for the bucket prefix.
-
-## 2) Redis-backed sccache (low-latency alternative)
-- Run a Redis instance accessible from CI (host/port + optional password).
-- Set `SCCACHE_REDIS` secret to `redis://:[password]@host:port` (or `redis://host:port`).
-- CI will use Redis as the sccache backend when `SCCACHE_REDIS` is present.
 
 ## 3) Local developer setup
 - Install `sccache`:
