@@ -46,17 +46,33 @@ jobs:
           path: ~/.cache/sccache
           key: ${{ runner.os }}-sccache-${{ hashFiles('**/Cargo.lock') }}
 
-      - name: Cache incremental target
+      - name: Install cargo-chef
+        run: |
+          cargo install cargo-chef --locked
+
+      - name: Prepare cargo-chef recipe
+        run: |
+          cargo chef prepare --recipe-path recipe.json
+
+      - name: Cache target (cargo-chef)
         uses: actions/cache@v4
         with:
           path: target
-          key: ${{ runner.os }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-target-${{ hashFiles('**/Cargo.lock', '**/recipe.json') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-target-
+
+      - name: Cook dependencies (cargo-chef)
+        run: |
+          cargo chef cook --release --recipe-path recipe.json
 
       - name: Cache incremental target
         uses: actions/cache@v4
         with:
           path: target
           key: ${{ runner.os }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-target-
 
       - name: Run fmt check
         run: |

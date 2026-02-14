@@ -35,18 +35,40 @@ Notes:
 - `sccache --show-stats` to inspect hits/misses.
 - If remote fails, sccache falls back to local cache; check network/credentials.
 
-## 6) Validate remote from CI (quick check)
+## 6) No-remote strategy (recommended alternative)
+If you do **not** want S3 or any remote service, use `cargo-chef` together with `actions/cache` to get fast, repeatable CI builds without external backends.
+
+Why this helps
+- No external secrets or services required — all caching uses GitHub Actions cache and the repo's `target`/dependency layers.
+- `cargo-chef` extracts the dependency build plan so CI can cache and reuse compiled dependencies reliably.
+
+How to enable (CI already configured)
+1. CI now includes `cargo-chef` steps: `cargo chef prepare` + `cargo chef cook` and caches `target`/`recipe.json`.
+2. No repository secrets are needed — just push your PR and CI will reuse cached dependency builds.
+3. Locally you can reproduce the cached layer with:
+
+```bash
+cargo chef prepare --recipe-path recipe.json
+cargo chef cook --recipe-path recipe.json
+```
+
+When to still use sccache
+- `sccache` remains useful locally for repeated incremental compiles, but remote sccache (S3/Redis) is not required with the `cargo-chef + actions/cache` strategy.
+
+---
+
+## 7) Validate remote from CI (quick check)
 - A validation workflow has been added: `.github/workflows/sccache-validate.yml` (run it from the Actions tab or via `workflow_dispatch`).
 - What it does:
   - Installs `sccache` in the runner and prints `sccache --show-stats`.
   - If `SCCACHE_BUCKET` + AWS credentials are present it will run `aws s3api head-bucket` to verify access.
-  - If `SCCACHE_REDIS` is set the workflow reports the value is configured (Redis connectivity must be validated separately).
+  - If `SCCACHE_REDIS` is set the workflow runs a TCP connectivity check to validate Redis reachability.
 
 How to use
-1. Add the repository secrets (see section above).
+1. Add the repository secrets (see section above) only if you plan to use remote backends.
 2. Open the repository Actions → `sccache-validate` → `Run workflow`.
-3. Inspect the job logs — the workflow will fail if S3 credentials cannot access the bucket.
+3. Inspect the job logs — the workflow will fail if S3 credentials cannot access the bucket or the Redis TCP check fails.
 
 Notes
 - This workflow is purely a validation aid and does not change cache contents.
-- If validation fails, check IAM permissions, bucket region, and that the secrets are set correctly.
+- If validation fails, check IAM permissions, bucket region, and network/firewall rules.

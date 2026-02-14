@@ -15,18 +15,19 @@ Guidelines
     [build]
     rustc-wrapper = "sccache"
     ```
-  - Remote sccache in CI: **we recommend Redis** (`SCCACHE_REDIS`) for low-latency shared caching across runners. CI still supports S3 (`SCCACHE_BUCKET` + AWS creds) as an alternate. CI prints `sccache --show-stats` after each run and uploads the stats artifact for inspection. See `docs/sccache-remote.md` for examples and troubleshooting.
+  - Fast CI without external services: we **recommend `cargo-chef` + `actions/cache`** as the default strategy (no S3/Redis required).
 
-    # Quick: add repository secret for Redis (recommended)
-    echo -n "redis://:PASSWORD@host:6379" | gh secret set SCCACHE_REDIS --repo OWNER/REPO
+    - Why: `cargo-chef` precomputes dependency build steps so CI can cache compiled dependency layers (`target`) and reuse them across runs — fast, reliable, and no secrets needed.
+    - CI already includes `cargo-chef` steps and caches `target`/`recipe.json`.
 
-    # Optional: S3-backed example (alternate)
-    echo -n "my-bucket" | gh secret set SCCACHE_BUCKET --repo OWNER/REPO
-    echo -n "us-east-1" | gh secret set SCCACHE_REGION --repo OWNER/REPO
-    echo -n "AKIA..." | gh secret set AWS_ACCESS_KEY_ID --repo OWNER/REPO
-    echo -n "...secret..." | gh secret set AWS_SECRET_ACCESS_KEY --repo OWNER/REPO
+    # Quick local reproduction
+    cargo install cargo-chef --locked
+    cargo chef prepare --recipe-path recipe.json
+    cargo chef cook --recipe-path recipe.json
 
-  - After adding secrets you can run the validation workflow: `Actions → sccache-validate` (or run `workflow_dispatch`). The validation workflow now checks Redis TCP connectivity when `SCCACHE_REDIS` is set. The workflow will verify S3 access when configured.
+  - `sccache` is still supported for local incremental builds (optional) but **no remote backend is required** with the `cargo-chef + actions/cache` approach. See `docs/sccache-remote.md` for alternatives.
+
+  - After making changes you can run the validation workflow: `Actions → sccache-validate` (or run `workflow_dispatch`).
 
   - Write tests for new behavior and document public API changes.
 - Keep commits small and focused.
