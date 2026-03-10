@@ -1,1 +1,0 @@
-Merge complete. Automation live where possible; admins please enable Mergify app to activate rules fully.

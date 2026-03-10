@@ -1,1 +1,0 @@
-Automation: PR #17 merged (configs present). Monitor Actions and install Mergify app if needed.

@@ -27,6 +27,9 @@ pub struct SimulateCommand {
     #[doc = " Auto-optimize based on simulation results"]
     #[arg(long)]
     optimize: bool,
+    #[doc = " Apply Chaos Theory (Lorenz Attractor) for chaotic load generation and stress testing (bio nickj mode)"]
+    #[arg(long)]
+    chaos: bool,
     #[doc = " Simulation duration in seconds"]
     #[arg(long, default_value = "10")]
     duration: u64,
@@ -49,6 +52,17 @@ impl SimulateCommand {
         );
         let duration = Duration::from_secs(self.duration);
         let mut results: Vec<(String, SimulationResult)> = Vec::new();
+        if self.chaos {
+            println!(
+                "{}",
+                "🌀 Running CHAOS THEORY simulation (Lorenz Attractor enabled)... bio nickj mode engaged".magenta()
+            );
+            let result = self
+                .run_chaos_simulation(duration, self.concurrency)
+                .await?;
+            results.push(("Chaos".to_string(), result));
+        }
+
         if self.throughput {
             println!("{}", "📊 Running throughput simulation...".yellow());
             let result = self
@@ -211,6 +225,96 @@ impl SimulateCommand {
     }
 
     #[doc = "Method documentation added by AI refactor"]
+    async fn run_chaos_simulation(
+        &self,
+        duration: Duration,
+        concurrency: usize,
+    ) -> Result<SimulationResult> {
+        use crate::core::chaos::LorenzChaos;
+        use std::sync::Arc;
+        use tokio::sync::{Mutex, Semaphore};
+        use tokio::time::Instant;
+
+        let semaphore = Arc::new(Semaphore::new(concurrency));
+        let operations = Arc::new(std::sync::atomic::AtomicU64::new(0));
+        let latencies = Arc::new(std::sync::Mutex::new(Vec::new()));
+
+        let lorenz = Arc::new(Mutex::new(LorenzChaos::default()));
+
+        let start = Instant::now();
+        let mut handles = Vec::new();
+
+        for _ in 0..concurrency {
+            let sem = semaphore.clone();
+            let ops = operations.clone();
+            let lats = latencies.clone();
+            let lorenz_gen = lorenz.clone();
+
+            let handle = tokio::spawn(async move {
+                loop {
+                    let permit = sem.acquire().await;
+                    let op_start = Instant::now();
+
+                    let factor = {
+                        let mut gen = lorenz_gen.lock().await;
+                        gen.get_chaotic_factor()
+                    };
+
+                    let delay = Duration::from_micros(1000)
+                        + tokio::time::Duration::from_micros((factor * 50_000.0) as u64);
+                    tokio::time::sleep(delay).await;
+
+                    let latency = op_start.elapsed();
+                    ops.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+
+                    {
+                        match lats.lock() {
+                            Ok(mut lats_lock) => {
+                                lats_lock.push(latency.as_millis() as f64);
+                            }
+                            Err(e) => {
+                                eprintln!("⚠️  Mutex poisoned when recording latency: {}", e);
+                            }
+                        }
+                    }
+                    drop(permit);
+
+                    if start.elapsed() >= duration {
+                        break;
+                    }
+                }
+            });
+            handles.push(handle);
+        }
+
+        for handle in handles {
+            handle.await?;
+        }
+
+        let total_ops = operations.load(std::sync::atomic::Ordering::Relaxed);
+        let ops_per_sec = total_ops as f64 / duration.as_secs_f64();
+        let lats_vec: Vec<f64> = match latencies.lock() {
+            Ok(g) => g.clone(),
+            Err(e) => {
+                eprintln!("⚠️  Mutex poisoned when reading latencies: {:?}", e);
+                Vec::new()
+            }
+        };
+
+        let avg_latency_ms = if lats_vec.is_empty() {
+            0.0
+        } else {
+            lats_vec.iter().sum::<f64>() / lats_vec.len() as f64
+        };
+
+        Ok(SimulationResult {
+            operations_per_sec: ops_per_sec,
+            avg_latency_ms,
+            total_operations: total_ops,
+        })
+    }
+
+    #[doc = "Method documentation added by AI refactor"]
     fn apply_optimizations(&self, results: &[(String, SimulationResult)]) -> Result<()> {
         println!("Applying performance optimizations based on simulation results...");
         for (sim_type, result) in results {
@@ -233,6 +337,9 @@ impl SimulateCommand {
                 }
                 "Complex" => {
                     println!("  🔬 Applying complex optimizations...");
+                }
+                "Chaos" => {
+                    println!("  🌀 Optimizing for extreme non-linear, chaotic loads (Chaos Theory applied)...");
                 }
                 _ => {}
             }

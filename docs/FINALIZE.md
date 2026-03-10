@@ -1,1 +1,0 @@
-Finalization: automation merged and active where possible. Next: proceed with cargo tasks per plan.
