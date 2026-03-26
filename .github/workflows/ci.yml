@@ -6,31 +6,51 @@ on:
   pull_request:
     branches: [ main, master ]
 
+env:
+  RUST_BACKTRACE: 1
+  CARGO_TERM_COLOR: always
+
 jobs:
   build:
+    name: Build & Test
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@v1
+
+      - name: Install Rust (stable)
+        uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
-      - name: Cache cargo registry
+          components: rustfmt, clippy
+
+      - name: Cache cargo
         uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-      - name: Run fmt check
-        run: |
-          cargo fmt -- --check
-      - name: Run clippy
-        run: |
-          cargo clippy --all-targets --all-features -- -D warnings
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: Check formatting
+        run: cargo fmt -- --check
+
+      - name: Clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
       - name: Run tests
-        run: |
-          cargo test --all --release
+        run: cargo test --release
+
       - name: Build release
-        run: |
-          cargo build --release
+        run: cargo build --release
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        if: success() && github.ref == 'refs/heads/main'
+        with:
+          name: trae-cli-linux-x64
+          path: |
+            target/release/trae
+            target/release/server_http
+          retention-days: 30
