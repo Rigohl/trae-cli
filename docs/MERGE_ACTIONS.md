@@ -1,1 +1,0 @@
-After merging, verify the Actions tab for CI and CodeQL runs, and confirm Mergify rules if installed.
