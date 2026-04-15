@@ -52,8 +52,9 @@ impl JarvixClient {
     pub fn new() -> Result<Option<Self>> {
         let config = Self::load_config()?;
         println!("🔧 JARVIX configurado: {}", config.endpoint);
+        let client = Client::builder().no_proxy().build()?;
         Ok(Some(Self {
-            client: Client::new(),
+            client,
             base_url: config.endpoint,
             api_key: config.api_key,
             timeout: Duration::from_secs(config.timeout),
