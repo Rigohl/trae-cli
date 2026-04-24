@@ -203,16 +203,6 @@ impl TestCommand {
     #[doc = "Method documentation added by AI refactor"]
     fn analyze_test_performance(&self, _cli: &TraeCli) -> Result<PerformanceAnalysis> {
         Ok(PerformanceAnalysis {
-            slowest_tests: vec![TestPerformance {
-                name: "test_slow_example".to_string(),
-                duration: 5000.0,
-                category: "integration".to_string(),
-            }],
-            fastest_tests: vec![TestPerformance {
-                name: "test_fast_example".to_string(),
-                duration: 0.5,
-                category: "unit".to_string(),
-            }],
             test_distribution: HashMap::from([
                 ("unit".to_string(), 85),
                 ("integration".to_string(), 12),
@@ -282,18 +272,6 @@ impl TestCommand {
         }
         if let Some(perf) = perf {
             println!("\n{}", "🔍 ANÁLISIS DE PERFORMANCE".yellow().bold());
-            println!(
-                "{} Test más lento: {} ({:.1}ms)",
-                "🐌".red(),
-                perf.slowest_tests[0].name,
-                perf.slowest_tests[0].duration
-            );
-            println!(
-                "{} Test más rápido: {} ({:.1}ms)",
-                "🚀".green(),
-                perf.fastest_tests[0].name,
-                perf.fastest_tests[0].duration
-            );
             println!("\n{}", "📊 Distribución de Tests:".cyan());
             for (category, count) in &perf.test_distribution {
                 println!("  {category}: {count}");
@@ -414,18 +392,8 @@ struct BenchmarkResults {
     total_time: f64,
 }
 #[derive(Debug)]
-#[allow(dead_code)]
-#[doc = "Struct documentation added by AI refactor"]
-struct TestPerformance {
-    name: String,
-    duration: f64,
-    category: String,
-}
-#[derive(Debug)]
 #[doc = "Struct documentation added by AI refactor"]
 struct PerformanceAnalysis {
-    slowest_tests: Vec<TestPerformance>,
-    fastest_tests: Vec<TestPerformance>,
     test_distribution: HashMap<String, usize>,
     recommendations: Vec<String>,
 }
