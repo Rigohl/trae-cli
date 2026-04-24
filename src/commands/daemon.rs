@@ -3,10 +3,11 @@
 #![doc = " Inicia el binario `trae-server` en segundo plano, con opción de silenciar"]
 #![doc = " stdout/stderr o redirigir a un archivo de log."]
 use crate::cli::TraeCli;
-use anyhow::{Context, Result};
+use anyhow::{anyhow, Context, Result};
 use clap::Args;
 use colored::Colorize;
 use std::fs::File;
+use std::path::Path;
 use std::process::Stdio;
 use tokio::process::Command;
 #[derive(Args, Debug)]
@@ -37,12 +38,22 @@ impl DaemonCommand {
             .cyan()
             .bold()
         );
+
         let mut cmd = Command::new(&self.binary);
         cmd.env("PORT", self.port.to_string());
         match (&self.log, self.quiet) {
-            (Some(path), _) => {
+            (Some(path_str), _) => {
+                let path = Path::new(path_str);
+
+                // Security check: Prevent path traversal
+                if path.is_absolute()
+                    || path.components().any(|c| matches!(c, std::path::Component::ParentDir))
+                {
+                    return Err(anyhow!("Ruta de log inválida: {}. No se permiten rutas absolutas o con '..'", path_str));
+                }
+
                 let log_file = File::create(path)
-                    .with_context(|| format!("No se pudo abrir log en {}", path))?;
+                    .with_context(|| format!("No se pudo abrir log en {}", path_str))?;
                 let stdout = Stdio::from(log_file.try_clone()?);
                 let stderr = Stdio::from(log_file);
                 cmd.stdout(stdout);
