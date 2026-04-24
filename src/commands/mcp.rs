@@ -1,7 +1,7 @@
 #![doc = " # MCP Command"]
 #![doc = ""]
 #![doc = " Inicia y controla procesos MCP personalizados en background."]
-use anyhow::{Context, Result};
+use anyhow::{anyhow, Context, Result};
 use clap::{Args, Subcommand};
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
@@ -88,6 +88,15 @@ impl McpCommand {
         cmd.arg("--port").arg(port.to_string());
         cmd.args(extra_args);
         if let Some(log_path) = &log {
+            // Security check: Prevent path traversal
+            if log_path.is_absolute()
+                || log_path
+                    .components()
+                    .any(|c| matches!(c, std::path::Component::ParentDir))
+            {
+                return Err(anyhow!("Ruta de log inválida: {}. No se permiten rutas absolutas o con '..'", log_path.display()));
+            }
+
             let file = fs::File::create(log_path)
                 .with_context(|| format!("No se pudo abrir log {}", log_path.display()))?;
             let stderr = file.try_clone()?;
