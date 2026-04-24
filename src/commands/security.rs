@@ -11,7 +11,6 @@ use std::fs;
 use std::process::Command;
 use std::time::Instant;
 #[derive(Args, Debug)]
-#[doc = "Struct documentation added by AI refactor"]
 pub struct SecurityCommand {
     #[doc = " Run full security audit"]
     #[arg(long)]
@@ -45,7 +44,6 @@ pub struct SecurityCommand {
     pub format: String,
 }
 impl SecurityCommand {
-    #[doc = "Method documentation added by AI refactor"]
     pub async fn execute(&self, cli: &TraeCli) -> Result<()> {
         let start_time = Instant::now();
         let mut metrics = MetricsCollector::new("security".to_string());
@@ -104,14 +102,13 @@ impl SecurityCommand {
         }
         if !cli.no_jarvix {
             if let Ok(Some(client)) = JarvixClient::new() {
-                if let Err(e) = client.report_security_metrics(metrics).await {
+                if let Err(e) = client.report_security_metrics(&metrics).await {
                     eprintln!("⚠️ No se pudo reportar métricas de security: {e}");
                 }
             }
         }
         Ok(())
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn parse_severity_level(&self) -> SecuritySeverity {
         match self.level.as_str() {
             "low" => SecuritySeverity::Low,
@@ -121,7 +118,6 @@ impl SecurityCommand {
             _ => SecuritySeverity::Medium,
         }
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn run_full_audit(
         &self,
         cli: &TraeCli,
@@ -163,7 +159,6 @@ impl SecurityCommand {
             audit_duration: 0.0,
         })
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn check_vulnerable_deps(&self, _cli: &TraeCli) -> Result<DependencySecurityResult> {
         let mut vulnerabilities = Vec::new();
         if let Ok(content) = fs::read_to_string("Cargo.lock") {
@@ -201,7 +196,6 @@ impl SecurityCommand {
             last_audit: None,
         })
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn scan_code_security(
         &self,
         _cli: &TraeCli,
@@ -286,7 +280,6 @@ impl SecurityCommand {
             scan_duration: 0.0,
         })
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn check_security_config(&self, _cli: &TraeCli) -> Result<ConfigSecurityResult> {
         let mut issues = Vec::new();
         if let Ok(content) = fs::read_to_string("Cargo.toml") {
@@ -323,7 +316,6 @@ impl SecurityCommand {
             security_score: 75,
         })
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn scan_hardcoded_secrets(&self, _cli: &TraeCli) -> Result<SecretsScanResult> {
         let mut findings = Vec::new();
         let secret_patterns = vec![
@@ -398,7 +390,6 @@ impl SecurityCommand {
                 .count(),
         })
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn run_cargo_audit(&self, _cli: &TraeCli) -> Result<CargoAuditResult> {
         let audit_check = Command::new("cargo").arg("audit").arg("--version").output();
         if audit_check.is_err() {
@@ -425,7 +416,6 @@ impl SecurityCommand {
             last_update: Some(chrono::Utc::now()),
         })
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn apply_auto_fixes(
         &self,
         _cli: &TraeCli,
@@ -462,7 +452,6 @@ impl SecurityCommand {
             ],
         })
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn calculate_security_score(&self, findings: &[SecurityFinding]) -> f64 {
         let base_score = 100.0;
         let penalty = findings
@@ -477,7 +466,6 @@ impl SecurityCommand {
             .sum::<f64>();
         (base_score - penalty).max(0.0)
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn generate_security_report(
         &self,
         results: &SecurityResults,
@@ -612,7 +600,6 @@ impl SecurityCommand {
     }
 }
 #[derive(Default, Debug)]
-#[doc = "Struct documentation added by AI refactor"]
 struct SecurityResults {
     audit: Option<SecurityAuditResult>,
     dependencies: Option<DependencySecurityResult>,
@@ -632,7 +619,6 @@ pub enum SecuritySeverity {
 }
 #[derive(Debug, Clone)]
 #[allow(dead_code)]
-#[doc = "Struct documentation added by AI refactor"]
 struct SecurityFinding {
     category: String,
     title: String,
@@ -645,7 +631,6 @@ struct SecurityFinding {
 }
 #[derive(Debug)]
 #[allow(dead_code)]
-#[doc = "Struct documentation added by AI refactor"]
 struct SecurityAuditResult {
     findings: Vec<SecurityFinding>,
     critical_count: usize,
@@ -657,7 +642,6 @@ struct SecurityAuditResult {
 }
 #[derive(Debug)]
 #[allow(dead_code)]
-#[doc = "Struct documentation added by AI refactor"]
 struct DependencySecurityResult {
     vulnerabilities: Vec<SecurityFinding>,
     total_deps_checked: usize,
@@ -666,7 +650,6 @@ struct DependencySecurityResult {
 }
 #[derive(Debug)]
 #[allow(dead_code)]
-#[doc = "Struct documentation added by AI refactor"]
 struct CodeSecurityResult {
     vulnerabilities: Vec<SecurityFinding>,
     files_scanned: usize,
@@ -674,14 +657,12 @@ struct CodeSecurityResult {
     scan_duration: f64,
 }
 #[derive(Debug)]
-#[doc = "Struct documentation added by AI refactor"]
 struct ConfigSecurityResult {
     issues: Vec<SecurityFinding>,
     config_files_checked: Vec<String>,
     security_score: usize,
 }
 #[derive(Debug)]
-#[doc = "Struct documentation added by AI refactor"]
 struct SecretsScanResult {
     findings: Vec<SecurityFinding>,
     files_scanned: usize,
@@ -690,7 +671,6 @@ struct SecretsScanResult {
 }
 #[derive(Debug)]
 #[allow(dead_code)]
-#[doc = "Struct documentation added by AI refactor"]
 struct CargoAuditResult {
     audit_run: bool,
     vulnerabilities_found: usize,
@@ -698,7 +678,6 @@ struct CargoAuditResult {
     last_update: Option<chrono::DateTime<chrono::Utc>>,
 }
 #[derive(Debug)]
-#[doc = "Struct documentation added by AI refactor"]
 struct SecurityFixesResult {
     fixes_applied: Vec<String>,
     fixes_failed: Vec<String>,

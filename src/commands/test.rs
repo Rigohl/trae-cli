@@ -9,7 +9,6 @@ use indicatif::{ProgressBar, ProgressStyle};
 use std::time::Instant;
 use std::{collections::HashMap, process::Command};
 #[derive(Args, Debug)]
-#[doc = "Struct documentation added by AI refactor"]
 pub struct TestCommand {
     #[doc = " Run tests in release mode"]
     #[arg(long)]
@@ -49,7 +48,6 @@ pub struct TestCommand {
     pub cargo_args: Vec<String>,
 }
 impl TestCommand {
-    #[doc = "Method documentation added by AI refactor"]
     pub async fn execute(&self, cli: &TraeCli) -> Result<()> {
         let start_time = Instant::now();
         let mut metrics = MetricsCollector::new("test".to_string());
@@ -97,14 +95,13 @@ impl TestCommand {
         pb.finish_with_message("Reporte generado");
         if !cli.no_jarvix {
             if let Ok(Some(client)) = JarvixClient::new() {
-                if let Err(e) = client.report_test_metrics(metrics).await {
+                if let Err(e) = client.report_test_metrics(&metrics).await {
                     eprintln!("⚠️ No se pudo reportar métricas de test: {e}");
                 }
             }
         }
         Ok(())
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn run_basic_tests(&self, _cli: &TraeCli) -> Result<TestResults> {
         let mut cmd = Command::new("cargo");
         cmd.arg("test");
@@ -140,7 +137,6 @@ impl TestCommand {
             duration: None,
         })
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn run_coverage_analysis(&self, _cli: &TraeCli) -> Result<CoverageData> {
         let tarpaulin_check = Command::new("cargo")
             .arg("tarpaulin")
@@ -177,7 +173,6 @@ impl TestCommand {
             branches_total: 95,
         })
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn run_benchmarks(&self, _cli: &TraeCli) -> Result<BenchmarkResults> {
         let mut cmd = Command::new("cargo");
         cmd.args(["bench"]);
@@ -200,7 +195,6 @@ impl TestCommand {
             total_time: 2500.0,
         })
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn analyze_test_performance(&self, _cli: &TraeCli) -> Result<PerformanceAnalysis> {
         Ok(PerformanceAnalysis {
             slowest_tests: vec![TestPerformance {
@@ -224,7 +218,6 @@ impl TestCommand {
             ],
         })
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn generate_test_report(
         &self,
         test_results: &TestResults,
@@ -377,7 +370,6 @@ impl TestCommand {
 }
 #[derive(Debug)]
 #[allow(dead_code)]
-#[doc = "Struct documentation added by AI refactor"]
 struct TestResults {
     success: bool,
     passed: usize,
@@ -388,7 +380,6 @@ struct TestResults {
     duration: Option<f64>,
 }
 #[derive(Debug)]
-#[doc = "Struct documentation added by AI refactor"]
 struct CoverageData {
     percentage: f64,
     lines_covered: usize,
@@ -399,7 +390,6 @@ struct CoverageData {
     branches_total: usize,
 }
 #[derive(Debug)]
-#[doc = "Struct documentation added by AI refactor"]
 struct BenchmarkResult {
     name: String,
     time: f64,
@@ -408,21 +398,18 @@ struct BenchmarkResult {
 }
 #[derive(Debug)]
 #[allow(dead_code)]
-#[doc = "Struct documentation added by AI refactor"]
 struct BenchmarkResults {
     benchmarks: Vec<BenchmarkResult>,
     total_time: f64,
 }
 #[derive(Debug)]
 #[allow(dead_code)]
-#[doc = "Struct documentation added by AI refactor"]
 struct TestPerformance {
     name: String,
     duration: f64,
     category: String,
 }
 #[derive(Debug)]
-#[doc = "Struct documentation added by AI refactor"]
 struct PerformanceAnalysis {
     slowest_tests: Vec<TestPerformance>,
     fastest_tests: Vec<TestPerformance>,

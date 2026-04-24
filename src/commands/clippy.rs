@@ -11,7 +11,6 @@ use indicatif::{ProgressBar, ProgressStyle};
 use log::info;
 use std::time::Instant;
 #[derive(Args, Debug)]
-#[doc = "Struct documentation added by AI refactor"]
 pub struct ClippyCommand {
     #[doc = " Run clippy on all targets"]
     #[arg(long, default_value = "true")]
@@ -30,7 +29,6 @@ pub struct ClippyCommand {
     pub clippy_args: Vec<String>,
 }
 impl ClippyCommand {
-    #[doc = "Method documentation added by AI refactor"]
     pub async fn execute(&self) -> Result<()> {
         info!("🔍 Ejecutando clippy mejorado con paralelismo");
         let start_time = Instant::now();
@@ -53,14 +51,13 @@ impl ClippyCommand {
         if result.is_ok() {
             self.analyze_clippy_results_parallel()?;
         }
-        if let Err(e) = self.report_metrics(metrics.clone()).await {
+        if let Err(e) = self.report_metrics(&metrics).await {
             eprintln!("⚠️ No se pudo reportar métricas a JARVIXSERVER: {e}");
         } else {
             println!("📡 Métricas reportadas a JARVIXSERVER exitosamente");
         }
         Ok(())
     }
-    #[doc = "Method documentation added by AI refactor"]
     async fn execute_clippy_parallel(&self) -> Result<String> {
         use tokio::process::Command;
         let mut clippy_args = vec!["clippy".to_string()];
@@ -104,7 +101,6 @@ impl ClippyCommand {
             ))
         }
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn analyze_clippy_results_parallel(&self) -> Result<()> {
         println!(
             "{}",
@@ -130,8 +126,7 @@ impl ClippyCommand {
         println!("  - Considera --all-features para cobertura completa");
         Ok(())
     }
-    #[doc = "Method documentation added by AI refactor"]
-    async fn report_metrics(&self, metrics: MetricsCollector) -> Result<()> {
+    async fn report_metrics(&self, metrics: &MetricsCollector) -> Result<()> {
         match JarvixClient::new() {
             Ok(Some(client)) => {
                 client.report_clippy_metrics(metrics).await?;

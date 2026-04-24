@@ -96,7 +96,6 @@ pub struct RepairCommand {
     pub git_commit: Option<String>,
 }
 impl RepairCommand {
-    #[doc = "Method documentation added by AI refactor"]
     pub async fn execute(&self, cli: &TraeCli) -> Result<()> {
         info!("?? Iniciando proceso de reparaci¢n autom tica");
         let total_start = Instant::now();
@@ -408,7 +407,7 @@ impl RepairCommand {
             steps.push(StepSummary::skipped("Jarvix report"));
         } else if fatal_error.is_none() {
             let jarvix_start = Instant::now();
-            match self.report_metrics(metrics.clone()).await {
+            match self.report_metrics(&metrics).await {
                 Ok(()) => steps.push(StepSummary::success(
                     "Jarvix report",
                     jarvix_start.elapsed(),
@@ -435,7 +434,6 @@ impl RepairCommand {
             Ok(())
         }
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn show_repair_config(&self) {
         println!("{}", "🔧 Configuración de Reparación:".cyan().bold());
         if self.auto {
@@ -506,14 +504,12 @@ impl RepairCommand {
         );
         println!();
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn export_step_label(&self) -> String {
         self.export
             .as_ref()
             .map(|path| format!("Export report ({path})"))
             .unwrap_or_else(|| "Export report".to_string())
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn append_phase_steps(
         &self,
         steps: &mut Vec<StepSummary>,
@@ -551,7 +547,6 @@ impl RepairCommand {
             }
         }
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn summary_categories(&self, issues: &[RepairIssue]) -> Vec<IssueCategory> {
         let mut wanted: HashSet<IssueCategory> = HashSet::new();
         for category in ISSUE_CATEGORY_ORDER {
@@ -568,7 +563,6 @@ impl RepairCommand {
             .filter(|cat| wanted.contains(cat))
             .collect()
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn phase_enabled(&self, category: IssueCategory) -> bool {
         match category {
             IssueCategory::Clippy => self.auto || self.clippy,
@@ -579,7 +573,6 @@ impl RepairCommand {
             IssueCategory::Tests => self.auto || self.tests,
         }
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn phase_label(category: IssueCategory) -> &'static str {
         match category {
             IssueCategory::Clippy => "Clippy fixes",
@@ -590,7 +583,6 @@ impl RepairCommand {
             IssueCategory::Tests => "Tests",
         }
     }
-    #[doc = "Method documentation added by AI refactor"]
     async fn detect_issues(&self) -> Result<Vec<RepairIssue>> {
         println!("{}", "🔍 Detectando issues...".cyan());
         let spinner = ProgressBar::new_spinner();
@@ -629,7 +621,6 @@ impl RepairCommand {
         spinner.finish_with_message(format!("Detectados {} issues ✓", issues.len()));
         Ok(issues)
     }
-    #[doc = "Method documentation added by AI refactor"]
     async fn detect_clippy_issues(&self) -> Result<Vec<RepairIssue>> {
         let executor = CargoExecutor::new();
         let output = executor
@@ -649,7 +640,6 @@ impl RepairCommand {
         }
         Ok(issues)
     }
-    #[doc = "Method documentation added by AI refactor"]
     async fn detect_format_issues(&self) -> Result<Vec<RepairIssue>> {
         let executor = CargoExecutor::new();
         let output = executor.execute_with_output(&["fmt", "--check"]).await;
@@ -665,7 +655,6 @@ impl RepairCommand {
         }
         Ok(issues)
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn detect_dependency_issues(&self) -> Result<Vec<RepairIssue>> {
         let mut issues = Vec::new();
         if std::path::Path::new("Cargo.toml").exists() {
@@ -685,7 +674,6 @@ impl RepairCommand {
         }
         Ok(issues)
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn detect_manifest_issues(&self) -> Result<Vec<RepairIssue>> {
         let mut issues = Vec::new();
         if std::path::Path::new("Cargo.toml").exists() {
@@ -705,7 +693,6 @@ impl RepairCommand {
         }
         Ok(issues)
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn detect_docs_issues(&self) -> Result<Vec<RepairIssue>> {
         let mut issues = Vec::new();
         if !std::path::Path::new("README.md").exists() {
@@ -720,7 +707,6 @@ impl RepairCommand {
         }
         Ok(issues)
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn detect_test_issues(&self) -> Result<Vec<RepairIssue>> {
         let mut issues = Vec::new();
         if !std::path::Path::new("tests").exists() && !std::path::Path::new("src/lib.rs").exists() {
@@ -735,7 +721,6 @@ impl RepairCommand {
         }
         Ok(issues)
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn show_detected_issues(&self, issues: &[RepairIssue]) {
         println!("{}", "📋 Issues Detectados:".yellow().bold());
         println!();
@@ -760,7 +745,6 @@ impl RepairCommand {
             println!();
         }
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn confirm_repairs(&self, issues: &[RepairIssue]) -> Result<bool> {
         use std::io::{self, Write};
         print!(
@@ -772,7 +756,6 @@ impl RepairCommand {
         io::stdin().read_line(&mut input)?;
         Ok(input.trim().to_lowercase() == "s" || input.trim().to_lowercase() == "sí")
     }
-    #[doc = "Method documentation added by AI refactor"]
     async fn execute_repairs(
         &self,
         issues: &[RepairIssue],
@@ -835,7 +818,6 @@ impl RepairCommand {
         progress.finish_with_message("Reparaciones completadas ✓".to_string());
         Ok((results, durations))
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn simulate_repairs(&self, issues: &[RepairIssue]) -> Result<Vec<RepairResult>> {
         println!("{}", "🔍 Simulando reparaciones (dry run)...".yellow());
         let results = issues
@@ -852,7 +834,6 @@ impl RepairCommand {
             .collect();
         Ok(results)
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn show_results(&self, results: &[RepairResult], duration: std::time::Duration) {
         println!();
         println!("{}", "📊 Resultados de Reparación:".green().bold());
@@ -874,7 +855,6 @@ impl RepairCommand {
             );
         }
     }
-    #[doc = "Method documentation added by AI refactor"]
     async fn run_post_check(&self) -> Result<PostCheckOutcome> {
         let executor = CargoExecutor::new();
         let output = executor.execute_streaming_capture(&["check"]).await?;
@@ -886,7 +866,6 @@ impl RepairCommand {
             errors,
         })
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn show_post_check(&self, outcome: &PostCheckOutcome) {
         println!();
         println!(
@@ -900,7 +879,6 @@ impl RepairCommand {
         println!("  ⚠️  Warnings: {}", outcome.warnings);
         println!("  ❌ Errores: {}", outcome.errors);
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn export_report(
         &self,
         path: &str,
@@ -912,8 +890,7 @@ impl RepairCommand {
         fs::write(path, serde_json::to_string_pretty(&report)?)?;
         Ok(())
     }
-    #[doc = "Method documentation added by AI refactor"]
-    async fn report_metrics(&self, metrics: MetricsCollector) -> Result<()> {
+    async fn report_metrics(&self, metrics: &MetricsCollector) -> Result<()> {
         match JarvixClient::new() {
             Ok(Some(client)) => {
                 client.report_repair_metrics(metrics).await?;
@@ -1081,7 +1058,6 @@ impl RepairCommand {
     }
 }
 #[derive(Debug, Clone)]
-#[doc = "Struct documentation added by AI refactor"]
 pub struct RepairIssue {
     pub category: IssueCategory,
     pub description: String,
@@ -1105,20 +1081,17 @@ pub enum IssueSeverity {
     Info,
 }
 #[derive(Debug, Clone)]
-#[doc = "Struct documentation added by AI refactor"]
 pub struct RepairResult {
     pub issue: RepairIssue,
     pub success: bool,
     pub message: String,
 }
 #[derive(Debug, Clone)]
-#[doc = "Struct documentation added by AI refactor"]
 pub struct PostCheckOutcome {
     pub success: bool,
     pub warnings: usize,
     pub errors: usize,
 }
-#[doc = "Function documentation added by AI refactor"]
 fn issue_category_name(cat: &IssueCategory) -> &'static str {
     match cat {
         IssueCategory::Clippy => "clippy",
@@ -1129,7 +1102,6 @@ fn issue_category_name(cat: &IssueCategory) -> &'static str {
         IssueCategory::Tests => "tests",
     }
 }
-#[doc = "Function documentation added by AI refactor"]
 fn issue_severity_name(sev: &IssueSeverity) -> &'static str {
     match sev {
         IssueSeverity::Critical => "critical",

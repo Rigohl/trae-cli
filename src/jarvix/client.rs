@@ -8,13 +8,11 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::time::Duration;
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[doc = "Struct documentation added by AI refactor"]
 pub struct JarvixConfig {
     pub endpoint: String,
     pub api_key: Option<String>,
     pub timeout: u64,
 }
-#[doc = "Struct documentation added by AI refactor"]
 pub struct JarvixClient {
     client: Client,
     base_url: String,
@@ -22,7 +20,6 @@ pub struct JarvixClient {
     timeout: Duration,
 }
 impl JarvixClient {
-    #[doc = "Method documentation added by AI refactor"]
     pub fn load_config() -> Result<JarvixConfig> {
         if let Ok(endpoint) = std::env::var("JARVIX_ENDPOINT") {
             return Ok(JarvixConfig {
@@ -48,7 +45,6 @@ impl JarvixClient {
             timeout: 30,
         })
     }
-    #[doc = "Method documentation added by AI refactor"]
     pub fn new() -> Result<Option<Self>> {
         let config = Self::load_config()?;
         println!("🔧 JARVIX configurado: {}", config.endpoint);
@@ -60,22 +56,18 @@ impl JarvixClient {
             timeout: Duration::from_secs(config.timeout),
         }))
     }
-    #[doc = "Method documentation added by AI refactor"]
-    pub async fn report_build_metrics(&self, metrics: MetricsCollector) -> Result<()> {
+    pub async fn report_build_metrics(&self, metrics: &MetricsCollector) -> Result<()> {
         let payload = json ! ({ "type" : "build_metrics" , "data" : metrics . to_json () , "timestamp" : chrono :: Utc :: now () });
         self.send_metrics(payload).await
     }
-    #[doc = "Method documentation added by AI refactor"]
-    pub async fn report_repair_metrics(&self, metrics: MetricsCollector) -> Result<()> {
+    pub async fn report_repair_metrics(&self, metrics: &MetricsCollector) -> Result<()> {
         let payload = json ! ({ "type" : "repair_metrics" , "data" : metrics . to_json () , "timestamp" : chrono :: Utc :: now () });
         self.send_metrics(payload).await
     }
-    #[doc = "Method documentation added by AI refactor"]
-    pub async fn report_scan_metrics(&self, metrics: MetricsCollector) -> Result<()> {
+    pub async fn report_scan_metrics(&self, metrics: &MetricsCollector) -> Result<()> {
         let payload = json ! ({ "type" : "scan_metrics" , "data" : metrics . to_json () , "timestamp" : chrono :: Utc :: now () , "performance_boost" : 400 });
         self.send_metrics(payload).await
     }
-    #[doc = "Method documentation added by AI refactor"]
     pub async fn submit_parallel_analysis_job(
         &self,
         analysis_type: &str,
@@ -99,7 +91,6 @@ impl JarvixClient {
             Err(anyhow::anyhow!("Failed to get job ID from response"))
         }
     }
-    #[doc = "Method documentation added by AI refactor"]
     pub async fn get_job_result(&self, job_id: &str) -> Result<Option<serde_json::Value>> {
         let url = format!("{}/jobs/{}", self.base_url, job_id);
         let mut request = self.client.get(&url).timeout(self.timeout);
@@ -130,7 +121,6 @@ impl JarvixClient {
             Err(anyhow::anyhow!("Invalid job response"))
         }
     }
-    #[doc = "Method documentation added by AI refactor"]
     pub async fn get_pool_stats(&self) -> Result<serde_json::Value> {
         let url = format!("{}/pool/stats", self.base_url);
         let mut request = self.client.get(&url).timeout(self.timeout);
@@ -141,32 +131,26 @@ impl JarvixClient {
         let stats: serde_json::Value = response.json().await?;
         Ok(stats)
     }
-    #[doc = "Method documentation added by AI refactor"]
-    pub async fn report_cargo_metrics(&self, metrics: MetricsCollector) -> Result<()> {
+    pub async fn report_cargo_metrics(&self, metrics: &MetricsCollector) -> Result<()> {
         let payload = json ! ({ "type" : "cargo_metrics" , "data" : metrics . to_json () , "timestamp" : chrono :: Utc :: now () });
         self.send_metrics(payload).await
     }
-    #[doc = "Method documentation added by AI refactor"]
-    pub async fn report_test_metrics(&self, metrics: MetricsCollector) -> Result<()> {
+    pub async fn report_test_metrics(&self, metrics: &MetricsCollector) -> Result<()> {
         let payload = json ! ({ "type" : "test_metrics" , "data" : metrics . to_json () , "timestamp" : chrono :: Utc :: now () });
         self.send_metrics(payload).await
     }
-    #[doc = "Method documentation added by AI refactor"]
-    pub async fn report_doc_metrics(&self, metrics: MetricsCollector) -> Result<()> {
+    pub async fn report_doc_metrics(&self, metrics: &MetricsCollector) -> Result<()> {
         let payload = json ! ({ "type" : "doc_metrics" , "data" : metrics . to_json () , "timestamp" : chrono :: Utc :: now () });
         self.send_metrics(payload).await
     }
-    #[doc = "Method documentation added by AI refactor"]
-    pub async fn report_security_metrics(&self, metrics: MetricsCollector) -> Result<()> {
+    pub async fn report_security_metrics(&self, metrics: &MetricsCollector) -> Result<()> {
         let payload = json ! ({ "type" : "security_metrics" , "data" : metrics . to_json () , "timestamp" : chrono :: Utc :: now () });
         self.send_metrics(payload).await
     }
-    #[doc = "Method documentation added by AI refactor"]
-    pub async fn report_clippy_metrics(&self, metrics: MetricsCollector) -> Result<()> {
+    pub async fn report_clippy_metrics(&self, metrics: &MetricsCollector) -> Result<()> {
         let payload = json ! ({ "type" : "clippy_metrics" , "data" : metrics . to_json () , "timestamp" : chrono :: Utc :: now () });
         self.send_metrics(payload).await
     }
-    #[doc = "Method documentation added by AI refactor"]
     async fn send_metrics(&self, payload: serde_json::Value) -> Result<()> {
         let url = format!("{}/trae/api/metrics", self.base_url);
         let mut request = self.client.post(&url).timeout(self.timeout).json(&payload);

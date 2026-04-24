@@ -4,7 +4,6 @@
 use anyhow::Result;
 use colored::Colorize;
 use which::which;
-#[doc = "Function documentation added by AI refactor"]
 pub async fn run_system_check() -> Result<()> {
     println!(
         "{}",
@@ -34,7 +33,6 @@ pub async fn run_system_check() -> Result<()> {
     }
     Ok(())
 }
-#[doc = "Function documentation added by AI refactor"]
 fn check_rust_installation() -> bool {
     print!("🦀 Verificando instalación de Rust... ");
     if let Ok(path) = which("rustc") {
@@ -54,7 +52,6 @@ fn check_rust_installation() -> bool {
         false
     }
 }
-#[doc = "Function documentation added by AI refactor"]
 fn check_cargo_installation() -> bool {
     print!("📦 Verificando instalación de Cargo... ");
     if let Ok(path) = which("cargo") {
@@ -73,7 +70,6 @@ fn check_cargo_installation() -> bool {
         false
     }
 }
-#[doc = "Function documentation added by AI refactor"]
 fn check_additional_tools() -> bool {
     let tools = vec![
         ("clippy", "cargo install clippy"),
@@ -101,14 +97,13 @@ fn check_additional_tools() -> bool {
     }
     all_ok
 }
-#[doc = "Function documentation added by AI refactor"]
 async fn check_jarvix_connection() -> Result<bool> {
     print!("🌐 Verificando conexión a JARVIXSERVER... ");
     match crate::jarvix::client::JarvixClient::new() {
         Ok(Some(client)) => {
             let test_metrics =
                 crate::metrics::collector::MetricsCollector::new("health_check".to_string());
-            match client.report_build_metrics(test_metrics).await {
+            match client.report_build_metrics(&test_metrics).await {
                 Ok(()) => {
                     println!("{}", "✅ Conectado y respondiendo".green());
                     Ok(true)
