@@ -118,7 +118,6 @@ pub enum Commands {
     Security(SecurityCommand),
 }
 impl TraeCli {
-    #[doc = "Method documentation added by AI refactor"]
     pub async fn execute(&self) -> Result<()> {
         let start_time = Instant::now();
         let result = match &self.command {
@@ -170,7 +169,6 @@ impl TraeCli {
         }
         result
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn show_command_catalog(&self) -> Result<()> {
         #[derive(Clone)]
         struct CommandInfo<'a> {
@@ -200,22 +198,18 @@ impl TraeCli {
         );
         Ok(())
     }
-    #[doc = "Method documentation added by AI refactor"]
     async fn show_cargo_help(&self) -> Result<()> {
         use crate::utils::docs::show_cargo_commands;
         show_cargo_commands().await
     }
-    #[doc = "Method documentation added by AI refactor"]
     async fn init_config(&self, force: bool) -> Result<()> {
         use crate::config::init_trae_config;
         init_trae_config(force).await
     }
-    #[doc = "Method documentation added by AI refactor"]
     async fn run_doctor(&self) -> Result<()> {
         use crate::core::doctor::run_system_check;
         run_system_check().await
     }
-    #[doc = "Method documentation added by AI refactor"]
     async fn run_super_scan(
         &self,
         deps: bool,
@@ -384,7 +378,7 @@ impl TraeCli {
             );
             metrics.add_custom_metric("parallel_processing".to_string(), i32::from(use_parallel));
             metrics.add_custom_metric("performance_boost".to_string(), 400);
-            if let Err(e) = client.report_scan_metrics(metrics).await {
+            if let Err(e) = client.report_scan_metrics(&metrics).await {
                 eprintln!("⚠️ No se pudo reportar métricas de scan: {e}");
             }
         }
@@ -424,7 +418,6 @@ impl TraeCli {
         println!("{}", "✅ TRAE AUTO completado".green());
         Ok(())
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn scan_rust_project(
         &self,
         critical_only: bool,
@@ -536,7 +529,6 @@ impl TraeCli {
         }
         (issues, suggestions)
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn scan_dependencies(&self) -> Vec<crate::core::analyzer::AnalysisIssue> {
         let mut issues = Vec::new();
         if let Ok(content) = std::fs::read_to_string("Cargo.toml") {
@@ -572,7 +564,6 @@ impl TraeCli {
         }
         issues
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn scan_dead_code(&self) -> Vec<crate::core::analyzer::AnalysisIssue> {
         use walkdir::WalkDir;
         let mut issues = Vec::new();
@@ -615,7 +606,6 @@ impl TraeCli {
         }
         issues
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn scan_multilang(&self) -> Vec<crate::core::analyzer::AnalysisIssue> {
         use walkdir::WalkDir;
         let mut issues = Vec::new();
@@ -690,7 +680,6 @@ impl TraeCli {
         }
         issues
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn scan_build_artifacts(&self) -> Vec<crate::core::analyzer::AnalysisIssue> {
         let mut issues = Vec::new();
         if std::path::Path::new("target").exists() {
@@ -736,7 +725,6 @@ impl TraeCli {
         }
         issues
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn generate_scan_report(
         &self,
         issues: &[crate::core::analyzer::AnalysisIssue],
@@ -811,7 +799,6 @@ impl TraeCli {
         }
         Ok(())
     }
-    #[doc = "Method documentation added by AI refactor"]
     async fn run_external_cargo(&self, args: &[String]) -> Result<()> {
         if args.is_empty() {
             println!(

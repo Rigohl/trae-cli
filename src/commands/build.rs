@@ -16,7 +16,6 @@ use indicatif::{ProgressBar, ProgressStyle};
 use log::{info, warn};
 use std::time::Instant;
 #[derive(Args, Debug)]
-#[doc = "Struct documentation added by AI refactor"]
 pub struct BuildCommand {
     #[doc = " Build in release mode"]
     #[arg(long)]
@@ -47,7 +46,6 @@ pub struct BuildCommand {
     pub cargo_args: Vec<String>,
 }
 impl BuildCommand {
-    #[doc = "Method documentation added by AI refactor"]
     pub async fn execute(&self, cli: &TraeCli) -> Result<()> {
         info!("??? Iniciando build mejorado con TRAE CLI");
         let total_start = Instant::now();
@@ -160,7 +158,7 @@ impl BuildCommand {
             steps.push(StepSummary::skipped("Jarvix report"));
         } else {
             let step_start = Instant::now();
-            match self.report_metrics(metrics.clone()).await {
+            match self.report_metrics(&metrics).await {
                 Ok(()) => steps.push(StepSummary::success("Jarvix report", step_start.elapsed())),
                 Err(e) => {
                     steps.push(StepSummary::failed(
@@ -209,7 +207,6 @@ impl BuildCommand {
             unreachable!()
         }
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn show_build_config(&self, _cli: &TraeCli) {
         println!("{}", "ðŸ“‹ ConfiguraciÃ³n del Build:".cyan().bold());
         println!(
@@ -247,7 +244,6 @@ impl BuildCommand {
         );
         println!();
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn pre_build_analysis(&self) -> Result<()> {
         println!("{}", "ðŸ” Ejecutando pre-anÃ¡lisis...".cyan());
         let quantum_start = Instant::now();
@@ -271,7 +267,6 @@ impl BuildCommand {
         }
         Ok(())
     }
-    #[doc = "Method documentation added by AI refactor"]
     async fn execute_build(&self, _cli: &TraeCli) -> Result<Vec<String>> {
         let build_msg = if self.docker {
             "ðŸš€ Ejecutando cargo build con Docker y Chapel..."
@@ -315,7 +310,6 @@ impl BuildCommand {
             Err(e) => Err(e),
         }
     }
-    #[doc = "Method documentation added by AI refactor"]
     async fn execute_build_with_docker(&self) -> Result<String> {
         use tokio::process::Command;
         let mut docker_args = vec![
@@ -352,7 +346,6 @@ impl BuildCommand {
             ))
         }
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn post_build_analysis(&self, artifacts: &[String]) -> Result<()> {
         println!("{}", "ðŸ” Ejecutando post-anÃ¡lisis...".cyan());
         let analyzer = ProjectAnalyzer::new();
@@ -369,7 +362,6 @@ impl BuildCommand {
         }
         Ok(())
     }
-    #[doc = "Method documentation added by AI refactor"]
     async fn run_auto_repair(&self, cli: &TraeCli) -> Result<()> {
         println!("{}", "ðŸ”§ Ejecutando auto-repair...".cyan());
         let repair = RepairCommand {
@@ -379,8 +371,7 @@ impl BuildCommand {
         };
         repair.execute(cli).await
     }
-    #[doc = "Method documentation added by AI refactor"]
-    async fn report_metrics(&self, metrics: MetricsCollector) -> Result<()> {
+    async fn report_metrics(&self, metrics: &MetricsCollector) -> Result<()> {
         match JarvixClient::new() {
             Ok(Some(client)) => {
                 client.report_build_metrics(metrics).await?;
@@ -395,7 +386,6 @@ impl BuildCommand {
         }
         Ok(())
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn suggest_repairs(&self, error: &anyhow::Error) -> Result<()> {
         println!("{}", "ðŸ”§ Sugerencias de reparaciÃ³n:".yellow().bold());
         let error_str = error.to_string();
@@ -423,7 +413,6 @@ impl BuildCommand {
         );
         Ok(())
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn extract_artifacts(&self, output: &str) -> Vec<String> {
         let mut artifacts = Vec::new();
         for line in output.lines() {

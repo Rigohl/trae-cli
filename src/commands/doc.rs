@@ -11,7 +11,6 @@ use std::path::Path;
 use std::process::Command;
 use std::time::Instant;
 #[derive(Args, Debug)]
-#[doc = "Struct documentation added by AI refactor"]
 pub struct DocCommand {
     #[doc = " Generate documentation"]
     #[arg(long)]
@@ -48,7 +47,6 @@ pub struct DocCommand {
     pub deps: bool,
 }
 impl DocCommand {
-    #[doc = "Method documentation added by AI refactor"]
     pub async fn execute(&self, cli: &TraeCli) -> Result<()> {
         let start_time = Instant::now();
         let metrics = MetricsCollector::new("doc".to_string());
@@ -98,14 +96,13 @@ impl DocCommand {
         println!("Tiempo total: {:?}", elapsed);
         if !cli.no_jarvix {
             if let Ok(Some(client)) = JarvixClient::new() {
-                if let Err(e) = client.report_doc_metrics(metrics).await {
+                if let Err(e) = client.report_doc_metrics(&metrics).await {
                     eprintln!("⚠️ No se pudo reportar métricas de doc: {e}");
                 }
             }
         }
         Ok(())
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn generate_docs(&self, _cli: &TraeCli) -> Result<()> {
         let mut cmd = Command::new("cargo");
         cmd.arg("doc");
@@ -140,7 +137,6 @@ impl DocCommand {
         println!("Advertencias: {}", stdout.matches("warning:").count());
         Ok(())
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn validate_docs(&self, _cli: &TraeCli) -> Result<()> {
         println!("🔍 Validando documentación...");
         if !Path::new("target/doc").exists() {
@@ -153,7 +149,6 @@ impl DocCommand {
         }
         Ok(())
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn check_doc_coverage(&self, _cli: &TraeCli) -> Result<()> {
         println!("📈 Analizando cobertura de documentación...");
         let mut total_items = 0;
@@ -175,7 +170,6 @@ impl DocCommand {
         }
         Ok(())
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn generate_readme(&self, _cli: &TraeCli) -> Result<()> {
         let project_name = env!("CARGO_PKG_NAME");
         let version = env!("CARGO_PKG_VERSION");
@@ -185,7 +179,6 @@ impl DocCommand {
         println!("📝 README.md generado exitosamente");
         Ok(())
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn open_docs(&self) -> Result<()> {
         let doc_path = "target/doc/index.html";
         if cfg!(target_os = "windows") {
@@ -199,7 +192,6 @@ impl DocCommand {
         }
         Ok(())
     }
-    #[doc = "Method documentation added by AI refactor"]
     fn publish_docs(&self, _cli: &TraeCli) -> Result<()> {
         let has_gh_pages = Path::new(".github/workflows").exists()
             && walkdir::WalkDir::new(".github/workflows")

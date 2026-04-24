@@ -15,7 +15,6 @@ use std::path::PathBuf;
 use std::time::{Duration, Instant};
 use which::which;
 #[derive(Args, Debug)]
-#[doc = "Struct documentation added by AI refactor"]
 pub struct CargoCommand {
     #[doc = " Cargo subcommand to execute"]
     #[arg(value_name = "COMMAND")]
@@ -32,7 +31,6 @@ pub struct CargoCommand {
     #[arg(long)]
     pub interactive: bool,
 }
-#[doc = "Function documentation added by AI refactor"]
 fn resolve_executable(name: &str) -> Option<String> {
     if let Ok(path) = which(name) {
         return Some(path.to_string_lossy().to_string());
@@ -57,7 +55,6 @@ fn resolve_executable(name: &str) -> Option<String> {
     None
 }
 impl CargoCommand {
-    #[doc = "Method documentation added by AI refactor"]
     pub async fn execute(&self, cli: &TraeCli) -> Result<()> {
         println!(
             "{}",
@@ -91,7 +88,6 @@ impl CargoCommand {
                 .await
         }
     }
-    #[doc = "Method documentation added by AI refactor"]
     async fn run_interactive(
         &self,
         cli: &TraeCli,
@@ -135,7 +131,6 @@ impl CargoCommand {
             }
         }
     }
-    #[doc = "Method documentation added by AI refactor"]
     async fn run_streaming(
         &self,
         cli: &TraeCli,
@@ -214,7 +209,6 @@ impl CargoCommand {
             }
         }
     }
-    #[doc = "Method documentation added by AI refactor"]
     async fn report_metrics(
         &self,
         cli: &TraeCli,
@@ -224,7 +218,7 @@ impl CargoCommand {
             return;
         }
         if let Ok(Some(client)) = crate::jarvix::client::JarvixClient::new() {
-            if let Err(e) = client.report_cargo_metrics(metrics.clone()).await {
+            if let Err(e) = client.report_cargo_metrics(metrics).await {
                 eprintln!("⚠️  No se pudo reportar métricas cargo a JARVIXSERVER: {e}");
             }
         }
@@ -340,7 +334,7 @@ impl CargoCommand {
                     metrics.add_custom_metric("interactive_mode".to_string(), 1);
                     if !no_jarvix {
                         if let Ok(Some(client)) = crate::jarvix::client::JarvixClient::new() {
-                            if let Err(e) = client.report_cargo_metrics(metrics.clone()).await {
+                            if let Err(e) = client.report_cargo_metrics(&metrics).await {
                                 eprintln!(
                                     "⚠️ No se pudo reportar métricas cargo a JARVIXSERVER: {e}"
                                 );
@@ -416,7 +410,7 @@ impl CargoCommand {
                     metrics.add_custom_metric("streaming_mode".to_string(), 1);
                     if !no_jarvix {
                         if let Ok(Some(client)) = crate::jarvix::client::JarvixClient::new() {
-                            if let Err(e) = client.report_cargo_metrics(metrics.clone()).await {
+                            if let Err(e) = client.report_cargo_metrics(&metrics).await {
                                 eprintln!(
                                     "⚠️ No se pudo reportar métricas cargo a JARVIXSERVER: {e}"
                                 );

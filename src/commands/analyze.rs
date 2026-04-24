@@ -236,7 +236,7 @@ impl AnalyzeCommand {
 
         if !no_jarvix {
             if let Ok(Some(client)) = crate::jarvix::client::JarvixClient::new() {
-                if let Err(e) = client.report_scan_metrics(metrics).await {
+                if let Err(e) = client.report_scan_metrics(&metrics).await {
                     eprintln!("⚠️ No se pudo reportar métricas de análisis a JARVIXSERVER: {e}");
                 }
             }

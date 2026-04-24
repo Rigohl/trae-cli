@@ -47,7 +47,7 @@ async fn jarvix_client_reports_scan_metrics_to_local_server() {
     let client = JarvixClient::new()
         .expect("client new")
         .expect("client present");
-    let res = client.report_scan_metrics(metrics).await;
+    let res = client.report_scan_metrics(&metrics).await;
     assert!(res.is_ok(), "report_scan_metrics failed: {:?}", res.err());
 
     // Allow server thread to process briefly
