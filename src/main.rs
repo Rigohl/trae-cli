@@ -656,6 +656,7 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
 
     // MEJORA: Cargar variables de entorno desde .env automáticamente para todos los comandos
     // Esto es especialmente útil para 'run' y 'test', pero no hace daño en otros.
+    // Usamos std::env::set_var para que afecte a todos los comandos futuros del proceso
     if let Ok(env_vars) = load_env_file(&args.project) {
         if !env_vars.is_empty() {
             println!(
@@ -663,7 +664,9 @@ async fn execute_command(args: &Args) -> (&'static str, Output) {
                 "ℹ".blue(),
                 env_vars.len()
             );
-            cmd.envs(env_vars);
+            for (key, value) in env_vars {
+                std::env::set_var(key, value);
+            }
         }
     }
 
@@ -2326,13 +2329,22 @@ fn load_env_file(
     let mut vars = std::collections::HashMap::new();
 
     for line in content.lines() {
-        let line = line.trim();
+        let mut line = line.trim();
         if line.is_empty() || line.starts_with('#') {
             continue;
         }
 
+        // Soporte para 'export KEY=VALUE'
+        if line.starts_with("export ") {
+            line = line.trim_start_matches("export ").trim();
+        }
+
         if let Some((key, value)) = line.split_once('=') {
             let key = key.trim().to_string();
+            if key.is_empty() {
+                continue;
+            }
+
             let value = value
                 .trim()
                 .trim_matches('"')
